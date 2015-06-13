@@ -1,0 +1,8 @@
+#+TITLE:	Trabalho de Estrutura de Dados e Algoritmos
+#+AUTHOR:	Alice Duarte Scarpa, Bruno Lucian Costa
+#+EMAIL:	alicescarpa@gmail.com, bruno.lucian.costa@gmail.com
+#+DATE:		2015-06-04
+#+UPDATE:	0:00:00
+#+STARTUP:	content
+
+* 
