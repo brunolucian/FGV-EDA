@@ -1,4 +1,4 @@
-% Created 2015-06-14 Dom 18:15
+% Created 2015-06-14 Dom 19:07
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -24,7 +24,7 @@
 \newcommand{\vertex}{\node[vertex]}
 \author{Alice Duarte Scarpa, Bruno Lucian Costa}
 \date{2015-06-23}
-\title{Exercício 7.28 (Tardos)}
+\title{Trabalho de Estrutura de Dados e Algoritmos}
 \hypersetup{
   pdfkeywords={},
   pdfsubject={},
@@ -33,8 +33,88 @@
 
 \maketitle
 
-\section{Enunciado}
+\section{Exercício 6.30 (Papadimitriou)}
 \label{sec-1}
+\subsection{Enunciado}
+\label{sec-1-1}
+
+\textit{Reconstruindo árvores filogenéticas pelo método da máxima parcimônia}
+
+Uma árvore filogenética é uma árvore em que as folhas são espécies
+diferentes, cuja raiz é o ancestral comum de tais espécies e cujos
+galhos representam eventos de especiação.
+
+Queremos achar:
+
+\begin{itemize}
+\item Uma árvore (binária) evolucionária com as espécies dadas
+\item Para cada nó interno uma string de comprimento $k$ com a
+sequência genética daquele ancestral.
+\end{itemize}
+
+
+Dada uma árvore acompanhada de uma string $s(u) \in \{A, C, G, T\}^k$ para
+cada nó $u \in V(T)$, podemos atribuir uma nota usando o método da
+máxima parcimônia, que diz que menos mutações são mais prováveis:
+\[ \mathrm{nota}(T) = \sum_{(u,v) \in E(T)} (\text{número de posições em que }s(u)\text{ e }s(v)\text{ diferem}). \]
+
+Achar a árvore com nota mais baixa é um problema difícil. Aqui vamos
+considerar um problema menor: Dada a estrutura da árvore, achar as
+sequências genéticas $s(u)$ para os nós internos que dêem a nota mais
+baixa.
+
+Um exemplo com $k = 4$ e $n = 5$:
+
+\href{http:github.com/adusca/FGV-EDA/6_30/tree.png}{\includegraphics[width=.9\linewidth]{6_30/tree.png}}
+
+\begin{enumerate}
+\item Ache uma reconstrução para o exemplo seguindo o método da
+máxima parcimônia.
+\item Dê um algoritmo eficiente para essa tarefa.
+\end{enumerate}
+
+
+\subsection{Dados reais}
+\label{sec-1-2}
+
+Usamos \url{http://www.ncbi.nlm.nih.gov/Taxonomy/CommonTree/wwwcmt.cgi} para gerar o banco de dados.
+
+Rosalind MULT, GLOB, EDTA, PERM, EDIT, LCSQ,
+CSTR, CTBL, NWCK, SSET, MRNA, KMP, PROB
+SSEQ, SPLC, LCSM
+
+
+\section{Exercício 6.3 (Papadimitriou)}
+\label{sec-2}
+
+\subsection{Enunciado}
+\label{sec-2-1}
+
+O Yuckdonald's está considerando abrir uma cadeia de restaurantes em
+Quaint Valley Highway (QVG). Os $n$ locais possíveis estão em uma
+linha reta, e as distâncias desses locais até o começo da QVG são, em
+milhas e em ordem crescente, $m_1, m_2, \ldots, m_n$. As restrições
+são as seguintes:
+
+\begin{itemize}
+\item Em cada local, o Yuckdonald's pode abrir no máximo um
+restaurante. O lucro esperado ao abrir um restaurante no local
+$i$ é $p_i$, onde $p_i > 0$ e $i = 1, 2, \ldots, n$.
+\item Quaisquer dois restaurantes devem estar a pelo menos $k$
+  milhas de distância, onde $k$ é um inteiro positivo.
+\end{itemize}
+
+Dê um algoritmo eficiente para computar o maior lucro total
+esperado, sujeito às restrições acima.
+
+
+
+
+\section{Exercício 7.28 (Tardos)}
+\label{sec-3}
+
+\subsection{Enunciado}
+\label{sec-3-1}
 
 Um grupo de estudantes está escrevendo um módulo para preparar
 cronogramas de monitoria. O protótipo inicial deles funciona do
@@ -73,29 +153,30 @@ b) O algoritmo acima tornou-se popular, e surgiu a vontade de
    algoritmo polinomial para resolver o problema com essa restrição
    adicional.
 
-\section{Solução força-bruta}
-\label{sec-2}
+\subsection{Solução força-bruta}
+\label{sec-3-2}
 
-\subsection{Algoritmo}
-\label{sec-2-1}
+\subsubsection{Algoritmo}
+\label{sec-3-2-1}
 
-\subsection{Implementação}
-\label{sec-2-2}
+\subsubsection{Implementação}
+\label{sec-3-2-2}
 
-\subsection{Complexidade}
-\label{sec-2-3}
+\subsubsection{Complexidade}
+\label{sec-3-2-3}
 
-\section{Solução usando fluxo}
-\label{sec-3}
+\subsection{Solução usando fluxo}
+\label{sec-3-3}
 
-\subsection{Introdução}
-\label{sec-3-1}
+\subsubsection{Introdução}
+\label{sec-3-3-1}
 
 Queremos modelar esse problema como um problema de fluxo. Para isso
 vamos começar com algumas definições de fluxo.
 
-\subsubsection{Definições}
-\label{sec-3-1-1}
+\begin{enumerate}
+\item Definições
+\label{sec-3-3-1-1}
 
 Uma rede de fluxo é um grafo direcionado $G =
 (V, E)$ com as seguintes propriedades:
@@ -120,8 +201,8 @@ um fluxo é o total que parte da fonte $s$, isso é:
 
 $$\label{valor_fluxo} \mathrm{Valor}(f) = \sum_{e \text{ saindo de } s} f(e) $$
 
-\subsubsection{Representação}
-\label{sec-3-1-2}
+\item Representação
+\label{sec-3-3-1-2}
 
 Podemos usar programação orientada a objetos para nos ajudar na
 representação da rede de fluxo, simplificando o algoritmo.
@@ -193,9 +274,10 @@ class RedeDeFluxo():
             valor += self.fluxo[aresta]
         return valor
 \end{minted}
+\end{enumerate}
 
-\subsection{Modelando o problema com fluxos}
-\label{sec-3-2}
+\subsubsection{Modelando o problema com fluxos}
+\label{sec-3-3-2}
 
 Os dois itens do problema podem ser reduzidos a encontrar o fluxo de
 valor máximo em uma rede usando construções semelhantes.
@@ -258,7 +340,16 @@ arestas sem rótulo tem capacidade mínima 0 e máxima 1.
 \end{tikzpicture}\]
 
 A única diferença na construção do item b é que, ao invés de ligarmos
-diretamente $s$ nos
+$s$ diretamente aos intervalos de monitoria, ligamos $s$ a cada dia da
+semana i com capacidade mínima $d_i$ e capacidade máxima $c$ e depois
+criamos uma aresta com capacidade mínima 0 e capacidade máxima 1 de
+cada dia da semana para os intervalos que são naquele dia.
+
+TODO: argumento que isso dá a solução certa
+
+Abaixo está o mesmo exemplo do item a) com dias da semana. Para deixar
+a visualização mais simples estamos colocando aqui apenas dois dias da
+semana.
 
 \[\begin{tikzpicture}[x=0.25\textwidth, scale=0.9,
     every edge/.style={
@@ -294,11 +385,12 @@ diretamente $s$ nos
 ;
 \end{tikzpicture}\]
 
-\subsection{Implementação}
-\label{sec-3-3}
+\subsubsection{Implementação}
+\label{sec-3-3-3}
 
-\subsubsection{Fluxo máximo}
-\label{sec-3-3-1}
+\begin{enumerate}
+\item Fluxo máximo
+\label{sec-3-3-3-1}
 
 Vamos começar estudando o problema de encontrar o fluxo máximo de uma
 $G$ em que $d_e = 0 \; \forall e \in E$ $f$. Vamos implementar aqui o
@@ -376,10 +468,56 @@ def fluxo_maximo(self, fonte, dreno):
     return self.valor_do_fluxo(fonte)
 \end{minted}
 
-\subsubsection{Fluxo máximo com capacidades mínimas}
-\label{sec-3-3-2}
+\item Fluxo máximo com capacidades mínimas
+\label{sec-3-3-3-2}
+\end{enumerate}
 
-\subsection{Complexidade}
-\label{sec-3-4}
+\subsubsection{Complexidade}
+\label{sec-3-3-4}
+
+\section{Exercício 4.5 (Tardos)}
+\label{sec-4}
+
+\subsection{Enunciado}
+\label{sec-4-1}
+
+Vamos considerar uma rua campestre longa e quieta, com casas
+espalhadas bem esparsamente ao longo da mesma. (Podemos imaginar a
+rua como um grande segmento de reta, com um extremo leste e um
+extremo oeste.) Além disso, vamos assumir que, apesar do ambiente
+bucólico, os residentes de todas essas casas são ávidos usuários de
+telefonia celular.
+
+Você quer colocar estações-base de celulares em certos pontos da
+rodovia, de modo que toda casa esteja a no máximo quatro milhas de
+uma das estações-base. Dê um algoritmo eficiente para alcançar esta
+meta, usando o menor número possível de bases.
+
+
+\section{Exercício 8.19 (Tardos)}
+\label{sec-5}
+
+\subsection{Enunciado}
+\label{sec-5-1}
+
+Um comboio de navios chega ao porto com um total de $n$ vasilhames
+contendo tipos diferentes de materiais perigosos.
+Na doca, estão $m$ caminhões, cada um com capacidade para até $k$
+vasilhames.  Para cada um dos dois problemas, dê um algoritmo
+polinomial ou prove NP-completude:
+
+
+\begin{itemize}
+\item Cada vasilhame só pode ser carregado com segurança em alguns
+dos caminhões. Existe como estocar os $n$ vasilhames nos $m$
+caminhões de modo que nenhum caminhão esteja sobrecarregado, e
+todo vasilhame esteja num caminhão que o comporta com segurança?
+\item Qualquer vasilhame pode ser colocado em qualquer caminhão,
+mas alguns pares de vasilhames não podem ficar juntos num mesmo
+caminhão. Existe como estocar os $n$ vasilhames nos $m$
+caminhões de modo que nenhum caminhão esteja sobrecarregado e
+que nenhum dos pares proibidos de vasilhames esteja no mesmo
+caminhão?
+\end{itemize}
 % Emacs 24.4.1 (Org mode 8.2.10)
 \end{document}

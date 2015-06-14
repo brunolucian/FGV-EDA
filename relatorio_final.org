@@ -1,4 +1,4 @@
-#+TITLE:	Exercício 7.28 (Tardos)
+#+TITLE:        Trabalho de Estrutura de Dados e Algoritmos
 #+AUTHOR:	Alice Duarte Scarpa, Bruno Lucian Costa
 #+EMAIL:	alicescarpa@gmail.com, bruno.lucian.costa@gmail.com
 #+DATE:		2015-06-23
@@ -13,7 +13,75 @@
 #+LaTeX_HEADER: \tikzstyle{vertex}=[circle, draw, inner sep=0pt, minimum size=7pt]
 #+LaTeX_HEADER: \newcommand{\vertex}{\node[vertex]}
 
-* Enunciado
+* Exercício 6.30 (Papadimitriou)
+** Enunciado
+
+  \textit{Reconstruindo árvores filogenéticas pelo método da máxima parcimônia}
+
+  Uma árvore filogenética é uma árvore em que as folhas são espécies
+  diferentes, cuja raiz é o ancestral comum de tais espécies e cujos
+  galhos representam eventos de especiação.
+
+  Queremos achar:
+
+    * Uma árvore (binária) evolucionária com as espécies dadas
+    * Para cada nó interno uma string de comprimento $k$ com a
+      sequência genética daquele ancestral.
+
+
+  Dada uma árvore acompanhada de uma string $s(u) \in \{A, C, G, T\}^k$ para
+  cada nó $u \in V(T)$, podemos atribuir uma nota usando o método da
+  máxima parcimônia, que diz que menos mutações são mais prováveis:
+  \[ \mathrm{nota}(T) = \sum_{(u,v) \in E(T)} (\text{número de posições em que }s(u)\text{ e }s(v)\text{ diferem}). \]
+
+  Achar a árvore com nota mais baixa é um problema difícil. Aqui vamos
+  considerar um problema menor: Dada a estrutura da árvore, achar as
+  sequências genéticas $s(u)$ para os nós internos que dêem a nota mais
+  baixa.
+
+   Um exemplo com $k = 4$ e $n = 5$:
+
+   [[http:github.com/adusca/FGV-EDA/6_30/tree.png][file:6_30/tree.png]]
+
+    1. Ache uma reconstrução para o exemplo seguindo o método da
+      máxima parcimônia.
+    2. Dê um algoritmo eficiente para essa tarefa.
+
+
+** Dados reais
+
+Usamos http://www.ncbi.nlm.nih.gov/Taxonomy/CommonTree/wwwcmt.cgi para gerar o banco de dados.
+
+Rosalind MULT, GLOB, EDTA, PERM, EDIT, LCSQ,
+CSTR, CTBL, NWCK, SSET, MRNA, KMP, PROB
+SSEQ, SPLC, LCSM
+
+
+* Exercício 6.3 (Papadimitriou)
+
+** Enunciado
+
+O Yuckdonald's está considerando abrir uma cadeia de restaurantes em
+Quaint Valley Highway (QVG). Os $n$ locais possíveis estão em uma
+linha reta, e as distâncias desses locais até o começo da QVG são, em
+milhas e em ordem crescente, $m_1, m_2, \ldots, m_n$. As restrições
+são as seguintes:
+
+- Em cada local, o Yuckdonald's pode abrir no máximo um
+  restaurante. O lucro esperado ao abrir um restaurante no local
+  $i$ é $p_i$, onde $p_i > 0$ e $i = 1, 2, \ldots, n$.
+- Quaisquer dois restaurantes devem estar a pelo menos $k$
+  milhas de distância, onde $k$ é um inteiro positivo.
+
+Dê um algoritmo eficiente para computar o maior lucro total
+esperado, sujeito às restrições acima.
+
+
+
+
+* Exercício 7.28 (Tardos)
+
+** Enunciado
 
 Um grupo de estudantes está escrevendo um módulo para preparar
 cronogramas de monitoria. O protótipo inicial deles funciona do
@@ -50,22 +118,22 @@ administrador.
       algoritmo polinomial para resolver o problema com essa restrição
       adicional.
 
-* Solução força-bruta
+** Solução força-bruta
 
-** Algoritmo
+*** Algoritmo
 
-** Implementação
+*** Implementação
 
-** Complexidade
+*** Complexidade
 
-* Solução usando fluxo
+** Solução usando fluxo
 
-** Introdução
+*** Introdução
 
 Queremos modelar esse problema como um problema de fluxo. Para isso
 vamos começar com algumas definições de fluxo.
 
-*** Definições
+**** Definições
 
 Uma rede de fluxo é um grafo direcionado $G =
 (V, E)$ com as seguintes propriedades:
@@ -86,7 +154,7 @@ um fluxo é o total que parte da fonte $s$, isso é:
 
 $$\label{valor_fluxo} \mathrm{Valor}(f) = \sum_{e \text{ saindo de } s} f(e) $$
 
-*** Representação
+**** Representação
 
 Podemos usar programação orientada a objetos para nos ajudar na
 representação da rede de fluxo, simplificando o algoritmo.
@@ -159,7 +227,7 @@ class RedeDeFluxo():
         return valor
 #+END_SRC
 
-** Modelando o problema com fluxos
+*** Modelando o problema com fluxos
 
 Os dois itens do problema podem ser reduzidos a encontrar o fluxo de
 valor máximo em uma rede usando construções semelhantes.
@@ -265,9 +333,9 @@ semana.
 ;
 \end{tikzpicture}\]
 
-** Implementação
+*** Implementação
 
-*** Fluxo máximo
+**** Fluxo máximo
 
 Vamos começar estudando o problema de encontrar o fluxo máximo de uma
 $G$ em que $d_e = 0 \; \forall e \in E$ $f$. Vamos implementar aqui o
@@ -341,6 +409,45 @@ função que encontra o fluxo máximo.
         return self.valor_do_fluxo(fonte)
 #+END_SRC
 
-*** Fluxo máximo com capacidades mínimas
+**** Fluxo máximo com capacidades mínimas
 
-** Complexidade
+*** Complexidade
+
+* Exercício 4.5 (Tardos)
+
+** Enunciado
+
+Vamos considerar uma rua campestre longa e quieta, com casas
+espalhadas bem esparsamente ao longo da mesma. (Podemos imaginar a
+rua como um grande segmento de reta, com um extremo leste e um
+extremo oeste.) Além disso, vamos assumir que, apesar do ambiente
+bucólico, os residentes de todas essas casas são ávidos usuários de
+telefonia celular.
+
+Você quer colocar estações-base de celulares em certos pontos da
+rodovia, de modo que toda casa esteja a no máximo quatro milhas de
+uma das estações-base. Dê um algoritmo eficiente para alcançar esta
+meta, usando o menor número possível de bases.
+
+
+* Exercício 8.19 (Tardos)
+
+** Enunciado
+
+Um comboio de navios chega ao porto com um total de $n$ vasilhames
+contendo tipos diferentes de materiais perigosos.
+Na doca, estão $m$ caminhões, cada um com capacidade para até $k$
+vasilhames.  Para cada um dos dois problemas, dê um algoritmo
+polinomial ou prove NP-completude:
+
+
+- Cada vasilhame só pode ser carregado com segurança em alguns
+  dos caminhões. Existe como estocar os $n$ vasilhames nos $m$
+  caminhões de modo que nenhum caminhão esteja sobrecarregado, e
+  todo vasilhame esteja num caminhão que o comporta com segurança?
+- Qualquer vasilhame pode ser colocado em qualquer caminhão,
+  mas alguns pares de vasilhames não podem ficar juntos num mesmo
+  caminhão. Existe como estocar os $n$ vasilhames nos $m$
+  caminhões de modo que nenhum caminhão esteja sobrecarregado e
+  que nenhum dos pares proibidos de vasilhames esteja no mesmo
+  caminhão?

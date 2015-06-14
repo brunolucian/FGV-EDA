@@ -1,9 +1,17 @@
-#+TITLE:	Exercício 6.30 (Papadimitriou)
+#+TITLE:	Exercício 7.28 (Tardos)
 #+AUTHOR:	Alice Duarte Scarpa, Bruno Lucian Costa
 #+EMAIL:	alicescarpa@gmail.com, bruno.lucian.costa@gmail.com
 #+DATE:		2015-06-23
 #+OPTIONS: tex:t
 #+OPTIONS: toc:nil
+#+STARTUP: showall
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+LaTeX_HEADER: \usemintedstyle{perldoc}
+#+LaTeX_HEADER: \usepackage{tikz}
+#+LaTeX_HEADER: \usetikzlibrary{decorations.markings}
+#+LaTeX_HEADER: \tikzstyle{vertex}=[circle, draw, inner sep=0pt, minimum size=7pt]
+#+LaTeX_HEADER: \newcommand{\vertex}{\node[vertex]}
 
 * Enunciado
 

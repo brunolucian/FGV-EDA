@@ -1,0 +1,31 @@
+#+TITLE:	Exercício 6.3 (Papadimitriou)
+#+AUTHOR:	Alice Duarte Scarpa, Bruno Lucian Costa
+#+EMAIL:	alicescarpa@gmail.com, bruno.lucian.costa@gmail.com
+#+DATE:		2015-06-23
+#+OPTIONS: tex:t
+#+OPTIONS: toc:nil
+#+STARTUP: showall
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+LaTeX_HEADER: \usemintedstyle{perldoc}
+#+LaTeX_HEADER: \usepackage{tikz}
+#+LaTeX_HEADER: \usetikzlibrary{decorations.markings}
+#+LaTeX_HEADER: \tikzstyle{vertex}=[circle, draw, inner sep=0pt, minimum size=7pt]
+#+LaTeX_HEADER: \newcommand{\vertex}{\node[vertex]}
+
+* Enunciado
+
+O Yuckdonald's está considerando abrir uma cadeia de restaurantes em
+Quaint Valley Highway (QVG). Os $n$ locais possíveis estão em uma
+linha reta, e as distâncias desses locais até o começo da QVG são, em
+milhas e em ordem crescente, $m_1, m_2, \ldots, m_n$. As restrições
+são as seguintes:
+
+- Em cada local, o Yuckdonald's pode abrir no máximo um
+  restaurante. O lucro esperado ao abrir um restaurante no local
+  $i$ é $p_i$, onde $p_i > 0$ e $i = 1, 2, \ldots, n$.
+- Quaisquer dois restaurantes devem estar a pelo menos $k$
+  milhas de distância, onde $k$ é um inteiro positivo.
+
+Dê um algoritmo eficiente para computar o maior lucro total
+esperado, sujeito às restrições acima.

@@ -1,0 +1,28 @@
+#+TITLE:	Exercício 4.5 (Tardos)
+#+AUTHOR:	Alice Duarte Scarpa, Bruno Lucian Costa
+#+EMAIL:	alicescarpa@gmail.com, bruno.lucian.costa@gmail.com
+#+DATE:		2015-06-23
+#+OPTIONS: tex:t
+#+OPTIONS: toc:nil
+#+STARTUP: showall
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+LaTeX_HEADER: \usemintedstyle{perldoc}
+#+LaTeX_HEADER: \usepackage{tikz}
+#+LaTeX_HEADER: \usetikzlibrary{decorations.markings}
+#+LaTeX_HEADER: \tikzstyle{vertex}=[circle, draw, inner sep=0pt, minimum size=7pt]
+#+LaTeX_HEADER: \newcommand{\vertex}{\node[vertex]}
+
+* Enunciado
+
+Vamos considerar uma rua campestre longa e quieta, com casas
+espalhadas bem esparsamente ao longo da mesma. (Podemos imaginar a
+rua como um grande segmento de reta, com um extremo leste e um
+extremo oeste.) Além disso, vamos assumir que, apesar do ambiente
+bucólico, os residentes de todas essas casas são ávidos usuários de
+telefonia celular.
+
+Você quer colocar estações-base de celulares em certos pontos da
+rodovia, de modo que toda casa esteja a no máximo quatro milhas de
+uma das estações-base. Dê um algoritmo eficiente para alcançar esta
+meta, usando o menor número possível de bases.
