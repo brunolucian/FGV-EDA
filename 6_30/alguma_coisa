@@ -1,0 +1,12 @@
+Entrada: Uma árvore T em que cada folha tem valor 0, 1, 2 ou 3
+
+Vamos computar ans[v][l] := a melhor maneira de preencher os nós
+da subárvore enraizada em v, dado que o pai de v tem valor l.
+
+ans[folha][l] = 0 se valor[folha] = l
+                1 caso contrário
+
+ans[v][l] = min_{m \in \{0, 1, 2, 3\}} \sum_{w filho de v} ans[w][m] + [l != m]
+
+Resposta: min_{l \in \{0, 1, 2, 3\}} \sum_{v filho da raiz} ans[v][l]
+          (ou min_{l \in \{0, 1, 2, 3\}} ans[raiz][l], o que requer prova)

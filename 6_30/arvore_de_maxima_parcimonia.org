@@ -42,3 +42,7 @@
 * Dados reais
 
 Usamos http://www.ncbi.nlm.nih.gov/Taxonomy/CommonTree/wwwcmt.cgi para gerar o banco de dados.
+
+Rosalind MULT, GLOB, EDTA, PERM, EDIT, LCSQ,
+CSTR, CTBL, NWCK, SSET, MRNA, KMP, PROB
+SSEQ, SPLC, LCSM
