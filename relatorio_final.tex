@@ -1,4 +1,4 @@
-% Created 2015-06-14 Dom 19:07
+% Created 2015-06-14 Dom 22:16
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -164,7 +164,6 @@ b) O algoritmo acima tornou-se popular, e surgiu a vontade de
 
 \subsubsection{Complexidade}
 \label{sec-3-2-3}
-
 \subsection{Solução usando fluxo}
 \label{sec-3-3}
 
@@ -182,8 +181,8 @@ Uma rede de fluxo é um grafo direcionado $G =
 (V, E)$ com as seguintes propriedades:
 \begin{itemize}
 \item Existe um único vértice \textit{fonte} $s \in V$. Nenhuma aresta entra em $s$.
-\item A cada aresta $e$ está associada uma capacidade máxima inteira
-$c_e \geq 0$ e uma capacidade mínima $d_e \geq 0$.
+\item A cada aresta $e$ está associada uma capacidade inteira $c_e$ e
+uma demanda $d_e$ tal que $c_e \geq d_e \geq 0$.
 \item Existe um único vértice \textit{dreno} $t \in V$. Nenhuma aresta sai de $t$.
 \end{itemize}
 
@@ -208,26 +207,28 @@ Podemos usar programação orientada a objetos para nos ajudar na
 representação da rede de fluxo, simplificando o algoritmo.
 TODO: explicar a parte de já construir o grafo reverso.
 
-Vamos usar uma classe para representar arestas. Uma aresta tem as
-propriedades: vértice de origem, vértice de destino, capacidade
-(e reversa e fluxo, talvez)
+Vamos usar uma classe para representar arestas. Uma aresta é
+inicializada com as propriedades: vértice de origem, vértice de
+destino, capacidade e demanda.
 
+TODO: explicar reversa e original
 \begin{minted}[]{python}
 class Aresta():
-    def __init__(self, origem, destino, capacidade, capacidade_min=0):
+    def __init__(self, origem, destino, capacidade, demanda):
         self.origem = origem
         self.destino = destino
         self.capacidade = capacidade
-        self.capacidade_min = capacidade_min
+        self.demanda = demanda
         self.reversa = None
+        self.original = True
 \end{minted}
 
 Agora que temos a classe Aresta, vamos usá-la para auxiliar na
 representação de uma rede de fluxo também como objeto.
 
 Uma rede de fluxo tem duas propriedades: adjacências, um dicionário
-que mapeia cada vértice às arestas que saem dele e fluxo,
-representando as arestas do grafo e fluxo, representando\ldots{}
+que mapeia cada vértice às arestas que saem dele e fluxo TODO: explicar isso
+
 O construtor da classe inicializa as duas propriedades como dicionários vazios.
 
 Vamos precisar dos seguintes métodos na nossa classe RedeDeFluxo:
@@ -250,13 +251,14 @@ class RedeDeFluxo():
     def novo_vertice(self, v):
         self.adj[v] = []
 
-    def nova_aresta(self, origem, destino, capacidade):
-        aresta = Aresta(origem, destino, capacidade)
+    def nova_aresta(self, origem, destino, capacidade, demanda):
+        aresta = Aresta(origem, destino, capacidade, demanda)
         self.adj[origem].append(aresta)
 
         # Criando a aresta reversa
-        aresta_reversa = Aresta(destino, origem, 0)
+        aresta_reversa = Aresta(destino, origem, 0, -1*demanda)
         self.adj[destino].append(aresta_reversa)
+        aresta_reversa.original = False
 
         # Marcando aresta e aresta_reversa como reversas uma da outra
         aresta.reversa = aresta_reversa
@@ -279,8 +281,8 @@ class RedeDeFluxo():
 \subsubsection{Modelando o problema com fluxos}
 \label{sec-3-3-2}
 
-Os dois itens do problema podem ser reduzidos a encontrar o fluxo de
-valor máximo em uma rede usando construções semelhantes.
+Os dois itens do problema podem ser reduzidos a encontrar um fluxo
+válido em uma rede usando construções semelhantes.
 
 Para o item a), construimos o grafo da seguinte forma:
 
@@ -289,15 +291,15 @@ Para o item a), construimos o grafo da seguinte forma:
   representando o dreno
 \item Para cada intervalo $I_i \in I_1, I_2, \ldots, I_k$ escolhido pelo
 administrador, criamos um vértice $I_i$ e uma aresta $(s, I_i)$
-capacidade mínima 0 e capacidade máxima 1
+capacidade 1 e demanda 0
 \item Para cada monitor $T_i \in T_1, T_2, \ldots, T_m$ criamos um vértice
 $T_i$. Se o monitor está disponível para dar monitoria no intervalo
-$I_j$ criamos uma aresta de $(I_j, T_i)$ de capacidade mínima 0 e
-capacidade máxima 1. Para cada monitor também criamos uma aresta
-$(T_i, t)$ de capacidade mínima $a$ e capacidade máxima $b$.
+$I_j$ criamos uma aresta de $(I_j, T_i)$ de demanda 0 e
+capacidade 1. Para cada monitor também criamos uma aresta
+$(T_i, t)$ de demanda $a$ e capacidade $b$.
 \item Para garantir que a solução final terá exatamente $c$ horas de
 monitoria, criamos uma nova fonte $s'$ e uma aresta $(s', s)$
-com capacidade mínima e máxima $c$.
+com demanda e capacidade $c$.
 \end{itemize}
 
 TODO: argumentar que soluções para esse problema são equivalentes a
@@ -306,8 +308,8 @@ soluções do problema original
 O caso com 3 intervalos e 2 monitores (A e B) em que o monitor A está
 disponível nos intervalos 1 e 2 e o monitor B está disponível nos
 horários 1 e 3 está representado abaixo. Os rótulos
-das arestas são da forma capacidade mínima/capacidade máxima. As
-arestas sem rótulo tem capacidade mínima 0 e máxima 1.
+das arestas são da forma demanda/capacidade. As
+arestas sem rótulo tem demanda 0 e capacidade 1.
 
 \[\begin{tikzpicture}[x=0.25\textwidth,
     every edge/.style={
@@ -341,8 +343,8 @@ arestas sem rótulo tem capacidade mínima 0 e máxima 1.
 
 A única diferença na construção do item b é que, ao invés de ligarmos
 $s$ diretamente aos intervalos de monitoria, ligamos $s$ a cada dia da
-semana i com capacidade mínima $d_i$ e capacidade máxima $c$ e depois
-criamos uma aresta com capacidade mínima 0 e capacidade máxima 1 de
+semana i com demanda $d_i$ e capacidade $c$ e depois
+criamos uma aresta com demanda 0 e capacidade 1 de
 cada dia da semana para os intervalos que são naquele dia.
 
 TODO: argumento que isso dá a solução certa
@@ -393,7 +395,7 @@ semana.
 \label{sec-3-3-3-1}
 
 Vamos começar estudando o problema de encontrar o fluxo máximo de uma
-$G$ em que $d_e = 0 \; \forall e \in E$ $f$. Vamos implementar aqui o
+rede $G$ em que $d_e = 0 \; \forall e \in E$ $f$. Vamos implementar aqui o
 algoritmo de Ford-Fulkerson para resolver esse problema.
 
 O algoritmo tem 2 partes:
@@ -409,7 +411,7 @@ novo fluxo $f'$ expandindo $f$ em $P$
 \item Primeira parte:
 \end{itemize}
 
-O gargalo de um caminho é \ldots{}
+O gargalo de um caminho é TODO: definir gargalo, explicar o código a seguir
 Definimos aqui uma função que encontra o gargalo do caminho
 \begin{minted}[]{python}
 def encontra_gargalo(self, caminho):
@@ -419,7 +421,7 @@ def encontra_gargalo(self, caminho):
     return min(residuos)
 \end{minted}
 
-Expandir o caminho é \ldots{}
+Expandir o caminho é TODO: explicar o que é expandir o caminho,
 
 \begin{minted}[]{python}
 def expande_caminho(self, caminho):
@@ -441,6 +443,7 @@ def cria_fluxo_inicial(self):
             fluxo[aresta] = 0
 \end{minted}
 
+TODO: explicar porque precisamos desse método e como ele funciona
 Retorna um caminho de fonte a dreno passando pelos vértices
 em caminho
 \begin{minted}[]{python}
@@ -458,6 +461,8 @@ def encontra_caminho(self, fonte, dreno, caminho):
 
 Com todas as funções auxiliares prontas, podemos finalmente definir a
 função que encontra o fluxo máximo.
+
+TODO: explicar o algoritmo de fluxo máximo
 \begin{minted}[]{python}
 def fluxo_maximo(self, fonte, dreno):
     self.cria_fluxo_inicial()
@@ -468,9 +473,59 @@ def fluxo_maximo(self, fonte, dreno):
     return self.valor_do_fluxo(fonte)
 \end{minted}
 
-\item Fluxo máximo com capacidades mínimas
+\item Fluxo válido com demandas não-nulas
 \label{sec-3-3-3-2}
+
+O nosso objetivo é encontrar um fluxo válido $f$ para uma rede $G =
+(V, E)$ no caso em que as demandas são positivas.
+
+Vamos construir uma rede $G' = (V', E')$ com um valor associado $d$
+tal que $d_e = 0 \; \forall e \in E'$ de tal forma que um fluxo válido
+para $G$ existe se e somente se o valor do fluxo máximo em $G'$ é
+$d$. Em caso afirmativo, podemos construir um fluxo válido $f$ para
+$G$ rapidamente a partir de qualquer fluxo máximo $f'$ de $G'$.
+
+Construimos $G'$ da seguinte forma:
+
+\begin{itemize}
+\item Criamos um vértice em $G'$ para cada vértice $G$
+\item Adicionamos uma fonte adicional $F$ e um dreno adicional $D$ a $G'$
+\item Definimos o saldo de cada vértice $v \in V$ como: \[
+  \textrm{saldo}(v) = \sum_{e \text{ saindo de }v}d_e - \sum_{e \text{
+  chegando em }v}d_e \]
+\item Se $\mathrm{saldo}(v) > 0$ adicionamos uma aresta $(v, D,
+  \mathrm{saldo}(v), 0)$ a $G'$
+\item Se $\mathrm{saldo}(v) < 0$ adicionamos uma aresta $(F, v,
+  -\mathrm{saldo}(v), 0)$ a $G'$
+\item Para cada aresta $e = (\mathrm{origem, destino, capacidade,
+  demanda}) \in E$, crie uma aresta $e' = (\mathrm{origem, destino,
+  capacidade - demanda, 0})$ em $G'$
+\end{itemize}
+
+Codificando a construção acima:
+\begin{minted}[]{python}
+def cria_rede_com_demandas_nulas(G):
+    G_ = RedeDeFluxo()
+    G_.novo_vertice('F')
+    G_.novo_vertice('D')
+    for vertice, arestas in G.adj.iteritems():
+        G_.novo_vertice(vertice)
+        saldo = sum(e.demanda for e in arestas)
+        if saldo > 0:
+            G_.nova_aresta(vertice, 'D', saldo,0)
+        elif saldo < 0:
+            G_.nova_aresta('F', vertice, -saldo, 0)
+    for arestas in G.adj.values():
+        for a in arestas:
+             if not a.eh_reversa:
+                 G_.nova_aresta(a.origem,
+                                a.destino,
+                                a.capacidade - a.demanda,
+                                0)
+\end{minted}
+TODO: provar que soluções de um são também soluções do outro
 \end{enumerate}
+
 
 \subsubsection{Complexidade}
 \label{sec-3-3-4}
@@ -507,17 +562,17 @@ vasilhames.  Para cada um dos dois problemas, dê um algoritmo
 polinomial ou prove NP-completude:
 
 
-\begin{itemize}
-\item Cada vasilhame só pode ser carregado com segurança em alguns
-dos caminhões. Existe como estocar os $n$ vasilhames nos $m$
-caminhões de modo que nenhum caminhão esteja sobrecarregado, e
-todo vasilhame esteja num caminhão que o comporta com segurança?
-\item Qualquer vasilhame pode ser colocado em qualquer caminhão,
-mas alguns pares de vasilhames não podem ficar juntos num mesmo
-caminhão. Existe como estocar os $n$ vasilhames nos $m$
-caminhões de modo que nenhum caminhão esteja sobrecarregado e
-que nenhum dos pares proibidos de vasilhames esteja no mesmo
-caminhão?
-\end{itemize}
+a) Cada vasilhame só pode ser carregado com segurança em alguns
+   dos caminhões. Existe como estocar os $n$ vasilhames nos $m$
+   caminhões de modo que nenhum caminhão esteja sobrecarregado, e
+   todo vasilhame esteja num caminhão que o comporta com segurança?
+
+
+b) Qualquer vasilhame pode ser colocado em qualquer caminhão,
+   mas alguns pares de vasilhames não podem ficar juntos num mesmo
+   caminhão. Existe como estocar os $n$ vasilhames nos $m$
+   caminhões de modo que nenhum caminhão esteja sobrecarregado e
+   que nenhum dos pares proibidos de vasilhames esteja no mesmo
+   caminhão?
 % Emacs 24.4.1 (Org mode 8.2.10)
 \end{document}
