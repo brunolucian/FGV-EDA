@@ -444,15 +444,20 @@ Codificando a construção acima:
 #+BEGIN_SRC python
 def cria_rede_com_demandas_nulas(G):
     G_ = RedeDeFluxo()
+    d = 0
     G_.novo_vertice('F')
     G_.novo_vertice('D')
+
     for vertice, arestas in G.adj.iteritems():
         G_.novo_vertice(vertice)
+
         saldo = sum(e.demanda for e in arestas)
         if saldo > 0:
-            G_.nova_aresta(vertice, 'D', saldo,0)
+            G_.nova_aresta(vertice, 'D', saldo, 0)
+            d += saldo
         elif saldo < 0:
             G_.nova_aresta('F', vertice, -saldo, 0)
+
     for arestas in G.adj.values():
         for a in arestas:
              if not a.eh_reversa:
@@ -460,6 +465,8 @@ def cria_rede_com_demandas_nulas(G):
                                 a.destino,
                                 a.capacidade - a.demanda,
                                 0)
+    return G_, d
+
 #+END_SRC
 TODO: provar que soluções de um são também soluções do outro
 

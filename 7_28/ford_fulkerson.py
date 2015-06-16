@@ -14,6 +14,7 @@ class Aresta():
         self.destino = destino
         self.capacidade = capacidade
         self.reversa = None
+        self.original = True
 
 
 class RedeDeFluxo():
@@ -34,6 +35,7 @@ class RedeDeFluxo():
         # Criando a aresta reversa
         aresta_reversa = Aresta(destino, origem, 0)
         self.adj[destino].append(aresta_reversa)
+        aresta_reversa.original = False
 
         # Marcando aresta e aresta_reversa como reversas uma da outra
         aresta.reversa = aresta_reversa
@@ -95,3 +97,26 @@ class RedeDeFluxo():
             self.expande_caminho(caminho)
             caminho = self.encontra_caminho(source, sink, [])
         return self.valor_do_fluxo(source)
+
+
+def cria_rede_com_demandas_nulas(G):
+    G_ = RedeDeFluxo()
+    G_.novo_vertice('F')
+    G_.novo_vertice('D')
+    d = 0
+    for vertice, arestas in G.adj.iteritems():
+        G_.novo_vertice(vertice)
+        saldo = sum(e.demanda for e in arestas)
+        if saldo > 0:
+            G_.nova_aresta(vertice, 'D', saldo,0)
+        elif saldo < 0:
+            G_.nova_aresta('F', vertice, -saldo, 0)
+            d += -saldo
+    for arestas in G.adj.values():
+        for a in arestas:
+            if a.original:
+                G_.nova_aresta(a.origem,
+                               a.destino,
+                               a.capacidade - a.demanda,
+                               0)
+    return G_, d

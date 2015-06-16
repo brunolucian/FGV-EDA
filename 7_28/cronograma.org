@@ -141,7 +141,7 @@ class RedeDeFluxo():
         self.adj[origem].append(aresta)
 
         # Criando a aresta reversa
-        aresta_reversa = Aresta(destino, origem, 0, -1*demanda)
+        aresta_reversa = Aresta(destino, origem, 0, -demanda)
         self.adj[destino].append(aresta_reversa)
         aresta_reversa.original = False
 
@@ -160,6 +160,14 @@ class RedeDeFluxo():
         for aresta in self.encontra_arestas(fonte):
             valor += self.fluxo[aresta]
         return valor
+
+    def print_str(self):
+        ans = []
+        for v, a in self.adj.iteritems():
+            for ar in a:
+                if ar.original:
+                    ans.append('%s - %s - %s - %s' % (ar.origem, ar.destino, ar.capacidade, ar.demanda))
+        return ans
 #+END_SRC
 
 ** Modelando o problema com fluxos
@@ -287,64 +295,79 @@ O algoritmo tem 2 partes:
 
 O gargalo de um caminho é TODO: definir gargalo, explicar o código a seguir
 Definimos aqui uma função que encontra o gargalo do caminho
+#+Name: gargalo
 #+BEGIN_SRC python
-    def encontra_gargalo(self, caminho):
-        residuos = []
-        for aresta in caminho:
-            residuos.append(aresta.capacidade - self.fluxo[aresta])
-        return min(residuos)
+def encontra_gargalo(self, caminho):
+    residuos = []
+    for aresta in caminho:
+        residuos.append(aresta.capacidade - self.fluxo[aresta])
+    return min(residuos)
 #+END_SRC
+
+#+RESULTS:
 
 Expandir o caminho é TODO: explicar o que é expandir o caminho,
-
+#+NAME: expande
 #+BEGIN_SRC python
-    def expande_caminho(self, caminho):
-        gargalo = self.encontra_gargalo(caminho)
-        for aresta in caminho:
-            self.fluxo[aresta] += gargalo
-            self.fluxo[aresta.reversa] -= gargalo
+def expande_caminho(self, caminho):
+    gargalo = self.encontra_gargalo(caminho)
+    for aresta in caminho:
+        self.fluxo[aresta] += gargalo
+        self.fluxo[aresta.reversa] -= gargalo
 #+END_SRC
+
+#+RESULTS:
 
 Com isso temos a parte 1 do algoritmo.
 
 Para a parte 2, vamos precisar criar um fluxo $f$ com $f(e) = 0$ para
 toda aresta $e$. Podemos fazer isso utilizando o seguinte método na
 classe RedeDeFluxo():
+#+NAME: fluxo_inicial
 #+BEGIN_SRC python
-    def cria_fluxo_inicial(self):
-        for vertice, arestas in self.adj.iteritems():
-            for aresta in arestas:
-                fluxo[aresta] = 0
+def cria_fluxo_inicial(self):
+    for vertice, arestas in self.adj.iteritems():
+        for aresta in arestas:
+            self.fluxo[aresta] = 0
 #+END_SRC
+
+#+RESULTS:
+: None
 
 TODO: explicar porque precisamos desse método e como ele funciona
 Retorna um caminho de fonte a dreno passando pelos vértices
 em caminho
+#+NAME: encontra_caminho
 #+BEGIN_SRC python
-    def encontra_caminho(self, fonte, dreno, caminho):
-        if fonte == dreno:
-            return caminho
-        for aresta in self.encontra_arestas(fonte):
-            residuo = aresta.capacidade - self.fluxo[aresta]
-            if residuo > 0 and aresta not in caminho:
-                resp = self.encontra_caminho(aresta.destino, dreno, caminho + [aresta])
-                # TODO: explicar essa parte
-                if resp != None:
-                    return resp
+def encontra_caminho(self, fonte, dreno, caminho):
+    if fonte == dreno:
+        return caminho
+    for aresta in self.encontra_arestas(fonte):
+        residuo = aresta.capacidade - self.fluxo[aresta]
+        if residuo > 0 and aresta not in caminho:
+            resp = self.encontra_caminho(aresta.destino,
+                                         dreno,
+                                         caminho + [aresta])
+            # TODO: explicar essa parte
+            if resp != None:
+                return resp
 #+END_SRC
+
+#+RESULTS:
 
 Com todas as funções auxiliares prontas, podemos finalmente definir a
 função que encontra o fluxo máximo.
 
 TODO: explicar o algoritmo de fluxo máximo
+#+NAME: fluxo_maximo
 #+BEGIN_SRC python
-    def fluxo_maximo(self, fonte, dreno):
-        self.cria_fluxo_inicial()
+def fluxo_maximo(self, fonte, dreno):
+    self.cria_fluxo_inicial()
+    caminho = self.encontra_caminho(fonte, dreno, [])
+    while caminho is not None:
+        self.expande_caminho(caminho)
         caminho = self.encontra_caminho(fonte, dreno, [])
-        while caminho is not None:
-            self.expande_caminho(caminho)
-            caminho = self.encontra_caminho(fonte, dreno, [])
-        return self.valor_do_fluxo(fonte)
+    return self.valor_do_fluxo(fonte)
 #+END_SRC
 
 *** Fluxo válido com demandas não-nulas
@@ -374,27 +397,188 @@ Construimos $G'$ da seguinte forma:
   capacidade - demanda, 0})$ em $G'$
 
 Codificando a construção acima:
+#+NAME: cria_rede_com_demandas_nulas
 #+BEGIN_SRC python
-def cria_rede_com_demandas_nulas(G):
+def cria_rede_com_demandas_nulas(G, fonte, dreno):
     G_ = RedeDeFluxo()
     G_.novo_vertice('F')
     G_.novo_vertice('D')
+    d = 0
+
     for vertice, arestas in G.adj.iteritems():
         G_.novo_vertice(vertice)
         saldo = sum(e.demanda for e in arestas)
         if saldo > 0:
-            G_.nova_aresta(vertice, 'D', saldo,0)
+            G_.nova_aresta(vertice, 'D', saldo, 0)
+            d += saldo
         elif saldo < 0:
             G_.nova_aresta('F', vertice, -saldo, 0)
+
+    G_.nova_aresta(dreno, fonte, 100000, 0)
+
     for arestas in G.adj.values():
         for a in arestas:
-             if not a.eh_reversa:
+             if a.original:
                  G_.nova_aresta(a.origem,
                                 a.destino,
                                 a.capacidade - a.demanda,
                                 0)
+    return G_, d
 #+END_SRC
+
+#+RESULTS:
+
 TODO: provar que soluções de um são também soluções do outro
 
 
 ** Complexidade
+
+** Rodando o algoritmo
+
+A seguinte tabela mostra a disponibilidade dos monitores nos horários
+escolhidos pelo administrador:
+
+#+tblname: horarios
+| Monitor | Seg 10h | Ter 10h | Ter 16h | Qua 17h | Qui 19h | Sex 7h | Sex 11h |
+| Arthur  |         | x       | x       |         |         |        |         |
+| Bianca  |    x    | x       |         |         |         | x      | x       |
+| Caio    |         |         |         | x       | x       |        |         |
+| Davi    |    x    | x       | x       |         |         |        |         |
+
+As outras regras para monitoria estão na tabela abaixo:
+
+#+tblname: regras
+| Min de horas por monitor    | 1 |
+| Max de horas por monitor    | 2 |
+| Horas de monitoria          | 6 |
+
+Podemos carregar as informações das tabelas para criar uma rede como
+descrita em [].
+#+NAME: processa_horarios
+#+BEGIN_SRC python
+# Lendo a tabela de disponibilidade
+intervalos = {}
+contador = {}
+monitores = []
+
+for j, intervalo in enumerate(horarios[0][1:]):
+    intervalos[intervalo] = []
+    contador[j] = intervalo
+
+for disponibilidade in horarios[1:]:
+    monitores.append(disponibilidade[0])
+    for i, slot in enumerate(disponibilidade[1:]):
+        if slot != '':
+            intervalos[contador[i]].append(disponibilidade[0])
+#+END_SRC
+
+#+RESULTS: tb_horarios
+
+#+RESULTS:
+
+Lendo a tabela de regras
+#+NAME: processa_regras
+#+BEGIN_SRC python
+min_horas = regras[0][1]
+max_horas = regras[1][1]
+total_horas = regras[2][1]
+#+END_SRC
+
+#+RESULTS: tb_regras
+
+#+RESULTS:
+
+Criando uma rede para o problema com os dados fornecidos
+
+#+NAME: cria_rede
+#+BEGIN_SRC python
+def cria_rede(intervalos, monitores, min_horas, max_horas, total_horas):
+    G = RedeDeFluxo()
+    G.novo_vertice('Fonte_')
+    G.novo_vertice('Fonte')
+    G.nova_aresta('Fonte_', 'Fonte', total_horas, total_horas)
+    G.novo_vertice('Dreno')
+
+    # Criando um vertice para cada monitor e ligando esse vertice ao dreno
+    for monitor in monitores:
+        G.novo_vertice(monitor)
+        G.nova_aresta(monitor, 'Dreno', max_horas, min_horas)
+
+    for intervalo, monitores_disponiveis in intervalos.iteritems():
+        # Criando um vertice para cada intervalo e conectando a fonte a
+        # cada um dos intervalos
+        G.novo_vertice(intervalo)
+        G.nova_aresta('Fonte', intervalo, 1, 0)
+
+        # Conectando o intervalo a cada monitor disponivel nele
+        for monitor in monitores_disponiveis:
+            G.nova_aresta(intervalo, monitor, 1, 0)
+
+    return G
+#+END_SRC
+
+#+RESULTS:
+
+Agora é só radar o algoritmo com o grafo obtido:
+#+NAME: rodando
+#+BEGIN_SRC python
+G = cria_rede(intervalos, monitores, min_horas, max_horas, total_horas)
+G_, d = cria_rede_com_demandas_nulas(G, 'Fonte_', 'Dreno')
+fluxo = G_.fluxo_maximo('F', 'D')
+return '\n'.join(sorted(G.print_str()) + [str(fluxo)])
+#return fluxo
+#+END_SRC
+
+#+BEGIN_SRC python :noweb yes :exports both :var horarios=horarios regras=regras
+<<definindo_classe_aresta>>
+
+<<definindo_classe_rede>>
+
+    <<gargalo>>
+
+    <<expande>>
+
+    <<fluxo_inicial>>
+
+    <<encontra_caminho>>
+
+    <<fluxo_maximo>>
+
+<<cria_rede_com_demandas_nulas>>
+
+<<processa_horarios>>
+
+<<processa_regras>>
+
+<<cria_rede>>
+
+<<rodando>>
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+Arthur - Dreno - 2 - 1
+Bianca - Dreno - 2 - 1
+Caio - Dreno - 2 - 1
+Davi - Dreno - 2 - 1
+Fonte - Qua 17h - 1 - 0
+Fonte - Qui 19h - 1 - 0
+Fonte - Seg 10h - 1 - 0
+Fonte - Sex 11h - 1 - 0
+Fonte - Sex 7h - 1 - 0
+Fonte - Ter 10h - 1 - 0
+Fonte - Ter 16h - 1 - 0
+Fonte_ - Fonte - 6 - 6
+Qua 17h - Caio - 1 - 0
+Qui 19h - Caio - 1 - 0
+Seg 10h - Bianca - 1 - 0
+Seg 10h - Davi - 1 - 0
+Sex 11h - Bianca - 1 - 0
+Sex 7h - Bianca - 1 - 0
+Ter 10h - Arthur - 1 - 0
+Ter 10h - Bianca - 1 - 0
+Ter 10h - Davi - 1 - 0
+Ter 16h - Arthur - 1 - 0
+Ter 16h - Davi - 1 - 0
+10
+#+end_example
