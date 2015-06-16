@@ -161,13 +161,6 @@ class RedeDeFluxo():
             valor += self.fluxo[aresta]
         return valor
 
-    def print_str(self):
-        ans = []
-        for v, a in self.adj.iteritems():
-            for ar in a:
-                if ar.original:
-                    ans.append('%s - %s - %s - %s' % (ar.origem, ar.destino, ar.capacidade, ar.demanda))
-        return ans
 #+END_SRC
 
 ** Modelando o problema com fluxos
@@ -399,7 +392,7 @@ Construimos $G'$ da seguinte forma:
 Codificando a construção acima:
 #+NAME: cria_rede_com_demandas_nulas
 #+BEGIN_SRC python
-def cria_rede_com_demandas_nulas(G, fonte, dreno):
+def cria_rede_com_demandas_nulas(G):
     G_ = RedeDeFluxo()
     G_.novo_vertice('F')
     G_.novo_vertice('D')
@@ -413,8 +406,6 @@ def cria_rede_com_demandas_nulas(G, fonte, dreno):
             d += saldo
         elif saldo < 0:
             G_.nova_aresta('F', vertice, -saldo, 0)
-
-    G_.nova_aresta(dreno, fonte, 100000, 0)
 
     for arestas in G.adj.values():
         for a in arestas:
@@ -441,7 +432,7 @@ escolhidos pelo administrador:
 #+tblname: horarios
 | Monitor | Seg 10h | Ter 10h | Ter 16h | Qua 17h | Qui 19h | Sex 7h | Sex 11h |
 | Arthur  |         | x       | x       |         |         |        |         |
-| Bianca  |    x    | x       |         |         |         | x      | x       |
+| Bianca  |         | x       | x       |         |         | x      | x       |
 | Caio    |         |         |         | x       | x       |        |         |
 | Davi    |    x    | x       | x       |         |         |        |         |
 
@@ -450,7 +441,7 @@ As outras regras para monitoria estão na tabela abaixo:
 #+tblname: regras
 | Min de horas por monitor    | 1 |
 | Max de horas por monitor    | 2 |
-| Horas de monitoria          | 6 |
+| Horas de monitoria          | 7 |
 
 Podemos carregar as informações das tabelas para criar uma rede como
 descrita em [].
@@ -494,10 +485,9 @@ Criando uma rede para o problema com os dados fornecidos
 #+BEGIN_SRC python
 def cria_rede(intervalos, monitores, min_horas, max_horas, total_horas):
     G = RedeDeFluxo()
-    G.novo_vertice('Fonte_')
     G.novo_vertice('Fonte')
-    G.nova_aresta('Fonte_', 'Fonte', total_horas, total_horas)
     G.novo_vertice('Dreno')
+    G.nova_aresta('Dreno', 'Fonte', total_horas, total_horas)
 
     # Criando um vertice para cada monitor e ligando esse vertice ao dreno
     for monitor in monitores:
@@ -519,17 +509,29 @@ def cria_rede(intervalos, monitores, min_horas, max_horas, total_horas):
 
 #+RESULTS:
 
-Agora é só radar o algoritmo com o grafo obtido:
+Agora é só rodar o algoritmo com o grafo obtido:
 #+NAME: rodando
 #+BEGIN_SRC python
 G = cria_rede(intervalos, monitores, min_horas, max_horas, total_horas)
-G_, d = cria_rede_com_demandas_nulas(G, 'Fonte_', 'Dreno')
+G_, d = cria_rede_com_demandas_nulas(G)
 fluxo = G_.fluxo_maximo('F', 'D')
-return '\n'.join(sorted(G.print_str()) + [str(fluxo)])
-#return fluxo
+if fluxo == d:
+    tabela_de_monitores = []
+    for horario in intervalos:
+        for w in G_.adj[horario]:
+            if G_.fluxo[w] == 1 and w.original:
+                tabela_de_monitores.append([w.origem, w.destino])
+    return tabela_de_monitores
+else:
+    return 'Impossivel'
 #+END_SRC
 
-#+BEGIN_SRC python :noweb yes :exports both :var horarios=horarios regras=regras
+No final, obtemos ou 'Impossível' se não existir um horário compatível
+ou uma tabela com um horário que atende a todas as restrições.
+
+Para a tabela acima:
+#+BEGIN_SRC python :tangle solucao.py :noweb yes :exports results :var horarios=horarios regras=regras
+# coding: utf-8
 <<definindo_classe_aresta>>
 
 <<definindo_classe_rede>>
@@ -556,29 +558,14 @@ return '\n'.join(sorted(G.print_str()) + [str(fluxo)])
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
-Arthur - Dreno - 2 - 1
-Bianca - Dreno - 2 - 1
-Caio - Dreno - 2 - 1
-Davi - Dreno - 2 - 1
-Fonte - Qua 17h - 1 - 0
-Fonte - Qui 19h - 1 - 0
-Fonte - Seg 10h - 1 - 0
-Fonte - Sex 11h - 1 - 0
-Fonte - Sex 7h - 1 - 0
-Fonte - Ter 10h - 1 - 0
-Fonte - Ter 16h - 1 - 0
-Fonte_ - Fonte - 6 - 6
-Qua 17h - Caio - 1 - 0
-Qui 19h - Caio - 1 - 0
-Seg 10h - Bianca - 1 - 0
-Seg 10h - Davi - 1 - 0
-Sex 11h - Bianca - 1 - 0
-Sex 7h - Bianca - 1 - 0
-Ter 10h - Arthur - 1 - 0
-Ter 10h - Bianca - 1 - 0
-Ter 10h - Davi - 1 - 0
-Ter 16h - Arthur - 1 - 0
-Ter 16h - Davi - 1 - 0
-10
-#+end_example
+| Qua 17h | Caio   |
+| Ter 10h | Arthur |
+| Qui 19h | Caio   |
+| Sex 11h | Bianca |
+| Seg 10h | Davi   |
+| Ter 16h | Davi   |
+| Sex 7h  | Bianca |
+
+# Local Variables:
+# coding: utf-8
+# End:

@@ -1,4 +1,4 @@
-% Created 2015-06-15 Seg 23:09
+% Created 2015-06-16 Ter 00:14
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -195,14 +195,6 @@ class RedeDeFluxo():
         for aresta in self.encontra_arestas(fonte):
             valor += self.fluxo[aresta]
         return valor
-
-    def print_str(self):
-        ans = []
-        for v, a in self.adj.iteritems():
-            for ar in a:
-                if ar.original:
-                    ans.append('%s - %s - %s - %s - %s' % (ar.origem, ar.destino, ar.capacidade, ar.demanda, self.fluxo[ar]))
-        return ans
 \end{minted}
 
 \subsection{Modelando o problema com fluxos}
@@ -435,7 +427,7 @@ Construimos $G'$ da seguinte forma:
 
 Codificando a construção acima:
 \begin{minted}[]{python}
-def cria_rede_com_demandas_nulas(G, fonte, dreno):
+def cria_rede_com_demandas_nulas(G):
     G_ = RedeDeFluxo()
     G_.novo_vertice('F')
     G_.novo_vertice('D')
@@ -449,8 +441,6 @@ def cria_rede_com_demandas_nulas(G, fonte, dreno):
             d += saldo
         elif saldo < 0:
             G_.nova_aresta('F', vertice, -saldo, 0)
-
-    G_.nova_aresta(dreno, fonte, 100000, 0)
 
     for arestas in G.adj.values():
         for a in arestas:
@@ -478,7 +468,7 @@ escolhidos pelo administrador:
 \begin{tabular}{llllllll}
 Monitor & Seg 10h & Ter 10h & Ter 16h & Qua 17h & Qui 19h & Sex 7h & Sex 11h\\
 Arthur &  & x & x &  &  &  & \\
-Bianca & x & x &  &  &  & x & x\\
+Bianca &  & x & x &  &  & x & x\\
 Caio &  &  &  & x & x &  & \\
 Davi & x & x & x &  &  &  & \\
 \end{tabular}
@@ -490,7 +480,7 @@ As outras regras para monitoria estão na tabela abaixo:
 \begin{tabular}{lr}
 Min de horas por monitor & 1\\
 Max de horas por monitor & 2\\
-Horas de monitoria & 6\\
+Horas de monitoria & 7\\
 \end{tabular}
 \end{center}
 
@@ -525,10 +515,9 @@ Criando uma rede para o problema com os dados fornecidos
 \begin{minted}[]{python}
 def cria_rede(intervalos, monitores, min_horas, max_horas, total_horas):
     G = RedeDeFluxo()
-    G.novo_vertice('Fonte_')
     G.novo_vertice('Fonte')
-    G.nova_aresta('Fonte_', 'Fonte', total_horas, total_horas)
     G.novo_vertice('Dreno')
+    G.nova_aresta('Dreno', 'Fonte', total_horas, total_horas)
 
     # Criando um vertice para cada monitor e ligando esse vertice ao dreno
     for monitor in monitores:
@@ -544,215 +533,40 @@ def cria_rede(intervalos, monitores, min_horas, max_horas, total_horas):
         # Conectando o intervalo a cada monitor disponivel nele
         for monitor in monitores_disponiveis:
             G.nova_aresta(intervalo, monitor, 1, 0)
+
     return G
 \end{minted}
 
-Agora é só radar o algoritmo com o grafo obtido:
+Agora é só rodar o algoritmo com o grafo obtido:
 \begin{minted}[]{python}
 G = cria_rede(intervalos, monitores, min_horas, max_horas, total_horas)
-G_, d = cria_rede_com_demandas_nulas(G, 'Fonte_', 'Dreno')
+G_, d = cria_rede_com_demandas_nulas(G)
 fluxo = G_.fluxo_maximo('F', 'D')
-return '\n'.join(sorted(G_.print_str()) + [str(fluxo)])
-#return fluxo
+if fluxo == d:
+    tabela_de_monitores = []
+    for horario in intervalos:
+        for w in G_.adj[horario]:
+            if G_.fluxo[w] == 1 and w.original:
+                tabela_de_monitores.append([w.origem, w.destino])
+    return tabela_de_monitores
+else:
+    return 'Impossivel'
 \end{minted}
 
-\begin{minted}[]{python}
-class Aresta():
-    def __init__(self, origem, destino, capacidade, demanda):
-        self.origem = origem
-        self.destino = destino
-        self.capacidade = capacidade
-        self.demanda = demanda
-        self.reversa = None
-        self.original = True
+No final, obtemos ou 'Impossível' se não existir um horário compatível
+ou uma tabela com um horário que atende a todas as restrições.
 
-class RedeDeFluxo():
-    def __init__(self):
-        self.adj = {}
-        self.fluxo = {}
-
-    def novo_vertice(self, v):
-        self.adj[v] = []
-
-    def nova_aresta(self, origem, destino, capacidade, demanda):
-        aresta = Aresta(origem, destino, capacidade, demanda)
-        self.adj[origem].append(aresta)
-
-        # Criando a aresta reversa
-        aresta_reversa = Aresta(destino, origem, 0, -demanda)
-        self.adj[destino].append(aresta_reversa)
-        aresta_reversa.original = False
-
-        # Marcando aresta e aresta_reversa como reversas uma da outra
-        aresta.reversa = aresta_reversa
-        aresta_reversa.reversa = aresta
-
-    def novo_fluxo(self, e, f):
-        self.fluxo[e] = f
-
-    def encontra_arestas(self, v):
-        return self.adj[v]
-
-    def valor_do_fluxo(self, fonte):
-        valor = 0
-        for aresta in self.encontra_arestas(fonte):
-            valor += self.fluxo[aresta]
-        return valor
-
-    def print_str(self):
-        ans = []
-        for v, a in self.adj.iteritems():
-            for ar in a:
-                if ar.original:
-                    ans.append('%s - %s - %s - %s - %s' % (ar.origem, ar.destino, ar.capacidade, ar.demanda, self.fluxo[ar]))
-        return ans
-
-    def encontra_gargalo(self, caminho):
-        residuos = []
-        for aresta in caminho:
-            residuos.append(aresta.capacidade - self.fluxo[aresta])
-        return min(residuos)
-
-    def expande_caminho(self, caminho):
-        gargalo = self.encontra_gargalo(caminho)
-        for aresta in caminho:
-            self.fluxo[aresta] += gargalo
-            self.fluxo[aresta.reversa] -= gargalo
-
-    def cria_fluxo_inicial(self):
-        for vertice, arestas in self.adj.iteritems():
-            for aresta in arestas:
-                self.fluxo[aresta] = 0
-
-    def encontra_caminho(self, fonte, dreno, caminho):
-        if fonte == dreno:
-            return caminho
-        for aresta in self.encontra_arestas(fonte):
-            residuo = aresta.capacidade - self.fluxo[aresta]
-            if residuo > 0 and aresta not in caminho:
-                resp = self.encontra_caminho(aresta.destino,
-                                             dreno,
-                                             caminho + [aresta])
-                # TODO: explicar essa parte
-                if resp != None:
-                    return resp
-
-    def fluxo_maximo(self, fonte, dreno):
-        self.cria_fluxo_inicial()
-        caminho = self.encontra_caminho(fonte, dreno, [])
-        while caminho is not None:
-            self.expande_caminho(caminho)
-            caminho = self.encontra_caminho(fonte, dreno, [])
-        return self.valor_do_fluxo(fonte)
-
-def cria_rede_com_demandas_nulas(G, fonte, dreno):
-    G_ = RedeDeFluxo()
-    G_.novo_vertice('F')
-    G_.novo_vertice('D')
-    d = 0
-
-    for vertice, arestas in G.adj.iteritems():
-        G_.novo_vertice(vertice)
-        saldo = sum(e.demanda for e in arestas)
-        if saldo > 0:
-            G_.nova_aresta(vertice, 'D', saldo, 0)
-            d += saldo
-        elif saldo < 0:
-            G_.nova_aresta('F', vertice, -saldo, 0)
-
-    G_.nova_aresta(dreno, fonte, 100000, 0)
-
-    for arestas in G.adj.values():
-        for a in arestas:
-             if a.original:
-                 G_.nova_aresta(a.origem,
-                                a.destino,
-                                a.capacidade - a.demanda,
-                                0)
-    return G_, d
-
-# Lendo a tabela de disponibilidade
-intervalos = {}
-contador = {}
-monitores = []
-
-for j, intervalo in enumerate(horarios[0][1:]):
-    intervalos[intervalo] = []
-    contador[j] = intervalo
-
-for disponibilidade in horarios[1:]:
-    monitores.append(disponibilidade[0])
-    for i, slot in enumerate(disponibilidade[1:]):
-        if slot != '':
-            intervalos[contador[i]].append(disponibilidade[0])
-
-min_horas = regras[0][1]
-max_horas = regras[1][1]
-total_horas = regras[2][1]
-
-def cria_rede(intervalos, monitores, min_horas, max_horas, total_horas):
-    G = RedeDeFluxo()
-    G.novo_vertice('Fonte_')
-    G.novo_vertice('Fonte')
-    G.nova_aresta('Fonte_', 'Fonte', total_horas, total_horas)
-    G.novo_vertice('Dreno')
-
-    # Criando um vertice para cada monitor e ligando esse vertice ao dreno
-    for monitor in monitores:
-        G.novo_vertice(monitor)
-        G.nova_aresta(monitor, 'Dreno', max_horas, min_horas)
-
-    for intervalo, monitores_disponiveis in intervalos.iteritems():
-        # Criando um vertice para cada intervalo e conectando a fonte a
-        # cada um dos intervalos
-        G.novo_vertice(intervalo)
-        G.nova_aresta('Fonte', intervalo, 1, 0)
-
-        # Conectando o intervalo a cada monitor disponivel nele
-        for monitor in monitores_disponiveis:
-            G.nova_aresta(intervalo, monitor, 1, 0)
-    return G
-
-G = cria_rede(intervalos, monitores, min_horas, max_horas, total_horas)
-G_, d = cria_rede_com_demandas_nulas(G, 'Fonte_', 'Dreno')
-fluxo = G_.fluxo_maximo('F', 'D')
-return '\n'.join(sorted(G_.print_str()) + [str(fluxo)])
-#return fluxo
-\end{minted}
-
-\begin{verbatim}
-Arthur - D - 1 - 0 - 1
-Arthur - Dreno - 1 - 0 - 0
-Bianca - D - 1 - 0 - 1
-Bianca - Dreno - 1 - 0 - 1
-Caio - D - 1 - 0 - 1
-Caio - Dreno - 1 - 0 - 0
-Davi - D - 1 - 0 - 1
-Davi - Dreno - 1 - 0 - 1
-Dreno - Fonte_ - 100000 - 0 - 6
-F - Dreno - 4 - 0 - 4
-F - Fonte - 6 - 0 - 6
-Fonte - Qua 17h - 1 - 0 - 1
-Fonte - Qui 19h - 1 - 0 - 0
-Fonte - Seg 10h - 1 - 0 - 1
-Fonte - Sex 11h - 1 - 0 - 1
-Fonte - Sex 7h - 1 - 0 - 1
-Fonte - Ter 10h - 1 - 0 - 1
-Fonte - Ter 16h - 1 - 0 - 1
-Fonte_ - D - 6 - 0 - 6
-Fonte_ - Fonte - 0 - 0 - 0
-Qua 17h - Caio - 1 - 0 - 1
-Qui 19h - Caio - 1 - 0 - 0
-Seg 10h - Bianca - 1 - 0 - 0
-Seg 10h - Davi - 1 - 0 - 1
-Sex 11h - Bianca - 1 - 0 - 1
-Sex 7h - Bianca - 1 - 0 - 1
-Ter 10h - Arthur - 1 - 0 - 0
-Ter 10h - Bianca - 1 - 0 - 0
-Ter 10h - Davi - 1 - 0 - 1
-Ter 16h - Arthur - 1 - 0 - 1
-Ter 16h - Davi - 1 - 0 - 0
-10
-\end{verbatim}
+Para a tabela acima:
+\begin{center}
+\begin{tabular}{ll}
+Qua 17h & Caio\\
+Ter 10h & Arthur\\
+Qui 19h & Caio\\
+Sex 11h & Bianca\\
+Seg 10h & Davi\\
+Ter 16h & Davi\\
+Sex 7h & Bianca\\
+\end{tabular}
+\end{center}
 % Emacs 24.4.1 (Org mode 8.2.10)
 \end{document}
