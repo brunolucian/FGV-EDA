@@ -40,7 +40,7 @@
 
    Um exemplo com $k = 4$ e $n = 5$:
 
-   [[http:github.com/adusca/FGV-EDA/6_30/tree.png][file:tree.png]]
+   [[http:github.com/adusca/FGV-EDA/6_30/tree.png][file:6_30/tree.png]]
 
     1. Ache uma reconstrução para o exemplo seguindo o método da
       máxima parcimônia.
