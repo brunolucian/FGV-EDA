@@ -82,9 +82,12 @@ $$\label{valor_fluxo} \mathrm{Valor}(f) = \sum_{e \text{ saindo de } s} f(e) $$
 TODO: definir circulação
 ** Representação
 
-Podemos usar programação orientada a objetos para nos ajudar na
-representação da rede de fluxo, simplificando o algoritmo.
-TODO: explicar a parte de já construir o grafo reverso.
+Podemos usar programação orientada a objetos [TODO: colocar alguma
+referência de OOP] para nos ajudar na representação da rede de fluxo,
+simplificando o algoritmo.
+
+TODO: explicar a parte de já construir o
+grafo reverso.
 
 Vamos usar uma classe para representar arestas. Uma aresta é
 inicializada com as propriedades: vértice de origem, vértice de

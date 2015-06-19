@@ -1,4 +1,4 @@
-#+TITLE:	Exercício 7.28 (Tardos)
+#+TITLE:	Exercício 6.30 (Papadimitriou)
 #+AUTHOR:	Alice Duarte Scarpa, Bruno Lucian Costa
 #+EMAIL:	alicescarpa@gmail.com, bruno.lucian.costa@gmail.com
 #+DATE:		2015-06-23
@@ -46,11 +46,109 @@
       máxima parcimônia.
     2. Dê um algoritmo eficiente para essa tarefa.
 
+* Solução
+
+Como o valor só depende TODO. Vamos calcular a resposta para cada
+letra independentemente e depois concatenar as respostas para obter a
+árvore final.
+
+Nós vamos usar um algoritmo de programação dinâmica para encontrar o
+valor das folhas intermediárias em uma árvore $P$ em que cada
+folha tem valor A, G, T ou C
+
+TODO: estrutura de dados para representar a árvore.
+#+Name: estrutura_de_dados
+#+BEGIN_SRC python
+# Colocar aqui uma estrutura de dados para a arvore
+#+END_SRC
+
+TODO: achar um nome melhor para ans
+
+Vamos computar $ans[v][\ell]$ como a melhor maneira de preencher os nós
+da sub-árvore enraizada em $v$, dado que o pai de $v$ tem valor \ell.
+
+TODO: justificar a inicializacao
+#+NAME: inicializando
+#+BEGIN_SRC python
+valor = {}
+ans = {}
+#+END_SRC
+
+Vamos computar $ans$ de baixo para cima. Então, o caso base para esse algoritmo
+é a resposta para as folhas, isso é, $ans[\mathrm{folha}][\ell]$.
+
+Uma sub-árvore que contém apenas uma folha e seu pai vai ter
+$\mathrm{nota} = 0$ se a folha e o pai tiverem ambos o mesmo valor (A,
+G, T ou C) ou $\mathrm{nota} = 1$, se os dois tiverem valores diferentes:
+
+\[ans[\mathrm{folha}][\ell] = \begin{cases}0 \text{ se } \mathrm{valor}[\mathrm{folha}] = \ell \\
+                                                     1 \text{ caso contrário}\end{cases}\]
+
+Podemos então preencher as folhas:
+#+NAME: caso_base
+#+BEGIN_SRC python
+#TODO: preencher as folhas
+#+END_SRC
+
+Tendo o caso base, podemos computar $ans[v][\ell]$ assumindo que $ans[w][\ell]$ já foi computado para
+todo $w$ filho de $v$ e $\ell \in \{A, G, T, C\}$.
+
+TODO: explicar em algum lugar que a raiz é especial
+
+A nota da sub-árvore quando o valor de $v$ é igual a $m$ é:
+
+\[[\ell \neq m] + \sum_{w \text{ filho de }v} ans[w][m]\]
+
+Onde \[[\ell \neq m] =  \begin{cases} 0 \text{ se } m = \ell \\
+                                     1 \text{ caso contrário}\end{cases}\]
+
+Queremos escolher um valor $m \in \{A, G, T, C\}$ para $v$
+que minimize a nota final da sub-árvore. Então:
+
+\[ans[v][\ell] = \min_{m \in \{A, G, T, C\}}  \left([\ell \neq m] + \sum_{w \text{ filho de }v} ans[w][m]\right)\]
+
+#+Name: preenchendo_ans
+#+BEGIN_SRC python
+# TODO: preencher os outros vértices (exceto a raiz)
+#+END_SRC
+
+Após computarmos $ans[v][\ell]$ para todos os vértices exceto a raiz
+podemos encontrar a nota da árvore como o mínimo entre os possíveis
+valores para a raiz:
+
+\[ \min_{\ell \in \{A, G, T, C\}} \sum_{v \text{ filho da raiz}} ans[v][\ell]\]
+
+#+Name: resposta
+#+BEGIN_SRC python
+# TODO: Calcular a resposta final
+#+END_SRC
 
 * Dados reais
 
-Usamos http://www.ncbi.nlm.nih.gov/Taxonomy/CommonTree/wwwcmt.cgi para gerar o banco de dados.
+** Formato Newick
+
+Um formato muito usado para árvores em bioinformática é o formato
+Newick. Assim como LISP, ele usa o fato de que parenteses podem ser
+usados para especificar uma árvore.
+
+TODO: especificar o formato, referência do formato
+
+*** Parseando o formato Newick
+
+** Rosalind
+
+Obtemos os dados do Rosalind, TODO: explicar o Rosalind.
 
 Rosalind MULT, GLOB, EDTA, PERM, EDIT, LCSQ,
 CSTR, CTBL, NWCK, SSET, MRNA, KMP, PROB
 SSEQ, SPLC, LCSM
+
+** Rodando o algoritmo com dados reais
+
+* Extensões
+
+Ao fazer esse exercício, notamos que a árvore já é uma entrada do problema.
+Como é possível obter a árvore de menor valor a partir das espécies
+
+Esse problema é NP-completo [TODO: colocar referência] e o melhor
+algoritmo conhecido é [TODO]
