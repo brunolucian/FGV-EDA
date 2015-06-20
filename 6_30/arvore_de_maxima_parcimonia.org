@@ -40,7 +40,7 @@
 
    Um exemplo com $k = 4$ e $n = 5$:
 
-   [[http:github.com/adusca/FGV-EDA/6_30/tree.png][file:6_30/tree.png]]
+   [[http://github.com/adusca/FGV-EDA/6_30/tree.png][file:tree.png]]
 
     1. Ache uma reconstrução para o exemplo seguindo o método da
       máxima parcimônia.
@@ -48,41 +48,45 @@
 
 * Solução
 
-Como o valor só depende TODO. Vamos calcular a resposta para cada
-letra independentemente e depois concatenar as respostas para obter a
-árvore final.
+A nota final de uma árvore é a soma da nota de cada letra. Podemos
+calcular a resposta para cada letra independentemente e depois
+concatenar as respostas para obter a árvore final.
 
 Nós vamos usar um algoritmo de programação dinâmica para encontrar o
 valor das folhas intermediárias em uma árvore $P$ em que cada
 folha tem valor A, G, T ou C
 
-TODO: estrutura de dados para representar a árvore.
+Vamos representar a nossa árvore como um objeto:
 #+Name: estrutura_de_dados
 #+BEGIN_SRC python
-# Colocar aqui uma estrutura de dados para a arvore
+class Arvore:
+    def __init__(self, pai):
+        self.filhos = []
+        self.label = ""
+        self.pai = pai
+
 #+END_SRC
 
-TODO: achar um nome melhor para ans
-
-Vamos computar $ans[v][\ell]$ como a melhor maneira de preencher os nós
+Vamos computar $melhor nota[v][\ell]$ como a melhor maneira de preencher os nós
 da sub-árvore enraizada em $v$, dado que o pai de $v$ tem valor \ell.
 
 TODO: justificar a inicializacao
 #+NAME: inicializando
 #+BEGIN_SRC python
 valor = {}
-ans = {}
+melhor_nota = {}
 #+END_SRC
 
-Vamos computar $ans$ de baixo para cima. Então, o caso base para esse algoritmo
-é a resposta para as folhas, isso é, $ans[\mathrm{folha}][\ell]$.
+Vamos computar $melhor nota$ de baixo para cima. Então, o caso base
+para esse algoritmo é a resposta para as folhas, isso é, $melhor
+nota[\mathrm{folha}][\ell]$.
 
 Uma sub-árvore que contém apenas uma folha e seu pai vai ter
 $\mathrm{nota} = 0$ se a folha e o pai tiverem ambos o mesmo valor (A,
 G, T ou C) ou $\mathrm{nota} = 1$, se os dois tiverem valores diferentes:
 
-\[ans[\mathrm{folha}][\ell] = \begin{cases}0 \text{ se } \mathrm{valor}[\mathrm{folha}] = \ell \\
-                                                     1 \text{ caso contrário}\end{cases}\]
+\[melhor nota[\mathrm{folha}][\ell] = \begin{cases}0 \text{ se } \mathrm{valor}[\mathrm{folha}] = \ell \\
+                                                   1 \text{ caso contrário}\end{cases}\]
 
 Podemos então preencher as folhas:
 #+NAME: caso_base
@@ -90,14 +94,14 @@ Podemos então preencher as folhas:
 #TODO: preencher as folhas
 #+END_SRC
 
-Tendo o caso base, podemos computar $ans[v][\ell]$ assumindo que $ans[w][\ell]$ já foi computado para
+Tendo o caso base, podemos computar $melhor nota[v][\ell]$ assumindo que $melhor nota[w][\ell]$ já foi computado para
 todo $w$ filho de $v$ e $\ell \in \{A, G, T, C\}$.
 
 TODO: explicar em algum lugar que a raiz é especial
 
 A nota da sub-árvore quando o valor de $v$ é igual a $m$ é:
 
-\[[\ell \neq m] + \sum_{w \text{ filho de }v} ans[w][m]\]
+\[[\ell \neq m] + \sum_{w \text{ filho de }v} melhor nota[w][m]\]
 
 Onde \[[\ell \neq m] =  \begin{cases} 0 \text{ se } m = \ell \\
                                      1 \text{ caso contrário}\end{cases}\]
@@ -105,22 +109,22 @@ Onde \[[\ell \neq m] =  \begin{cases} 0 \text{ se } m = \ell \\
 Queremos escolher um valor $m \in \{A, G, T, C\}$ para $v$
 que minimize a nota final da sub-árvore. Então:
 
-\[ans[v][\ell] = \min_{m \in \{A, G, T, C\}}  \left([\ell \neq m] + \sum_{w \text{ filho de }v} ans[w][m]\right)\]
+\[melhor nota[v][\ell] = \min_{m \in \{A, G, T, C\}}  \left([\ell \neq m] + \sum_{w \text{ filho de }v} melhor nota[w][m]\right)\]
 
-#+Name: preenchendo_ans
+#+Name: preenchendo_melhor_nota
 #+BEGIN_SRC python
 # TODO: preencher os outros vértices (exceto a raiz)
 #+END_SRC
 
-Após computarmos $ans[v][\ell]$ para todos os vértices exceto a raiz
+Após computarmos $melhor nota[v][\ell]$ para todos os vértices exceto a raiz
 podemos encontrar a nota da árvore como o mínimo entre os possíveis
 valores para a raiz:
 
-\[ \min_{\ell \in \{A, G, T, C\}} \sum_{v \text{ filho da raiz}} ans[v][\ell]\]
+\[ \min_{\ell \in \{A, G, T, C\}} \sum_{v \text{ filho da raiz}} melhor nota[v][\ell]\]
 
 #+Name: resposta
 #+BEGIN_SRC python
-# TODO: Calcular a resposta final
+
 #+END_SRC
 
 * Dados reais
@@ -135,6 +139,73 @@ TODO: especificar o formato, referência do formato
 
 *** Parseando o formato Newick
 
+O primeiro passo é notar que (gato, rato) é equivalente a
+((gato)(rato)), então podemos transformar uma estrutura com vírgulas
+em uma estrutura que só contém parênteses.
+
+TODO: explicar o código
+#+NAME: parseando_newick
+#+BEGIN_SRC python
+def parseia_newick(string):
+    string = string.replace(',', ')(').replace(';', '')
+
+    em_construcao = collections.deque()
+    em_construcao.append(Arvore(None))
+
+    for ch in string:
+        if ch == '(':
+            pai_atual = em_construcao[-1]
+            filho_novo = Arvore(pai_atual)
+            pai_atual.filhos.append(filho_novo)
+            em_construcao.append(filho_novo)
+        elif ch == ')':
+            em_construcao.pop()
+        else:
+            em_construcao[-1].label += ch
+
+    assert len(em_construcao) == 1
+    return em_construcao[0]
+#+END_SRC
+
+
+*** Separando e concatenando árvores
+
+As árvores no nosso algoritmo só tem uma letra por nó, mas nós
+recebemos apenas uma árvore com toda a string de DNA.
+
+Precisamos de um método para capaz de criar uma árvore para cada
+carácter. A seguinte DFS cria a árvore das i-ésimas letras:
+#+NAME: separa_arvore
+#+BEGIN_SRC python
+def separa_arvore(indice, origem):
+    copia_origem = Arvore(None)
+    if len(origem.label):
+        copia_origem.label = origem.label[indice]
+
+    for filho in origem.filhos:
+        copia_filho = separa_arvore(indice, filho)
+        copia_filho.pai = copia_origem
+        copia_origem.filhos.append(copia_filho)
+
+    return copia_origem
+#+END_SRC
+
+Depois de rodar o algoritmo, vamos querer juntar as árvores para encontrar
+os valores dos nós intermediários. Podemos fazer isso com uma DFS e ~reduce~.
+#+NAME: juntando_arvores
+#+BEGIN_SRC python
+def concatena_arvores(arvores):
+    fusao = Arvore(None)
+    fusao.label = reduce(lambda string, arv: string + arv.label, arvores, "")
+
+    for i in xrange(len(arvores[0].filhos)):
+        fusao_filho = concatena_arvores(map(lambda arvore: arvore.filhos[i],
+                                            arvores))
+        fusao_filho.pai = fusao
+        fusao.filhos.append(fusao_filho)
+
+    return fusao
+#+END_SRC
 ** Rosalind
 
 Obtemos os dados do Rosalind, TODO: explicar o Rosalind.

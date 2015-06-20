@@ -7,4 +7,33 @@
 
 * Introdução
 
+Esse repositório contém arquivos no org mode, imagens e bancos de
+dados utilizados para fazer o trabalho final de Estrutura de Dados e
+Algoritmos da FGV-Rio.
+
+** Gerando o relatório final:
+
+Para gerar o relatório final em PDF, basta exportar
+[relatorio_final.org] como PDF, usando ~C-c C-e l o~.
+
+Para que o código apareça colorizado no relatório em PDF, é importante
+que as seguintes linhas estejam no arquivo ~init.el~:
+
+#+BEGIN_SRC lisp
+;; Requer o minted para code highlight no pdf final
+(require 'ox-latex)
+(add-to-list 'org-latex-packages-alist '("" "minted"))
+(setq org-latex-listings 'minted)
+
+;; Roda o pdflatex duas vezes com -shell-escape
+(setq org-latex-pdf-process
+      '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+        "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+
+#+END_SRC
+
 * Organização
+
+Existe uma pasta por exercício contendo todos os arquivos necessários
+para aquele exercício. O relatório final em org mode e o PDF por ele
+gerado se encontra na base da pasta.
