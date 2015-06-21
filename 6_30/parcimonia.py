@@ -1,13 +1,20 @@
+
+import collections
+
 class Arvore:
     def __init__(self, pai):
         self.filhos = []
         self.valor = ""
         self.pai = pai
+        self.nome = ""
 
 melhor_nota = {}
 melhor_letra = {}
 
 def calcula_melhor_nota(v, l):
+    if (v, l) in melhor_nota:
+        return melhor_nota[v, l]
+
     if not v.filhos:
         melhor_nota[v, l] = 1 if l != v.valor else 0
         melhor_letra[v, l] = v.valor
@@ -15,7 +22,7 @@ def calcula_melhor_nota(v, l):
 
     melhor_nota[v, l] = 100000
 
-    for m in ['A', 'G', 'T', 'C']:
+    for m in ['A', 'G', 'T', 'C', '-']:
         nota_atual = sum(calcula_melhor_nota(w, m) for w in v.filhos)
         if m != l:
             nota_atual += 1
@@ -26,10 +33,24 @@ def calcula_melhor_nota(v, l):
 
     return melhor_nota[v, l]
 
-def preenche_dado_pai(v):
-    v.valor = melhor_letra[v, v.pai.valor]
-    for w in v.filhos:
+def preenche_tudo(raiz):
+    melhor_nota_raiz = 100000
+    for l in ['A', 'G', 'T', 'C', '-']:
+        nota_atual_raiz = sum(calcula_melhor_nota(w, l) for w in raiz.filhos)
+
+        if nota_atual_raiz < melhor_nota_raiz:
+            raiz.valor = l
+            melhor_nota_raiz = nota_atual_raiz
+
+    def preenche_dado_pai(v):
+        v.valor = melhor_letra[v, v.pai.valor]
+        for w in v.filhos:
+            preenche_dado_pai(w)
+
+    for w in raiz.filhos:
         preenche_dado_pai(w)
+
+    return raiz, melhor_nota_raiz
 
 def parseia_newick(string):
     string = string.replace(',', ')(').replace(';', '')
@@ -46,13 +67,34 @@ def parseia_newick(string):
         elif ch == ')':
             em_construcao.pop()
         else:
-            em_construcao[-1].valor += ch
+            em_construcao[-1].nome += ch
 
     assert len(em_construcao) == 1
     return em_construcao[0]
 
+def fasta_para_lista(array):
+    label = ""
+    dna = ""
+    lista = []
+
+    for tmp in array:
+        line = tmp.rstrip()
+        if line[0] == ">":
+            if label != "":
+                lista.append((label, dna))
+                dna = ""
+            label = line[1:]
+        else:
+            dna += line
+
+    lista.append((label, dna))
+
+    return lista
+
 def separa_arvore(indice, origem):
     copia_origem = Arvore(None)
+    copia_origem.nome = origem.nome
+
     if len(origem.valor):
         copia_origem.valor = origem.valor[indice]
 
@@ -66,7 +108,8 @@ def separa_arvore(indice, origem):
 def concatena_arvores(arvores):
     fusao = Arvore(None)
     fusao.valor = reduce(lambda string, arv: string + arv.valor,
-        arvores, "")
+                         arvores, "")
+    fusao.nome = arvores[0].nome
 
     for i in xrange(len(arvores[0].filhos)):
         fusao_filho = concatena_arvores(
@@ -76,15 +119,36 @@ def concatena_arvores(arvores):
 
     return fusao
 
-raiz = parseia_newick("")
+def imprime_resposta(arvore):
+    if arvore.filhos:
+        print '>%s' % arvore.nome
+        print arvore.valor
 
-for w in raiz.filhos:
-    preenche_dado_pai(w)
+    for w in arvore.filhos:
+        imprime_resposta(w)
 
-melhor_nota_raiz = 100000
-for l in ['A', 'G', 'T', 'C']:
-    nota_atual_raiz = sum(calcula_melhor_nota(w, m) for w in v.filhos)
+with open('livro.in', 'r') as f:
+    entrada = map(lambda s: s.strip(), f.readlines())
 
-    if nota_atual_raiz < melhor_nota_raiz:
-        raiz.valor = l
-        melhor_custo_raiz = nota_atual_raiz
+raiz_grande = parseia_newick(entrada[0])
+dnas = dict(fasta_para_lista(entrada[1:]))
+
+def preenche_labels_fixos(arvore, dnas):
+    if arvore.nome in dnas:
+        arvore.valor = dnas[arvore.nome]
+
+    for w in arvore.filhos:
+        preenche_labels_fixos(w, dnas)
+
+preenche_labels_fixos(raiz_grande, dnas)
+
+n = len(dnas.values()[0])
+
+arvores_individuais = [separa_arvore(i, raiz_grande) for i in range(n)]
+pares_preenchidos = [preenche_tudo(arvore) for arvore in arvores_individuais]
+
+nota_total = sum(nota for (_, nota) in pares_preenchidos)
+arvore_resposta = concatena_arvores([raiz for (raiz, _) in pares_preenchidos])
+
+print "Nota:", nota_total
+imprime_resposta(arvore_resposta)

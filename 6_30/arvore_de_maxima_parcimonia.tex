@@ -1,4 +1,4 @@
-% Created 2015-06-21 Dom 15:14
+% Created 2015-06-21 Dom 16:35
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -21,7 +21,7 @@
 \usepackage{tikz}
 \usetikzlibrary{decorations.markings}
 \tikzstyle{vertex}=[circle, draw, inner sep=0pt, minimum size=7pt]
-\newcommand{\vertex}{\node[vertex]}
+\providecommand{\vertex}{\node[vertex]}
 \newcommand{\tu}{\textunderscore}
 \author{Alice Duarte Scarpa, Bruno Lucian Costa}
 \date{2015-06-23}
@@ -106,35 +106,35 @@ melhor_letra = {}
 \end{minted}
 
 Vamos computar $melhor \tu nota$ de baixo para cima. Então, o caso base
-para esse algoritmo é a resposta para as folhas, isto é, $melhor\tu nota[\mathrm{folha}][\ell]$.
+para esse algoritmo é a resposta para as folhas, isto é, $melhor\tu nota[\mathrm{folha}, \ell]$.
 
 Uma sub-árvore que contém apenas uma folha e seu pai vai ter
 nota 0 se a folha e o pai tiverem ambos o mesmo valor (A,
 G, T ou C) ou nota 1 se os dois tiverem valores diferentes:
 
-\[melhor \tu nota[\textit{folha}][\ell] = \begin{cases}0 \text{ se } \textit{folha}.valor = \ell \\
+\[melhor \tu nota[\textit{folha}, \ell] = \begin{cases}0 \text{ se } \textit{folha}.valor = \ell \\
                                                        1 \text{ caso contrário}\end{cases}\]
 
 Além disso, não temos escolha para o valor otimal:
-\[ melhor \tu valor[\textit{folha}][\ell] = \textit{folha}.valor \]
+\[ melhor \tu valor[\textit{folha}, \ell] = \textit{folha}.valor \]
 
-Tendo o caso base, podemos computar $melhor \tu nota[v][\ell]$
-assumindo que $melhor \tu nota[w][\ell]$ já foi computado para todo
+Tendo o caso base, podemos computar $melhor \tu nota[v, \ell]$
+assumindo que $melhor \tu nota[w, \ell]$ já foi computado para todo
 $w$ filho de $v$ e $\ell \in \{A, G, T, C\}$.
 
 Dado que o pai de $v$ tem valor $\ell$, a melhor nota para a
 sub-árvore enraizada em $v$ quando o valor de $v$ é igual a $m$ é:
-\[ [\ell \neq m] + \sum_{w \text{ filho de }v} melhor \tu nota[w][m]\]
+\[ [\ell \neq m] + \sum_{w \text{ filho de }v} melhor \tu nota[w, m]\]
 
 Onde \[[\ell \neq m] =  \begin{cases} 0 \text{ se } m = \ell \\
                                       1 \text{ caso contrário}\end{cases}\]
 
 Queremos escolher um valor $m \in \{A, G, T, C\}$ para $v$
 que minimize a nota final da sub-árvore. Então:
-\[melhor \tu nota[v][\ell] = \min_{m \in \{A, G, T, C\}} \left([\ell
-\neq m] + \sum_{w \text{ filho de }v} melhor \tu nota[w][m]\right)\]
+\[melhor \tu nota[v, \ell] = \min_{m \in \{A, G, T, C\}} \left([\ell
+\neq m] + \sum_{w \text{ filho de }v} melhor \tu nota[w, m]\right)\]
 
-e $melhor\tu letra[v][\ell]$ é um valor de $m$ que atinge o mínimo
+e $melhor\tu letra[v, \ell]$ é um valor de $m$ que atinge o mínimo
 acima.
 
 Implementando o que descrevemos recursivamente, obtemos a seguinte
@@ -163,11 +163,11 @@ def calcula_melhor_nota(v, l):
     return melhor_nota[v, l]
 \end{minted}
 
-Sabendo calcular $melhor \tu nota[v][\ell]$ para todos os vértices
+Sabendo calcular $melhor \tu nota[v, \ell]$ para todos os vértices
 exceto a raiz podemos encontrar a nota da árvore como o mínimo entre
 os possíveis valores para a raiz:
 \[ \min_{\ell \in \{A, G, T, C\}} \sum_{v \text{ filho da raiz}}
-melhor \tu nota[v][\ell]\]
+melhor \tu nota[v, \ell]\]
 
 Um valor ótimo para a raiz é um valor de $\ell$ para o qual o mínimo
 acima é atingido.
@@ -230,7 +230,7 @@ def parseia_newick(string):
         elif ch == ')':
             em_construcao.pop()
         else:
-            em_construcao[-1].valor += ch
+            em_construcao[-1].nome += ch
 
     assert len(em_construcao) == 1
     return em_construcao[0]
@@ -244,27 +244,27 @@ formato bem simples:
 >Nome
 Sequência de DNA
 
-Vamos escrever uma função para converter dados no formato FASTA em uma
-lista de tuplas:
+Vamos escrever uma função para converter dados no formato FASTA em um
+dicionário:
 \begin{minted}[]{python}
-def fasta_para_lista(array):
+def fasta_para_dict(array):
     label = ""
     dna = ""
-    lista = []
+    saida = {}
 
     for tmp in array:
         line = tmp.rstrip()
         if line[0] == ">":
             if label != "":
-                lista.append((label, dna))
+                saida[label] = dna
                 dna = ""
             label = line[1:]
         else:
             dna += line
 
-    lista.append((label, dna))
+    saida[label] = dna
 
-    return lista
+    return saida
 \end{minted}
 
 \subsection{Separando e concatenando árvores}
@@ -278,6 +278,8 @@ carácter. A seguinte DFS cria a árvore das $i$-ésimas letras:
 \begin{minted}[]{python}
 def separa_arvore(indice, origem):
     copia_origem = Arvore(None)
+    copia_origem.nome = origem.nome
+
     if len(origem.valor):
         copia_origem.valor = origem.valor[indice]
 
@@ -288,6 +290,7 @@ def separa_arvore(indice, origem):
 
     return copia_origem
 \end{minted}
+
 
 Depois de rodar o algoritmo, vamos querer juntar as árvores para encontrar
 os valores dos nós intermediários. Podemos fazer isso com uma DFS e \verb~reduce~.
@@ -296,6 +299,7 @@ def concatena_arvores(arvores):
     fusao = Arvore(None)
     fusao.valor = reduce(lambda string, arv: string + arv.valor,
                          arvores, "")
+    fusao.nome = arvores[0].nome
 
     for i in xrange(len(arvores[0].filhos)):
         fusao_filho = concatena_arvores(
@@ -306,127 +310,109 @@ def concatena_arvores(arvores):
     return fusao
 \end{minted}
 
-\subsection{Rodando o algoritmo com os dados do problema}
+\subsection{Imprimindo os resultados}
 \label{sec-3-4}
 
-\#+NAME codigo$_{\text{completo}}$
+Vamos usar o formato FASTA para imprimir as sequências de DNA que
+encontrarmos para todos os nós internos.
+
 \begin{minted}[]{python}
-import collections
+def imprime_resposta(arvore):
+    if arvore.filhos:
+        print '>%s' % arvore.nome
+        print arvore.valor
 
-class Arvore:
-    def __init__(self, pai):
-        self.filhos = []
-        self.valor = ""
-        self.pai = pai
-        self.nome = ""
-
-melhor_nota = {}
-melhor_letra = {}
-
-def calcula_melhor_nota(v, l):
-    if (v, l) in melhor_nota:
-        return melhor_nota[v, l]
-
-    if not v.filhos:
-        melhor_nota[v, l] = 1 if l != v.valor else 0
-        melhor_letra[v, l] = v.valor
-        return melhor_nota[v, l]
-
-    melhor_nota[v, l] = 100000
-
-    for m in ['A', 'G', 'T', 'C', '-']:
-        nota_atual = sum(calcula_melhor_nota(w, m) for w in v.filhos)
-        if m != l:
-            nota_atual += 1
-
-        if nota_atual < melhor_nota[v, l]:
-            melhor_nota[v, l] = nota_atual
-            melhor_letra[v, l] = m
-
-    return melhor_nota[v, l]
-
-def preenche_tudo(raiz):
-    melhor_nota_raiz = 100000
-    for l in ['A', 'G', 'T', 'C', '-']:
-        nota_atual_raiz = sum(calcula_melhor_nota(w, l) for w in raiz.filhos)
-
-        if nota_atual_raiz < melhor_nota_raiz:
-            raiz.valor = l
-            melhor_nota_raiz = nota_atual_raiz
-
-    def preenche_dado_pai(v):
-        v.valor = melhor_letra[v, v.pai.valor]
-        for w in v.filhos:
-            preenche_dado_pai(w)
-
-    for w in raiz.filhos:
-        preenche_dado_pai(w)
-
-    return raiz, melhor_nota_raiz
-
-
-
-def parseia_newick(string):
-    string = string.replace(',', ')(').replace(';', '')
-
-    em_construcao = collections.deque()
-    em_construcao.append(Arvore(None))
-
-    for ch in string:
-        if ch == '(':
-            pai_atual = em_construcao[-1]
-            filho_novo = Arvore(pai_atual)
-            pai_atual.filhos.append(filho_novo)
-            em_construcao.append(filho_novo)
-        elif ch == ')':
-            em_construcao.pop()
-        else:
-            em_construcao[-1].valor += ch
-
-    assert len(em_construcao) == 1
-    return em_construcao[0]
-
-def separa_arvore(indice, origem):
-    copia_origem = Arvore(None)
-    if len(origem.valor):
-        copia_origem.valor = origem.valor[indice]
-
-    for filho in origem.filhos:
-        copia_filho = separa_arvore(indice, filho)
-        copia_filho.pai = copia_origem
-        copia_origem.filhos.append(copia_filho)
-
-    return copia_origem
-
-def concatena_arvores(arvores):
-    fusao = Arvore(None)
-    fusao.valor = reduce(lambda string, arv: string + arv.valor,
-                         arvores, "")
-
-    for i in xrange(len(arvores[0].filhos)):
-        fusao_filho = concatena_arvores(
-            map(lambda arvore: arvore.filhos[i], arvores))
-        fusao_filho.pai = fusao
-        fusao.filhos.append(fusao_filho)
-
-    return fusao
+    for w in arvore.filhos:
+        imprime_resposta(w)
 \end{minted}
 
 
-
-\subsection{Rodando o algoritmo com dados reais}
+\subsection{Rodando o algoritmo com os dados do problema}
 \label{sec-3-5}
+
+Usando os formatos Newick e FASTA para descrever os dados do problema,
+obtemos o seguinte:
+
+\begin{verbatim}
+(((folha1,folha2)interno1,folha3)interno2,(folha4,folha5)interno3)interno4;
+>folha1
+ATTC
+>folha2
+AGTC
+>folha3
+CGCG
+>folha4
+AGGA
+>folha5
+ATCA
+\end{verbatim}
+
+Salvamos esta entrada no arquivo \verb~livro.in~.
+
+Podemos agora rodar o código para descobrir os valores dos nós internos:
+
+\begin{minted}[]{python}
+with open('livro.in', 'r') as f:
+    entrada = map(lambda s: s.strip(), f.readlines())
+
+raiz_grande = parseia_newick(entrada[0])
+dnas = fasta_para_dict(entrada[1:])
+
+def preenche_folhas(arvore, dnas):
+    if arvore.nome in dnas:
+        arvore.valor = dnas[arvore.nome]
+
+    for w in arvore.filhos:
+        preenche_folhas(w, dnas)
+
+preenche_folhas(raiz_grande, dnas)
+
+n = len(dnas.values()[0])
+
+arvores_sep = [separa_arvore(i, raiz_grande) for i in range(n)]
+pares_preenchidos = [preenche_tudo(a) for a in arvores_sep]
+
+nota_total = sum(nota for (_, nota) in pares_preenchidos)
+resposta = concatena_arvores([raiz for (raiz, _) in pares_preenchidos])
+
+print "Nota:", nota_total
+imprime_resposta(resposta)
+\end{minted}
+
+\begin{verbatim}
+Nota: 7
+>interno4
+AGCA
+>interno2
+AGCA
+>interno1
+AGTC
+>interno3
+AGCA
+\end{verbatim}
+
+
+
+\subsection{Rodando o algoritmo com dados mais complexos}
+\label{sec-3-6}
 
 Obtemos os dados no formato Newick do \href{http://rosalind.info}{Rosalind}, uma plataforma de
 ensino de bioinformática.
 
-\section{Extensões}
-\label{sec-4}
+O arquivo \href{https://github.com/adusca/FGV-EDA/blob/master/6_30/rosalind.in}{rosalind.in} contém um banco de dados de 221 espécies, cada
+uma com 266 caracteres.
 
-Ao fazer esse exercício, notamos que a árvore já é uma entrada do problema.
-Como é possível obter a árvore de menor valor a partir das espécies
+Como o resultado é muito longo, deixamos ele disponível em
+\href{https://github.com/adusca/FGV-EDA/blob/master/6_30/rosalind.out}{rosalind.out}. As primeiras linhas da saída são:
 
-Esse problema é NP-completo [TODO: colocar referência] e o melhor
-algoritmo conhecido é [TODO]
+\begin{verbatim}
+Nota: 16880
+>sibiricus_plumipes
+TGGCATTGCAATGTACAAGTGGTCTAACGTCAGTGATCATACTTGCTAAGAATAGAAAAC
+CAACCTAAATAAAACCGACACTAAAGACCTCAGCGTTATGCGACATAACTATGCCTCGTT
+AAGAATCTGCGTAATACGGCACGCGGACAACATATGACTAGGGGCATAGGAAGTATGAAG
+CGTTCGGCAGTCTTGGGATCAAAAAGAAGCGTAGATCAATTTCTATGTAAAACTATACGG
+CCGACAAATTTAAAAACGCGAACGATGGAAT
+\end{verbatim}
 % Emacs 24.4.1 (Org mode 8.2.10)
 \end{document}
