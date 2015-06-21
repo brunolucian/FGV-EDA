@@ -1,0 +1,139 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{fixltx2e}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{marvosym}
+\usepackage{wasysym}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\tolerance=1000
+\usepackage{minted}
+\usemintedstyle{perldoc}
+\usepackage{tikz}
+\hyphenation{es-co-lhi-dos}
+%\usepackage[table]{xcolor}
+%\usetikzlibrary{decorations.markings}
+%\tikzstyle{vertex}=[circle, draw, inner sep=0pt, minimum size=7pt]
+%\newcommand{\vertex}{\node[vertex]}
+\author{Alice Duarte Scarpa, Bruno Lucian Costa}
+\date{2015-06-23}
+\title{Exercício 4.5 (Tardos)}
+\hypersetup{
+  pdfkeywords={},
+  pdfsubject={},
+  pdfcreator={Emacs 24.4.1 (Org mode 8.2.10)}}
+\begin{document}
+
+\maketitle
+
+\section{Enunciado}
+\label{sec-1}
+
+Vamos considerar uma rua campestre longa e quieta, 
+com casas espalhadas bem esparsamente ao longo da mesma. 
+(Podemos imaginar a rua como um grande segmento de reta, 
+com um extremo leste e um extremo oeste.) 
+Além disso, vamos assumir que, apesar do ambiente bucólico, 
+os residentes de todas essas casas são ávidos usuários de telefonia celular.
+\\
+
+\noindent
+Você quer colocar estações-base de celulares em certos pontos da rodovia, 
+de modo que toda casa esteja a no máximo quatro milhas de uma das estações-base. 
+Dê um algoritmo eficiente para alcançar esta meta, usando o menor número possível de bases.
+
+
+
+\section{Introdução}
+\label{sec-2}
+
+Com este exercicio vamos abordar uma técnica chamada de algoritmos gulosos
+sempre realizando a escolha que parece ser a melhor no momento, fazendo uma escolha ótima local, 
+com intuito de que esta escolha leve até a solução ótima global.
+
+Antes porém, vai ser apresentado duas soluções utilizando um algoritmo ``naive'' e um força bruta. 
+
+
+\section{Soluções para o problema}
+\label{sec-3}
+
+
+
+\subsection{Naive algoritmo}
+
+Esta primeira solução para o problema é uma das mais simples possiveis de se pensar quando confrontamos o problema.
+O problema diz que temos que colocar uma antena a no máximo 4 milhas de distancias, nesse algoritmo fizemos a solução 
+baseado apenas nessa ideia, então com ele vamos colocar uma antena a cada 4 milhas de distancia até que a casa mais distante 
+esteja coberta pela nossas antenas.
+
+
+\begin{minted}[]{python}
+ 
+ def antena(lista):
+    lmax = max(lista) # Valor maximo presente na lista de distancias
+    ant = []
+    j = 0
+    for i in range(lmax): 
+        if j >= lmax:
+            if j - ant[-1] <= 4:
+                return ant
+        j += 4
+        ant.append(j)
+ 
+\end{minted}
+
+
+\subsection{Força Bruta}
+
+\label{sec-3-1}
+
+
+\begin{minted}[]{python}
+import math, numpy
+
+def antena(lista):
+  lmax = max(lista)
+  ant = []
+  
+  while lista != []: # Realizar procedimento ate todas as casas cobertas
+      torre = numpy.random.randint(1, lmax) #fixando uma torre em um ponto qualquer
+      for i in range(len(lista)): #Percorrendo toda a lista
+        for i in lista: # 
+            if i >= torre-4 and i <= torre+4: # Verifica se tem casa esta coberta
+                lista.remove(i) # remove a casa coberta
+                ant.append(torre) # adciona a torre a lista
+  
+  ant = list(set(ant)) # Remove as torres colocadas em duplicatas
+  ant.sort() #Ordena as torres
+
+  return ant
+ 
+ 
+\end{minted}
+
+
+
+\section{Implementação}
+\label{sec-4}
+
+\subsection{Fluxo válido com demandas não-nulas}
+\label{sec-4-2}
+
+
+
+\section{Complexidade}
+\label{sec-5}
+
+TODO: calcular a complexidade do algoritmo
+
+
+
+\end{document}
