@@ -350,20 +350,6 @@ import collections
 <<rodando>>
 #+END_SRC
 
-#+RESULTS:
-| v_1  | C_4 |
-| v_2  | C_2 |
-| v_3  | C_3 |
-| v_4  | C_4 |
-| v_5  | C_1 |
-| v_6  | C_1 |
-| v_7  | C_3 |
-| v_8  | C_1 |
-| v_9  | C_2 |
-| v_10 | C_4 |
-
-
-
 *** Complexidade
 
 O algoritmo de Ford-Fulkerson tem complexidade $O(VF)$ TODO:

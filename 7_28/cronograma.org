@@ -82,18 +82,18 @@ $$\label{valor_fluxo} \mathrm{Valor}(f) = \sum_{e \text{ saindo de } s} f(e) $$
 TODO: definir circulação
 ** Representação
 
-Podemos usar programação orientada a objetos [TODO: colocar alguma
-referência de OOP] para nos ajudar na representação da rede de fluxo,
+Podemos usar [[TODO: colocar uma referencia de OOP][programação orientada a objetos]
+para nos ajudar na representação da rede de fluxo,
 simplificando o algoritmo.
-
-TODO: explicar a parte de já construir o
-grafo reverso.
 
 Vamos usar uma classe para representar arestas. Uma aresta é
 inicializada com as propriedades: vértice de origem, vértice de
 destino, capacidade e demanda.
 
-TODO: explicar reversa e original
+Para facilitar o processamento futuro, vamos adicionar também as
+propriedades reversa e original. Reversa aponta para uma outra aresta
+reversa à atual, a propriedade original é uma flag indicando se a
+aresta pertence à rede original ou não.
 #+NAME: definindo_classe_aresta
 #+BEGIN_SRC python
 class Aresta():

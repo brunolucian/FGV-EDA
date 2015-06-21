@@ -1,4 +1,4 @@
-% Created 2015-06-20 Sáb 13:15
+% Created 2015-06-20 Sáb 23:02
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -24,16 +24,6 @@
 \newcommand{\vertex}{\node[vertex]}
 \usemintedstyle{perldoc}
 \usepackage{tikz}
-\usetikzlibrary{decorations.markings}
-\tikzstyle{vertex}=[circle, draw, inner sep=0pt, minimum size=7pt]
-\newcommand{\vertex}{\node[vertex]}
-\usemintedstyle{perldoc}
-\usepackage{tikz}
-\usetikzlibrary{decorations.markings}
-\tikzstyle{vertex}=[circle, draw, inner sep=0pt, minimum size=7pt]
-\newcommand{\vertex}{\node[vertex]}
-\usemintedstyle{perldoc}
-\usepackage{tikz}
 \hyphenation{es-co-lhi-dos}
 \usepackage[table]{xcolor}
 \usetikzlibrary{decorations.markings}
@@ -44,8 +34,19 @@
 \usetikzlibrary{decorations.markings}
 \tikzstyle{vertex}=[circle, draw, inner sep=0pt, minimum size=7pt]
 \newcommand{\vertex}{\node[vertex]}
+\newcommand{\tu}{\textunderscore}
 \usemintedstyle{perldoc}
 \usepackage{tikz}
+\usetikzlibrary{decorations.markings}
+\tikzstyle{vertex}=[circle, draw, inner sep=0pt, minimum size=7pt]
+\newcommand{\vertex}{\node[vertex]}
+\usemintedstyle{perldoc}
+\usepackage{tikz}
+\usetikzlibrary{decorations.markings}
+\tikzstyle{vertex}=[circle, draw, inner sep=0pt, minimum size=7pt]
+\newcommand{\vertex}{\node[vertex]}
+\usemintedstyle{perldoc}
+\usepackage{tikz,enumerate}
 \usetikzlibrary{decorations.markings}
 \tikzstyle{vertex}=[circle, draw, inner sep=0pt, minimum size=7pt]
 \newcommand{\vertex}{\node[vertex]}
@@ -60,189 +61,11 @@
 
 \maketitle
 
-\section{Exercício 6.30 (Papadimitriou)}
+\section{Exercício 7.28 (Tardos)}
 \label{sec-1}
 
 \subsection{Enunciado}
 \label{sec-1-1}
-
-\textit{Reconstruindo árvores filogenéticas pelo método da máxima parcimônia}
-
-Uma árvore filogenética é uma árvore em que as folhas são espécies
-diferentes, cuja raiz é o ancestral comum de tais espécies e cujos
-galhos representam eventos de especiação.
-
-Queremos achar:
-
-\begin{itemize}
-\item Uma árvore (binária) evolucionária com as espécies dadas
-\item Para cada nó interno uma string de comprimento $k$ com a
-sequência genética daquele ancestral.
-\end{itemize}
-
-
-Dada uma árvore acompanhada de uma string $s(u) \in \{A, C, G, T\}^k$ para
-cada nó $u \in V(T)$, podemos atribuir uma nota usando o método da
-máxima parcimônia, que diz que menos mutações são mais prováveis:
-\[ \mathrm{nota}(T) = \sum_{(u,v) \in E(T)} (\text{número de posições em que }s(u)\text{ e }s(v)\text{ diferem}). \]
-
-Achar a árvore com nota mais baixa é um problema difícil. Aqui vamos
-considerar um problema menor: Dada a estrutura da árvore, achar as
-sequências genéticas $s(u)$ para os nós internos que dêem a nota mais
-baixa.
-
-Um exemplo com $k = 4$ e $n = 5$:
-
-\href{http://github.com/adusca/FGV-EDA/6_30/tree.png}{\includegraphics[width=.9\linewidth]{tree.png}}
-
-\begin{enumerate}
-\item Ache uma reconstrução para o exemplo seguindo o método da
-máxima parcimônia.
-\item Dê um algoritmo eficiente para essa tarefa.
-\end{enumerate}
-
-\subsection{Solução}
-\label{sec-1-2}
-
-Como o valor só depende TODO.
-
-Vamos calcular a resposta para cada letra independentemente e depois
-concatenar as respostas para obter a árvore final.
-
-Nós vamos usar um algoritmo de programação dinâmica para encontrar o
-valor das folhas intermediárias em uma árvore $P$ em que cada
-folha tem valor A, G, T ou C
-
-TODO: estrutura de dados para representar a árvore.
-\begin{minted}[]{python}
-class Arvore:
-    def __init__(self, pai):
-        self.filhos = []
-        self.label = ""
-        self.pai = pai
-
-# Colocar aqui uma estrutura de dados para a arvore
-\end{minted}
-
-TODO: achar um nome melhor para ans
-
-Vamos computar $ans[v][\ell]$ como a melhor maneira de preencher os nós
-da sub-árvore enraizada em $v$, dado que o pai de $v$ tem valor $\ell$.
-
-TODO: justificar a inicializacao
-\begin{minted}[]{python}
-valor = {}
-ans = {}
-\end{minted}
-
-Vamos computar $ans$ de baixo para cima. Então, o caso base para esse algoritmo
-é a resposta para as folhas, isso é, $ans[\mathrm{folha}][\ell]$.
-
-Uma sub-árvore que contém apenas uma folha e seu pai vai ter
-$\mathrm{nota} = 0$ se a folha e o pai tiverem ambos o mesmo valor (A,
-G, T ou C) ou $\mathrm{nota} = 1$, se os dois tiverem valores diferentes:
-
-\[ans[\mathrm{folha}][\ell] = \begin{cases}0 \text{ se } \mathrm{valor}[\mathrm{folha}] = \ell \\
-                                                     1 \text{ caso contrário}\end{cases}\]
-
-Podemos então preencher as folhas:
-\begin{minted}[]{python}
-#TODO: preencher as folhas
-\end{minted}
-
-Tendo o caso base, podemos computar $ans[v][\ell]$ assumindo que $ans[w][\ell]$ já foi computado para
-todo $w$ filho de $v$ e $\ell \in \{A, G, T, C\}$.
-
-TODO: explicar em algum lugar que a raiz é especial
-
-A nota da sub-árvore quando o valor de $v$ é igual a $m$ é:
-
-\[[\ell \neq m] + \sum_{w \text{ filho de }v} ans[w][m]\]
-
-Onde \[[\ell \neq m] =  \begin{cases} 0 \text{ se } m = \ell \\
-                                     1 \text{ caso contrário}\end{cases}\]
-
-Queremos escolher um valor $m \in \{A, G, T, C\}$ para $v$
-que minimize a nota final da sub-árvore. Então:
-
-\[ans[v][\ell] = \min_{m \in \{A, G, T, C\}}  \left([\ell \neq m] + \sum_{w \text{ filho de }v} ans[w][m]\right)\]
-
-\begin{minted}[]{python}
-# TODO: preencher os outros vértices (exceto a raiz)
-\end{minted}
-
-Após computarmos $ans[v][\ell]$ para todos os vértices exceto a raiz
-podemos encontrar a nota da árvore como o mínimo entre os possíveis
-valores para a raiz:
-
-\[ \min_{\ell \in \{A, G, T, C\}} \sum_{v \text{ filho da raiz}} ans[v][\ell]\]
-
-\subsection{Dados reais}
-\label{sec-1-3}
-
-\subsubsection{Formato Newick}
-\label{sec-1-3-1}
-
-Um formato muito usado para árvores em bioinformática é o formato
-Newick. Assim como LISP, ele usa o fato de que parenteses podem ser
-usados para especificar uma árvore.
-
-TODO: especificar o formato, referência do formato
-
-\begin{enumerate}
-\item Parseando o formato Newick
-\label{sec-1-3-1-1}
-\end{enumerate}
-
-\subsubsection{Rosalind}
-\label{sec-1-3-2}
-
-Obtemos os dados do Rosalind, TODO: explicar o Rosalind.
-
-Rosalind MULT, GLOB, EDTA, PERM, EDIT, LCSQ,
-CSTR, CTBL, NWCK, SSET, MRNA, KMP, PROB
-SSEQ, SPLC, LCSM
-
-\subsubsection{Rodando o algoritmo com dados reais}
-\label{sec-1-3-3}
-
-\subsection{Extensões}
-\label{sec-1-4}
-
-Ao fazer esse exercício, notamos que a árvore já é uma entrada do problema.
-Como é possível obter a árvore de menor valor a partir das espécies
-
-Esse problema é NP-completo [TODO: colocar referência] e o melhor
-algoritmo conhecido é [TODO]
-
-\section{Exercício 6.3 (Papadimitriou)}
-\label{sec-2}
-
-\subsection{Enunciado}
-\label{sec-2-1}
-
-O Yuckdonald's está considerando abrir uma cadeia de restaurantes em
-Quaint Valley Highway (QVG). Os $n$ locais possíveis estão em uma
-linha reta, e as distâncias desses locais até o começo da QVG são, em
-milhas e em ordem crescente, $m_1, m_2, \ldots, m_n$. As restrições
-são as seguintes:
-
-\begin{itemize}
-\item Em cada local, o Yuckdonald's pode abrir no máximo um
-restaurante. O lucro esperado ao abrir um restaurante no local
-$i$ é $p_i$, onde $p_i > 0$ e $i = 1, 2, \ldots, n$.
-\item Quaisquer dois restaurantes devem estar a pelo menos $k$
-  milhas de distância, onde $k$ é um inteiro positivo.
-\end{itemize}
-
-Dê um algoritmo eficiente para computar o maior lucro total
-esperado, sujeito às restrições acima.
-
-\section{Exercício 7.28 (Tardos)}
-\label{sec-3}
-
-\subsection{Enunciado}
-\label{sec-3-1}
 
 Um grupo de estudantes está escrevendo um módulo para preparar
 cronogramas de monitoria. O protótipo inicial deles funciona do
@@ -283,13 +106,13 @@ b) O algoritmo acima tornou-se popular, e surgiu a vontade de
 
 
 \subsection{Introdução}
-\label{sec-3-2}
+\label{sec-1-2}
 
 Queremos modelar esse problema como um problema de fluxo. Para isso
 vamos começar com algumas definições de fluxo.
 
 \subsubsection{Definições}
-\label{sec-3-2-1}
+\label{sec-1-2-1}
 
 Uma rede de fluxo é um grafo direcionado $G =
 (V, E)$ com as seguintes propriedades:
@@ -316,20 +139,20 @@ $$\label{valor_fluxo} \mathrm{Valor}(f) = \sum_{e \text{ saindo de } s} f(e) $$
 
 TODO: definir circulação
 \subsubsection{Representação}
-\label{sec-3-2-2}
+\label{sec-1-2-2}
 
-Podemos usar programação orientada a objetos [TODO: colocar alguma
-referência de OOP] para nos ajudar na representação da rede de fluxo,
+Podemos usar [[TODO: colocar uma referencia de OOP][programação orientada a objetos]
+para nos ajudar na representação da rede de fluxo,
 simplificando o algoritmo.
-
-TODO: explicar a parte de já construir o
-grafo reverso.
 
 Vamos usar uma classe para representar arestas. Uma aresta é
 inicializada com as propriedades: vértice de origem, vértice de
 destino, capacidade e demanda.
 
-TODO: explicar reversa e original
+Para facilitar o processamento futuro, vamos adicionar também as
+propriedades reversa e original. Reversa aponta para uma outra aresta
+reversa à atual, a propriedade original é uma flag indicando se a
+aresta pertence à rede original ou não.
 \begin{minted}[]{python}
 class Aresta():
     def __init__(self, origem, destino, capacidade, demanda):
@@ -396,7 +219,7 @@ class RedeDeFluxo():
 \end{minted}
 
 \subsection{Modelando o problema com fluxos}
-\label{sec-3-3}
+\label{sec-1-3}
 
 Os dois itens do problema podem ser reduzidos a encontrar um fluxo
 válido em uma rede usando construções semelhantes.
@@ -506,10 +329,10 @@ semana.
 \end{tikzpicture}\]
 
 \subsection{Implementação}
-\label{sec-3-4}
+\label{sec-1-4}
 
 \subsubsection{Fluxo máximo}
-\label{sec-3-4-1}
+\label{sec-1-4-1}
 
 Vamos começar estudando o problema de encontrar o fluxo máximo de uma
 rede $G$ em que $d_e = 0 \; \forall e \in E$ $f$. Vamos implementar aqui o
@@ -602,7 +425,7 @@ def fluxo_maximo(self, fonte, dreno):
 \end{minted}
 
 \subsubsection{Fluxo válido com demandas não-nulas}
-\label{sec-3-4-2}
+\label{sec-1-4-2}
 
 O nosso objetivo é encontrar um fluxo válido $f$ para uma rede $G =
 (V, E)$ no caso em que as demandas são positivas.
@@ -661,15 +484,15 @@ TODO: provar que soluções de um são também soluções do outro
 
 
 \subsection{Complexidade}
-\label{sec-3-5}
+\label{sec-1-5}
 
 TODO: calcular a complexidade do algoritmo
 
 \subsection{Rodando o algoritmo}
-\label{sec-3-6}
+\label{sec-1-6}
 
 \subsubsection{Item A}
-\label{sec-3-6-1}
+\label{sec-1-6-1}
 A seguinte tabela mostra a disponibilidade dos monitores nos horários
 escolhidos pelo administrador:
 
@@ -773,7 +596,7 @@ ou uma tabela com um horário que atende a todas as restrições.
 Para a tabela acima:
 
 \subsubsection{Item b}
-\label{sec-3-6-2}
+\label{sec-1-6-2}
 
 No item b, além de todas as restrições do item a, há também a
 restrição de mínimo de horas por dia da semana.
@@ -854,6 +677,290 @@ Sex 7h & Edu\\
 \end{tabular}
 \end{center}
 
+\section{Exercício 6.30 (Papadimitriou)}
+\label{sec-2}
+
+\subsection{Enunciado}
+\label{sec-2-1}
+
+\textit{Reconstruindo árvores filogenéticas pelo método da máxima parcimônia}
+
+Uma árvore filogenética é uma árvore em que as folhas são espécies
+diferentes, cuja raiz é o ancestral comum de tais espécies e cujos
+galhos representam eventos de especiação.
+
+Queremos achar:
+
+\begin{itemize}
+\item Uma árvore (binária) evolucionária com as espécies dadas
+\item Para cada nó interno uma string de comprimento $k$ com a
+sequência genética daquele ancestral.
+\end{itemize}
+
+
+Dada uma árvore acompanhada de uma string $s(u) \in \{A, C, G, T\}^k$ para
+cada nó $u \in V(T)$, podemos atribuir uma nota usando o método da
+máxima parcimônia, que diz que menos mutações são mais prováveis:
+\[ \mathrm{nota}(T) = \sum_{(u,v) \in E(T)} (\text{número de posições em que }s(u)\text{ e }s(v)\text{ diferem}). \]
+
+Achar a árvore com nota mais baixa é um problema difícil. Aqui vamos
+considerar um problema menor: Dada a estrutura da árvore, achar as
+sequências genéticas $s(u)$ para os nós internos que dêem a nota mais
+baixa.
+
+Um exemplo com $k = 4$ e $n = 5$:
+
+\href{http://github.com/adusca/FGV-EDA/6_30/tree.png}{\includegraphics[width=.9\linewidth]{tree.png}}
+
+\begin{enumerate}
+\item Ache uma reconstrução para o exemplo seguindo o método da
+máxima parcimônia.
+\item Dê um algoritmo eficiente para essa tarefa.
+\end{enumerate}
+
+\subsection{Solução}
+\label{sec-2-2}
+
+A nota final de uma árvore é a soma da nota de cada letra. Podemos
+calcular a resposta para cada letra independentemente e depois
+concatenar as respostas para obter a árvore final.
+
+Nós vamos usar um algoritmo de programação dinâmica para encontrar o
+valor das folhas intermediárias em uma árvore $P$ em que cada
+folha tem valor A, G, T ou C.
+
+Vamos representar a nossa árvore como um objeto:
+\begin{minted}[]{python}
+class Arvore:
+    def __init__(self, pai):
+        self.filhos = []
+        self.valor = ""
+        self.pai = pai
+\end{minted}
+
+Vamos computar $melhor\tu nota[v, \ell]$ como a melhor maneira de
+preencher os nós da sub-árvore enraizada em $v$, dado que o pai de $v$
+tem valor $\ell$. Também preencheremos $melhor \tu letra[v, \ell]$ com um valor possível
+de uma configuração otimal. Guardaremos tais valores em dicionários.
+
+\begin{minted}[]{python}
+melhor_nota = {}
+melhor_letra = {}
+\end{minted}
+
+Vamos computar $melhor \tu nota$ de baixo para cima. Então, o caso base
+para esse algoritmo é a resposta para as folhas, isto é, $melhor\tu nota[\mathrm{folha}][\ell]$.
+
+Uma sub-árvore que contém apenas uma folha e seu pai vai ter
+nota 0 se a folha e o pai tiverem ambos o mesmo valor (A,
+G, T ou C) ou nota 1 se os dois tiverem valores diferentes:
+
+\[melhor \tu nota[\textit{folha}][\ell] = \begin{cases}0 \text{ se } \textit{folha}.valor = \ell \\
+                                                       1 \text{ caso contrário}\end{cases}\]
+
+Além disso, não temos escolha para o valor otimal:
+\[ melhor \tu valor[\textit{folha}][\ell] = \textit{folha}.valor \]
+
+Tendo o caso base, podemos computar $melhor \tu nota[v][\ell]$
+assumindo que $melhor \tu nota[w][\ell]$ já foi computado para todo
+$w$ filho de $v$ e $\ell \in \{A, G, T, C\}$.
+
+Dado que o pai de $v$ tem valor $\ell$, a melhor nota para a
+sub-árvore enraizada em $v$ quando o valor de $v$ é igual a $m$ é:
+\[ [\ell \neq m] + \sum_{w \text{ filho de }v} melhor \tu nota[w][m]\]
+
+Onde \[[\ell \neq m] =  \begin{cases} 0 \text{ se } m = \ell \\
+                                      1 \text{ caso contrário}\end{cases}\]
+
+Queremos escolher um valor $m \in \{A, G, T, C\}$ para $v$
+que minimize a nota final da sub-árvore. Então:
+\[melhor \tu nota[v][\ell] = \min_{m \in \{A, G, T, C\}} \left([\ell
+\neq m] + \sum_{w \text{ filho de }v} melhor \tu nota[w][m]\right)\]
+
+e $melhor\tu letra[v][\ell]$ é um valor de $m$ que atinge o mínimo
+acima.
+
+Implementando o que descrevemos recursivamente, obtemos a seguinte
+função:
+\begin{minted}[]{python}
+def calcula_melhor_nota(v, l):
+    if not v.filhos:
+        melhor_nota[v, l] = 1 if l != v.valor else 0
+        melhor_letra[v, l] = v.valor
+        return melhor_nota[v, l]
+
+    melhor_nota[v, l] = 100000
+
+    for m in ['A', 'G', 'T', 'C']:
+        nota_atual = sum(calcula_melhor_nota(w, m) for w in v.filhos)
+        if m != l:
+            nota_atual += 1
+
+        if nota_atual < melhor_nota[v, l]:
+            melhor_nota[v, l] = nota_atual
+            melhor_letra[v, l] = m
+
+    return melhor_nota[v, l]
+\end{minted}
+
+Sabendo calcular $melhor \tu nota[v][\ell]$ para todos os vértices
+exceto a raiz podemos encontrar a nota da árvore como o mínimo entre
+os possíveis valores para a raiz:
+\[ \min_{\ell \in \{A, G, T, C\}} \sum_{v \text{ filho da raiz}}
+melhor \tu nota[v][\ell]\]
+
+Um valor ótimo para a raiz é um valor de $\ell$ para o qual o mínimo
+acima é atingido. Preencheremos $raiz.label$ com tal valor, como
+abaixo:
+\begin{minted}[]{python}
+melhor_nota_raiz = 100000
+for l in ['A', 'G', 'T', 'C']:
+    nota_atual_raiz = sum(calcula_melhor_nota(w, m) for w in v.filhos)
+
+    if nota_atual_raiz < melhor_nota_raiz:
+        raiz.valor = l
+        melhor_custo_raiz = nota_atual_raiz
+\end{minted}
+
+Tendo o valor da raiz já determinado e os valores de $melhor \tu
+letra$, podemos preencher os valores dos nós internos:
+
+\begin{minted}[]{python}
+def preenche_dado_pai(v):
+    v.valor = melhor_letra[v, v.pai.valor]
+    for w in v.filhos:
+        preenche_dado_pai(w)
+
+for w in raiz.filhos:
+    preenche_dado_pai(w)
+\end{minted}
+
+
+\subsection{Rodando o algoritmo}
+\label{sec-2-3}
+
+\subsubsection{Formato Newick}
+\label{sec-2-3-1}
+
+Um formato muito usado para árvores em bioinformática é o formato
+Newick. Assim como as $s$-expressions do LISP, ele usa o fato de que
+parênteses podem ser usados para especificar uma árvore.
+
+TODO: especificar o formato, referência do formato
+
+\begin{enumerate}
+\item Parseando o formato Newick
+\label{sec-2-3-1-1}
+
+O primeiro passo é notar que (gato, rato) é equivalente a
+(gato)(rato), então podemos transformar uma estrutura com vírgulas
+em uma estrutura que só contém parênteses.
+
+TODO: explicar o código
+\begin{minted}[]{python}
+def parseia_newick(string):
+    string = string.replace(',', ')(').replace(';', '')
+
+    em_construcao = collections.deque()
+    em_construcao.append(Arvore(None))
+
+    for ch in string:
+        if ch == '(':
+            pai_atual = em_construcao[-1]
+            filho_novo = Arvore(pai_atual)
+            pai_atual.filhos.append(filho_novo)
+            em_construcao.append(filho_novo)
+        elif ch == ')':
+            em_construcao.pop()
+        else:
+            em_construcao[-1].valor += ch
+
+    assert len(em_construcao) == 1
+    return em_construcao[0]
+\end{minted}
+
+
+\item Separando e concatenando árvores
+\label{sec-2-3-1-2}
+
+As árvores no nosso algoritmo só tem uma letra por nó, mas nós
+recebemos apenas uma árvore com toda a string de DNA.
+
+Precisamos de um método para capaz de criar uma árvore para cada
+carácter. A seguinte DFS cria a árvore das $i$-ésimas letras:
+\begin{minted}[]{python}
+def separa_arvore(indice, origem):
+    copia_origem = Arvore(None)
+    if len(origem.valor):
+        copia_origem.valor = origem.valor[indice]
+
+    for filho in origem.filhos:
+        copia_filho = separa_arvore(indice, filho)
+        copia_filho.pai = copia_origem
+        copia_origem.filhos.append(copia_filho)
+
+    return copia_origem
+\end{minted}
+
+Depois de rodar o algoritmo, vamos querer juntar as árvores para encontrar
+os valores dos nós intermediários. Podemos fazer isso com uma DFS e \verb~reduce~.
+\begin{minted}[]{python}
+def concatena_arvores(arvores):
+    fusao = Arvore(None)
+    fusao.valor = reduce(lambda string, arv: string + arv.valor,
+        arvores, "")
+
+    for i in xrange(len(arvores[0].filhos)):
+        fusao_filho = concatena_arvores(
+            map(lambda arvore: arvore.filhos[i], arvores))
+        fusao_filho.pai = fusao
+        fusao.filhos.append(fusao_filho)
+
+    return fusao
+\end{minted}
+\end{enumerate}
+
+\subsubsection{Rodando o algoritmo com os dados do problema}
+\label{sec-2-3-2}
+
+\subsubsection{Rodando o algoritmo com dados reais}
+\label{sec-2-3-3}
+
+Obtemos os dados no formato Newick do \href{http://rosalind.info}{Rosalind}, uma plataforma de
+ensino de bioinformática.
+
+\subsection{Extensões}
+\label{sec-2-4}
+
+Ao fazer esse exercício, notamos que a árvore já é uma entrada do problema.
+Como é possível obter a árvore de menor valor a partir das espécies
+
+Esse problema é NP-completo [TODO: colocar referência] e o melhor
+algoritmo conhecido é [TODO]
+
+\section{Exercício 6.3 (Papadimitriou)}
+\label{sec-3}
+
+\subsection{Enunciado}
+\label{sec-3-1}
+
+O Yuckdonald's está considerando abrir uma cadeia de restaurantes em
+Quaint Valley Highway (QVG). Os $n$ locais possíveis estão em uma
+linha reta, e as distâncias desses locais até o começo da QVG são, em
+milhas e em ordem crescente, $m_1, m_2, \ldots, m_n$. As restrições
+são as seguintes:
+
+\begin{itemize}
+\item Em cada local, o Yuckdonald's pode abrir no máximo um
+restaurante. O lucro esperado ao abrir um restaurante no local
+$i$ é $p_i$, onde $p_i > 0$ e $i = 1, 2, \ldots, n$.
+\item Quaisquer dois restaurantes devem estar a pelo menos $k$
+  milhas de distância, onde $k$ é um inteiro positivo.
+\end{itemize}
+
+Dê um algoritmo eficiente para computar o maior lucro total
+esperado, sujeito às restrições acima.
+
 \section{Exercício 4.5 (Tardos)}
 \label{sec-4}
 
@@ -890,6 +997,7 @@ polinomial ou prove NP-completude:
 dos caminhões. Existe como estocar os $n$ vasilhames nos $m$
 caminhões de modo que nenhum caminhão esteja sobrecarregado, e
 todo vasilhame esteja num caminhão que o comporta com segurança?
+
 \item Qualquer vasilhame pode ser colocado em qualquer caminhão,
 mas alguns pares de vasilhames não podem ficar juntos num mesmo
 caminhão. Existe como estocar os $n$ vasilhames nos $m$
@@ -897,5 +1005,406 @@ caminhões de modo que nenhum caminhão esteja sobrecarregado e
 que nenhum dos pares proibidos de vasilhames esteja no mesmo
 caminhão?
 \end{itemize}
+
+\subsection{Item a}
+\label{sec-5-2}
+
+Uma solução força-bruta para esse problema seria:
+
+\begin{itemize}
+\item Estenda a lista de vasilhames com vasilhames vazios, até que ela
+tenha tamanho $mk$ (a capacidade total de todos os
+caminhões). Vasilhames vazios podem ser transportados em qualquer
+caminhão (e correspondem a um lugar sobrando no mesmo).
+\item Para cada uma das $(mk)!$ ordenações da lista acima, considere que
+os $k$ primeiros vasilhames vão para o primeiro caminhão, os $k$
+próximos para o segundo e assim até o final da lista. Se cada
+vasilhame estiver em um camihão que o comporta com segurança,
+retorne essa solução, se não, tente com uma nova ordem.
+\end{itemize}
+
+Esse algoritmo faz $(mk)!$ iterações do loop principal no pior caso, cada
+iteração tem custo $mk$ para conferir se é uma solução válida. Isso dá
+uma complexidade total de $O(mk(mk)!)$
+
+Esse é um algoritmo super-exponencial para o problema, mas isso não
+significa que o problema é NP-completo. Na verdade, como veremos a
+seguir, esse problema não é NP-completo pois aceita uma solução
+polinomial usando fluxos.
+
+\subsubsection{Solução com fluxos}
+\label{sec-5-2-1}
+
+Podemos transformar esse problemas em um problema de encontrar o fluxo
+máximo de um grafo usando a seguinte construção:
+
+\begin{itemize}
+\item Criamos um vértice $s$ representando a fonte e um vértice $t$
+  representando o dreno
+
+\item Para cada vasilhame $v_i \in \{v_1, v_2, \ldots, v_n\}$ criamos um
+vértice $v_i$ e uma aresta $(s, v_i)$ capacidade 1
+
+\item Para cada caminhão $C_i \in \{C_1, C_2, \ldots, C_m\}$ criamos um
+vértice $C_i$. Se o vasilhame $v_j$ puder ser transportado com
+segurança no caminhão $C_i$ criamos uma aresta $(v_j, C_i)$ de
+capacidade 1. Para cada caminhão criamos também uma aresta $(C_i, t)$
+de capacidade $k$.
+\end{itemize}
+
+Dessa forma, existe uma configuração possível de caminhões se e
+somente se o fluxo máximo tem valor $m$.
+
+De fato, se encontramos um fluxo máximo de valor $m$ então exatamente
+uma aresta com origem em cada vasilhame terá fluxo 1. Se colocarmos
+cada vasilhame no caminhão de destino da aresta de fluxo 1 obtemos um
+posicionamento válido. Por outro lado, se existe um arranjo válido,
+colocando 1 de fluxo nas arestas entre os vasilhames e os caminhões
+que os contém nesse arranjo obtemos um fluxo de valor $m$.
+
+Para a seguinte situação:
+\begin{center}
+\begin{tabular}{lr}
+Capacidade & 3\\
+Total de cam. & 4\\
+Total de vas. & 10\\
+\end{tabular}
+\end{center}
+
+
+\begin{center}
+\begin{tabular}{r l}
+Vasilhame & Cam. seguros\\
+1 & 1, 4\\
+2 & 1, 2\\
+3 & 3, 4\\
+4 & 4\\
+5 & 1, 2, 3, 4\\
+6 & 1\\
+7 & 3\\
+8 & 1, 2, 3\\
+9 & 2, 3\\
+10 & 4\\
+\end{tabular}
+\end{center}
+
+
+
+A construção seria como ilustrado na figura abaixo. Omitimos as
+capacidades iguais a 1 para não poluir demais a imagem.
+
+\[\begin{tikzpicture}[x=0.25\textwidth,
+    every edge/.style={
+        draw,
+        postaction={decorate,
+                    decoration={markings,mark=at position 1 with {\arrow[line width = 0.5mm]{stealth}}}
+                   }
+        }
+]
+\vertex (fonte) at (0,5) [label=above:$s$] {};
+\vertex (v1) at (1,10) [label=above:$v_1$] {};
+\vertex (v2) at (1,9) [label=above:$v_2$] {};
+\vertex (v3) at (1,8) [label=above:$v_3$] {};
+\vertex (v4) at (1,7) [label=above:$v_4$] {};
+\vertex (v5) at (1,6) [label=above:$v_5$] {};
+\vertex (v6) at (1,5) [label=above:$v_6$] {};
+\vertex (v7) at (1,4) [label=above:$v_7$] {};
+\vertex (v8) at (1,3) [label=above:$v_8$] {};
+\vertex (v9) at (1,2) [label=above:$v_9$] {};
+\vertex (v10) at (1,1) [label=above:$v_{10}$] {};
+\vertex (C1) at (2.5,10) [label=above:$C_1$] {};
+\vertex (C2) at (2.5,7) [label=above:$C_2$] {};
+\vertex (C3) at (2.5,4) [label=above:$C_3$] {};
+\vertex (C4) at (2.5,1) [label=above:$C_4$] {};
+\vertex (dreno) at (3.5,5) [label=above:$t$] {};
+\path
+(fonte) edge (v1)
+(fonte) edge (v2)
+(fonte) edge (v3)
+(fonte) edge (v4)
+(fonte) edge (v5)
+(fonte) edge (v6)
+(fonte) edge (v7)
+(fonte) edge (v8)
+(fonte) edge (v9)
+(fonte) edge (v10)
+(v1) edge (C1)
+(v1) edge (C4)
+(v2) edge (C1)
+(v2) edge (C2)
+(v3) edge (C3)
+(v3) edge (C4)
+(v4) edge (C4)
+(v5) edge (C1)
+(v5) edge (C2)
+(v5) edge (C3)
+(v5) edge (C4)
+(v6) edge (C1)
+(v7) edge (C3)
+(v8) edge (C1)
+(v8) edge (C2)
+(v8) edge (C3)
+(v9) edge (C2)
+(v9) edge (C3)
+(v10) edge (C4)
+(C1) edge node [above] {$4$} (dreno)
+(C2) edge node [above] {$4$} (dreno)
+(C3) edge node [above] {$4$} (dreno)
+(C4) edge node [above] {$4$} (dreno)
+;
+\end{tikzpicture}\]
+
+\begin{enumerate}
+\item Implementação
+\label{sec-5-2-1-1}
+
+Primeiramente, precisamos ser capazes de ler a tabela acima para
+passar os valores para o nosso algoritmo.
+\begin{minted}[]{python}
+capacidade_por_caminhao = regras[0][1]
+total_de_vasilhames = regras[2][1]
+\end{minted}
+
+\begin{minted}[]{python}
+vasilhames = collections.OrderedDict()
+caminhoes = []
+for line in seguros[1:]:
+    # Nomeando os vasilhames
+    vasilhame = 'v_%s' % line[0]
+    vasilhames[vasilhame] = []
+    for caminhao in str(line[1]).split(','):
+        nome = 'C_%s' % caminhao.strip()
+        vasilhames[vasilhame].append(nome)
+        if nome not in caminhoes:
+            caminhoes.append(nome)
+\end{minted}
+
+Vamos usar a classe RedeDeFluxo, que definimos para a questão 7.28.
+
+\begin{minted}[]{python}
+def cria_grafo(vasilhames, caminhoes, capacidade_por_caminhao):
+    G = RedeDeFluxo()
+    G.novo_vertice('Fonte')
+    G.novo_vertice('Dreno')
+
+    # Criando um vertice para cada caminhao e ligando esse vertice ao dreno
+    for caminhao in caminhoes:
+        G.novo_vertice(caminhao)
+        G.nova_aresta(caminhao, 'Dreno', capacidade_por_caminhao, 0)
+
+    for vasilhame, caminhoes in vasilhames.iteritems():
+        # Criando um vertice para cada vasilhame e conectando a fonte a
+        # cada um dos vasilhames
+        G.novo_vertice(vasilhame)
+        G.nova_aresta('Fonte', vasilhame, 1, 0)
+
+        # Conectando o vasilhame a cada caminhao que pode transporta-lo
+        for caminhao in caminhoes:
+            G.nova_aresta(vasilhame, caminhao, 1, 0)
+
+    return G
+\end{minted}
+
+Como nesse problema as demandas já são 0, podemos aplicar
+Ford-Fulkerson diretamente, usando a mesma implementação que fizemos
+para o exercício 7.28.
+
+Podemos então rodar Ford-Fulkerson e ver se o fluxo máximo encontrado
+é igual ao total de vasilhames. Se for, isso significa que o problema
+tem uma solução, que vamos retornar. Caso contrário não existe arranjo
+possível.
+\begin{minted}[]{python}
+G = cria_grafo(vasilhames, caminhoes, capacidade_por_caminhao)
+fluxo = G.fluxo_maximo('Fonte', 'Dreno')
+if fluxo == total_de_vasilhames:
+    tabela_de_vasilhames = []
+    for vasilhame in vasilhames:
+        for w in G.adj[vasilhame]:
+            if G.fluxo[w] == 1:
+                tabela_de_vasilhames.append([w.origem, w.destino])
+    return tabela_de_vasilhames
+else:
+    return 'Impossivel'
+\end{minted}
+
+A solução para a nossa entrada:
+
+\item Complexidade
+\label{sec-5-2-1-2}
+
+O algoritmo de Ford-Fulkerson tem complexidade $O(VF)$ TODO:
+referência ao 7.28, em que $V$ é a quantidade de vértices e $F$ é o
+maior valor possível para o fluxo.
+
+No caso, o número de vértices é $m + n + 2$ e o maior fluxo possível é
+$n$, totalizando uma complexidade $O(n(m + n))$, o que é polinomial na
+entrada.
+\end{enumerate}
+
+\subsection{Item b}
+\label{sec-5-3}
+
+Vamos mostrar que é possível reduzir uma instância do 3-SAT a um
+problema de colocar vasilhames em caminhões seguindo as restrições do
+enunciado. De modo que, como 3-SAT é NP-completo, nosso problema
+também é.
+
+\subsubsection{Definindo 3-SAT}
+\label{sec-5-3-1}
+
+3-SAT é o problema de dado um conjunto de variáveis $v_1, \ldots, v_x$
+e cláusulas $K_1, \ldots, K_y$, onde cada cláusula é constituída de no
+máximo três elementos do universo de \textit{literais}, $\{v_1,
+\overline{v_1}, \ldots, v_x, \overline{v_x}\}$, encontrar uma
+atribuição de valores Verdadeiro/Falso para cada variável
+que faça com que todas as claúsulas sejam verdadeiras.
+
+\subsubsection{3-SAT $\to$ Caminhões}
+\label{sec-5-3-2}
+
+Dada uma instância do 3-SAT, vamos construir uma instância do problema
+enunciado que admite solução se e somente se tal
+instância do 3-SAT admite solução.
+
+Primeiramente, note que podemos assumir que nosso
+problema de 3-SAT tem pelo menos quatro variáveis, adicionando
+variáveis que não aparecem em cláusula alguma se necessário.
+
+\begin{enumerate}
+\item Construção
+\label{sec-5-3-2-1}
+
+Vamos começar a construção sem as cláusulas:
+
+\begin{itemize}
+\item São $x+1$ caminhões, cada um de capacidade $3x+y$
+
+\item Existe um vasilhame para cada um dos $2x$ literais em $\{v_1,
+  \overline{v_1}, \ldots, v_x, \overline{v_x}\}$. Esses vasilhames têm o
+mesmo nome do literal a que correspondem.
+
+\item Existe um vasilhame adicional $w_i$ para cada variável $v_i$
+\end{itemize}
+
+Queremos criar restrições entre os vasilhames de modo que, em uma
+atribuição válida:
+
+\begin{enumerate}
+\item $x$ dos caminhões contenham exatamente um literal verdadeiro cada.
+\item O caminhão restante contenha todos os literais falsos;
+\end{enumerate}
+
+Para garantir as condições acima, vamos criar os seguintes conflitos:
+\begin{itemize}
+\item $w_i$ conflita com $w_j$ para todo $i \neq j$.
+\item $w_i$ e conflita com $v_j$ e com $\overline{v_j}$, se $i \neq j$.
+\item $v_i$ conflita com $\overline{v_i}$.
+\end{itemize}
+
+Com isso, garantimos as seguintes propriedades:
+
+\begin{enumerate}[($P_1$)]
+\item Como todos os $w_i$ conflitem entre si, é necessário um
+caminhão por $w_i$.
+
+\item Como $w_i$ conflita com todos os literais tais que
+$i \neq j$, o caminhão que contém $w_i$ só pode conter literais
+correspondentes a $i$-ésima variável.
+
+\item $v_i$ e $\overline{v_i}$ não
+podem estar ambas no caminhão do $w_i$, pois elas conflitam entre si.
+\end{enumerate}
+
+Mais ainda, $\textit{exatamente}$ um elemento do par $\{v_i,
+\overline{v_i}\}$ está no caminhão do $w_i$ numa atribuição válida: Se
+nenhuma delas estivesse no caminhão do $w_i$, estariam ambas no único
+caminhão que não contém nenhum $w$ (pois todos os outros caminhões
+contém um $w_j$ com $i \neq j$, o que conflita com $v_i$ e
+$\overline{v_i}$), o que também não pode acontecer.
+
+
+Agora, vamos adicionar as cláusulas à nossa construção:
+
+\begin{itemize}
+\item Existe um vasilhame para cada uma das $y$ cláusulas $K_1, \ldots, K_y$
+\end{itemize}
+
+Com seguinte conflito:
+
+\begin{itemize}
+\item $K_i$ conflita com $v_j$ se $v_j \not\in K_i$. Similarlmente, $K_i$
+  conflita com $\overline{v_j}$ se $\overline{v_j} \not\in K_i$.
+\end{itemize}
+
+Ou seja, permitimos colocar o vasilhame da cláusula $K_i$ num caminhão
+apenas se a cláusula contém todos os literais que vão viajar no
+caminhão.
+
+Dessa forma, uma cláusula nunca pode viajar no caminhão dos literais
+falsos, pois cada a cláusula contém no máximo três literais e temos no
+mínimo quatro literais falsos, de modo que há garantidamente um
+literal que não aparece na cláusula e portanto conflita com ela.
+
+\item Obtendo uma solução
+\label{sec-5-3-2-2}
+
+Para completar a nossa redução, precisamos de duas coisas:
+\begin{itemize}
+\item A partir de uma solução do problema dos caminhões que construimos,
+encontrar em tempo polinomial uma solução do 3-SAT correspondente
+\item Provar que quando nenhuma solução do problema dos caminhões existe o
+3-SAT também não tem solução
+\end{itemize}
+
+\begin{enumerate}
+\item Solução caminhões $\to$ Solução 3-SAT
+\label{sec-5-3-2-2-1}
+
+Se existe uma solução para o problema, então todo caminhão que contém
+um vasilhame do tipo $w_i$ também contém um vasilhame correspondente a
+um literal; esse literal será marcado como verdadeiro. Todos os outros
+literais serão marcados como falsos. Essa marcação é consistente, pois
+para cada $i \in \{1, 2, \ldots, x\}$ exatamente um literal entre
+$v_i, \overline{v_i}$ que está no mesmo caminhão que $w_i$. Como todas as
+cláusulas têm que estar em um caminhão que contém um vasilhame do tipo
+$w_i$ e esse caminhão tem que conter um literal que está na claúsula,
+essa marcação faz com que todas as cláusulas sejam verdadeiras.
+
+
+\item $\not \exists$ solução caminhões $\Rightarrow \not \exists$ solução 3-SAT
+\label{sec-5-3-2-2-2}
+
+É mais fácil provar a contrapositiva, isso é, $\exists$ solução 3-SAT
+$\Rightarrow \exists$ solução caminhões.
+
+Seja $S$ os conjuntos dos literais verdadeiros na solução do 3-SAT.
+Então:
+\begin{itemize}
+\item $S \subset \{v_1,\overline{v_1}, \ldots, v_x, \overline{v_x}\}$
+\item $\forall \; 1\leq i \leq x, |S\cap\{v_i, \overline{v_i}\}| = 1$
+\item $\forall \; 1\leq j \leq y, S\cap K_j \neq \emptyset$
+\end{itemize}
+
+Podemos construir uma solução válida para o problema dos caminhões da
+seguinte forma:
+\begin{itemize}
+\item $\forall \; 1\leq i \leq x$, coloque o vasilhame $w_i$ no caminhão $C_i$
+\item $\forall \; 1\leq i \leq x$, coloque o vasilhame $S\cap\{v_i, \overline{v_i}\}$ em $C_i$
+\item $\forall \; 1\leq j \leq y$, seja $i$ o menor valor tal que $v_i$ ou
+$\overline{v_i}$ está em $S\cap K_j$. Coloque o vasilhame $K_j$ em $C_i$.
+\item Coloque todos os literais em $\{v_1,\overline{v_1}, \ldots, v_x,
+  \overline{v_x}\} - S$ no caminhão $C_{x+1}$
+\end{itemize}
+
+
+Isso respeita todas as restrições. De fato, cada $K_j$ está num
+caminhão que só contém um vasilhame correspondente a um literal e,
+pelo item 3, o vasilhame do literal não conflita com o vasilhame da
+cláusula. Além disso, cada $w_i$ está em seu próprio caminhão, nenhum
+par $\{v_i, \overline{v_i}\}$ aparece num mesmo caminhão e nenhum
+$w_i$ aparece no mesmo caminhão de um literal $v_j$ ou
+$\overline{v_j}$ com $i \neq j$.
+\end{enumerate}
+\end{enumerate}
 % Emacs 24.4.1 (Org mode 8.2.10)
 \end{document}

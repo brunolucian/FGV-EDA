@@ -12,6 +12,7 @@
 #+LaTeX_HEADER: \usetikzlibrary{decorations.markings}
 #+LaTeX_HEADER: \tikzstyle{vertex}=[circle, draw, inner sep=0pt, minimum size=7pt]
 #+LaTeX_HEADER: \newcommand{\vertex}{\node[vertex]}
+#+LaTeX_HEADER: \newcommand{\tu}{\textunderscore}
 
 * Enunciado
 
@@ -54,7 +55,7 @@ concatenar as respostas para obter a árvore final.
 
 Nós vamos usar um algoritmo de programação dinâmica para encontrar o
 valor das folhas intermediárias em uma árvore $P$ em que cada
-folha tem valor A, G, T ou C
+folha tem valor A, G, T ou C.
 
 Vamos representar a nossa árvore como um objeto:
 #+Name: estrutura_de_dados
@@ -62,85 +63,127 @@ Vamos representar a nossa árvore como um objeto:
 class Arvore:
     def __init__(self, pai):
         self.filhos = []
-        self.label = ""
+        self.valor = ""
         self.pai = pai
 
 #+END_SRC
 
-Vamos computar $melhor nota[v][\ell]$ como a melhor maneira de preencher os nós
-da sub-árvore enraizada em $v$, dado que o pai de $v$ tem valor \ell.
+Vamos computar $melhor\tu nota[v, \ell]$ como a melhor maneira de
+preencher os nós da sub-árvore enraizada em $v$, dado que o pai de $v$
+tem valor $\ell$. Também preencheremos $melhor \tu letra[v, \ell]$ com um valor possível
+de uma configuração otimal. Guardaremos tais valores em dicionários.
 
-TODO: justificar a inicializacao
 #+NAME: inicializando
 #+BEGIN_SRC python
-valor = {}
 melhor_nota = {}
+melhor_letra = {}
 #+END_SRC
 
-Vamos computar $melhor nota$ de baixo para cima. Então, o caso base
-para esse algoritmo é a resposta para as folhas, isso é, $melhor
-nota[\mathrm{folha}][\ell]$.
+Vamos computar $melhor \tu nota$ de baixo para cima. Então, o caso base
+para esse algoritmo é a resposta para as folhas, isto é, $melhor\tu nota[\mathrm{folha}][\ell]$.
 
 Uma sub-árvore que contém apenas uma folha e seu pai vai ter
-$\mathrm{nota} = 0$ se a folha e o pai tiverem ambos o mesmo valor (A,
-G, T ou C) ou $\mathrm{nota} = 1$, se os dois tiverem valores diferentes:
+nota 0 se a folha e o pai tiverem ambos o mesmo valor (A,
+G, T ou C) ou nota 1 se os dois tiverem valores diferentes:
 
-\[melhor nota[\mathrm{folha}][\ell] = \begin{cases}0 \text{ se } \mathrm{valor}[\mathrm{folha}] = \ell \\
-                                                   1 \text{ caso contrário}\end{cases}\]
+\[melhor \tu nota[\textit{folha}][\ell] = \begin{cases}0 \text{ se } \textit{folha}.valor = \ell \\
+                                                       1 \text{ caso contrário}\end{cases}\]
 
-Podemos então preencher as folhas:
-#+NAME: caso_base
-#+BEGIN_SRC python
-#TODO: preencher as folhas
-#+END_SRC
+Além disso, não temos escolha para o valor otimal:
+\[ melhor \tu valor[\textit{folha}][\ell] = \textit{folha}.valor \]
 
-Tendo o caso base, podemos computar $melhor nota[v][\ell]$ assumindo que $melhor nota[w][\ell]$ já foi computado para
-todo $w$ filho de $v$ e $\ell \in \{A, G, T, C\}$.
+Tendo o caso base, podemos computar $melhor \tu nota[v][\ell]$
+assumindo que $melhor \tu nota[w][\ell]$ já foi computado para todo
+$w$ filho de $v$ e $\ell \in \{A, G, T, C\}$.
 
-TODO: explicar em algum lugar que a raiz é especial
-
-A nota da sub-árvore quando o valor de $v$ é igual a $m$ é:
-
-\[[\ell \neq m] + \sum_{w \text{ filho de }v} melhor nota[w][m]\]
+Dado que o pai de $v$ tem valor $\ell$, a melhor nota para a
+sub-árvore enraizada em $v$ quando o valor de $v$ é igual a $m$ é:
+\[ [\ell \neq m] + \sum_{w \text{ filho de }v} melhor \tu nota[w][m]\]
 
 Onde \[[\ell \neq m] =  \begin{cases} 0 \text{ se } m = \ell \\
-                                     1 \text{ caso contrário}\end{cases}\]
+                                      1 \text{ caso contrário}\end{cases}\]
 
 Queremos escolher um valor $m \in \{A, G, T, C\}$ para $v$
 que minimize a nota final da sub-árvore. Então:
+\[melhor \tu nota[v][\ell] = \min_{m \in \{A, G, T, C\}} \left([\ell
+\neq m] + \sum_{w \text{ filho de }v} melhor \tu nota[w][m]\right)\]
 
-\[melhor nota[v][\ell] = \min_{m \in \{A, G, T, C\}}  \left([\ell \neq m] + \sum_{w \text{ filho de }v} melhor nota[w][m]\right)\]
+e $melhor\tu letra[v][\ell]$ é um valor de $m$ que atinge o mínimo
+acima.
 
-#+Name: preenchendo_melhor_nota
+Implementando o que descrevemos recursivamente, obtemos a seguinte
+função:
+#+Name: calcula_melhor_nota
 #+BEGIN_SRC python
-# TODO: preencher os outros vértices (exceto a raiz)
+def calcula_melhor_nota(v, l):
+    if not v.filhos:
+        melhor_nota[v, l] = 1 if l != v.valor else 0
+        melhor_letra[v, l] = v.valor
+        return melhor_nota[v, l]
+
+    melhor_nota[v, l] = 100000
+
+    for m in ['A', 'G', 'T', 'C']:
+        nota_atual = sum(calcula_melhor_nota(w, m) for w in v.filhos)
+        if m != l:
+            nota_atual += 1
+
+        if nota_atual < melhor_nota[v, l]:
+            melhor_nota[v, l] = nota_atual
+            melhor_letra[v, l] = m
+
+    return melhor_nota[v, l]
 #+END_SRC
 
-Após computarmos $melhor nota[v][\ell]$ para todos os vértices exceto a raiz
-podemos encontrar a nota da árvore como o mínimo entre os possíveis
-valores para a raiz:
+Sabendo calcular $melhor \tu nota[v][\ell]$ para todos os vértices
+exceto a raiz podemos encontrar a nota da árvore como o mínimo entre
+os possíveis valores para a raiz:
+\[ \min_{\ell \in \{A, G, T, C\}} \sum_{v \text{ filho da raiz}}
+melhor \tu nota[v][\ell]\]
 
-\[ \min_{\ell \in \{A, G, T, C\}} \sum_{v \text{ filho da raiz}} melhor nota[v][\ell]\]
-
-#+Name: resposta
+Um valor ótimo para a raiz é um valor de \ell para o qual o mínimo
+acima é atingido. Preencheremos $raiz.label$ com tal valor, como
+abaixo:
+#+Name: raiz
 #+BEGIN_SRC python
+melhor_nota_raiz = 100000
+for l in ['A', 'G', 'T', 'C']:
+    nota_atual_raiz = sum(calcula_melhor_nota(w, m) for w in v.filhos)
 
+    if nota_atual_raiz < melhor_nota_raiz:
+        raiz.valor = l
+        melhor_custo_raiz = nota_atual_raiz
 #+END_SRC
 
-* Dados reais
+Tendo o valor da raiz já determinado e os valores de $melhor \tu
+letra$, podemos preencher os valores dos nós internos:
+
+#+Name: rodando
+#+BEGIN_SRC python
+def preenche_dado_pai(v):
+    v.valor = melhor_letra[v, v.pai.valor]
+    for w in v.filhos:
+        preenche_dado_pai(w)
+
+for w in raiz.filhos:
+    preenche_dado_pai(w)
+#+END_SRC
+
+
+* Rodando o algoritmo
 
 ** Formato Newick
 
 Um formato muito usado para árvores em bioinformática é o formato
-Newick. Assim como LISP, ele usa o fato de que parenteses podem ser
-usados para especificar uma árvore.
+Newick. Assim como as $s$-expressions do LISP, ele usa o fato de que
+parênteses podem ser usados para especificar uma árvore.
 
 TODO: especificar o formato, referência do formato
 
 *** Parseando o formato Newick
 
 O primeiro passo é notar que (gato, rato) é equivalente a
-((gato)(rato)), então podemos transformar uma estrutura com vírgulas
+(gato)(rato), então podemos transformar uma estrutura com vírgulas
 em uma estrutura que só contém parênteses.
 
 TODO: explicar o código
@@ -161,7 +204,7 @@ def parseia_newick(string):
         elif ch == ')':
             em_construcao.pop()
         else:
-            em_construcao[-1].label += ch
+            em_construcao[-1].valor += ch
 
     assert len(em_construcao) == 1
     return em_construcao[0]
@@ -174,13 +217,13 @@ As árvores no nosso algoritmo só tem uma letra por nó, mas nós
 recebemos apenas uma árvore com toda a string de DNA.
 
 Precisamos de um método para capaz de criar uma árvore para cada
-carácter. A seguinte DFS cria a árvore das i-ésimas letras:
+carácter. A seguinte DFS cria a árvore das $i$-ésimas letras:
 #+NAME: separa_arvore
 #+BEGIN_SRC python
 def separa_arvore(indice, origem):
     copia_origem = Arvore(None)
-    if len(origem.label):
-        copia_origem.label = origem.label[indice]
+    if len(origem.valor):
+        copia_origem.valor = origem.valor[indice]
 
     for filho in origem.filhos:
         copia_filho = separa_arvore(indice, filho)
@@ -196,25 +239,24 @@ os valores dos nós intermediários. Podemos fazer isso com uma DFS e ~reduce~.
 #+BEGIN_SRC python
 def concatena_arvores(arvores):
     fusao = Arvore(None)
-    fusao.label = reduce(lambda string, arv: string + arv.label, arvores, "")
+    fusao.valor = reduce(lambda string, arv: string + arv.valor,
+        arvores, "")
 
     for i in xrange(len(arvores[0].filhos)):
-        fusao_filho = concatena_arvores(map(lambda arvore: arvore.filhos[i],
-                                            arvores))
+        fusao_filho = concatena_arvores(
+            map(lambda arvore: arvore.filhos[i], arvores))
         fusao_filho.pai = fusao
         fusao.filhos.append(fusao_filho)
 
     return fusao
 #+END_SRC
-** Rosalind
 
-Obtemos os dados do Rosalind, TODO: explicar o Rosalind.
-
-Rosalind MULT, GLOB, EDTA, PERM, EDIT, LCSQ,
-CSTR, CTBL, NWCK, SSET, MRNA, KMP, PROB
-SSEQ, SPLC, LCSM
+** Rodando o algoritmo com os dados do problema
 
 ** Rodando o algoritmo com dados reais
+
+Obtemos os dados no formato Newick do [[http://rosalind.info][Rosalind]], uma plataforma de
+ensino de bioinformática.
 
 * Extensões
 

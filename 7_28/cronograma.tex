@@ -1,4 +1,4 @@
-% Created 2015-06-17 Qua 22:22
+% Created 2015-06-20 Sáb 23:01
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -112,15 +112,18 @@ TODO: definir circulação
 \subsection{Representação}
 \label{sec-2-2}
 
-Podemos usar programação orientada a objetos para nos ajudar na
-representação da rede de fluxo, simplificando o algoritmo.
-TODO: explicar a parte de já construir o grafo reverso.
+Podemos usar [[TODO: colocar uma referencia de OOP][programação orientada a objetos]
+para nos ajudar na representação da rede de fluxo,
+simplificando o algoritmo.
 
 Vamos usar uma classe para representar arestas. Uma aresta é
 inicializada com as propriedades: vértice de origem, vértice de
 destino, capacidade e demanda.
 
-TODO: explicar reversa e original
+Para facilitar o processamento futuro, vamos adicionar também as
+propriedades reversa e original. Reversa aponta para uma outra aresta
+reversa à atual, a propriedade original é uma flag indicando se a
+aresta pertence à rede original ou não.
 \begin{minted}[]{python}
 class Aresta():
     def __init__(self, origem, destino, capacidade, demanda):
@@ -562,20 +565,6 @@ No final, obtemos ou 'Impossível' se não existir um horário compatível
 ou uma tabela com um horário que atende a todas as restrições.
 
 Para a tabela acima:
-\begin{center}
-\begin{tabular}{ll}
-Seg 10h & Davi\\
-Seg 14h & Gabi\\
-Seg 21h & Ana\\
-Ter 10h & Bia\\
-Ter 16h & Caio\\
-Ter 20h & Isa\\
-Qua 9h & Felipe\\
-Qua 17h & Caio\\
-Qua 19h & Hugo\\
-Qui 19h & Edu\\
-\end{tabular}
-\end{center}
 
 \subsection{Item b}
 \label{sec-6-2}
