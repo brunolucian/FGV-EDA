@@ -65,20 +65,19 @@ class RedeDeFluxo():
             for aresta in arestas:
                 self.fluxo[aresta] = 0
 
-    def encontra_caminho(self, fonte, dreno, caminho, visitados):
-        if fonte == dreno:
+    def encontra_caminho(self, v, dreno, caminho, visitados):
+        if v == dreno:
             return caminho
     
-        visitados.add(fonte)
+        visitados.add(v)
     
-        for aresta in self.encontra_arestas(fonte):
+        for aresta in self.encontra_arestas(v):
             residuo = aresta.capacidade - self.fluxo[aresta]
             if residuo > 0 and aresta.destino not in visitados:
                 resp = self.encontra_caminho(aresta.destino,
                                              dreno,
                                              caminho + [aresta],
                                              visitados)
-                # TODO: explicar essa parte
                 if resp != None:
                     return resp
 
@@ -140,14 +139,16 @@ def cria_rede(intervalos, monitores, min_horas,
     G.novo_vertice('Dreno')
     G.nova_aresta('Dreno', 'Fonte', total_horas, total_horas)
 
-    # Criando um vertice para cada monitor e ligando esse vertice ao dreno
+    # Criando um vertice para cada monitor e ligando esse vertice
+    # ao dreno
     for monitor in monitores:
         G.novo_vertice(monitor)
         G.nova_aresta(monitor, 'Dreno', max_horas, min_horas)
 
-    # Criando um vertice para cada dia e uma aresta da Fonte ao dia
-    # com demanda igual ao minimo de horas de monitoria para aquele dia
-    # e capacidade suficientemente grande (vamos usar o total de horas)
+    # Criando um vertice para cada dia e uma aresta da Fonte
+    # ao dia com demanda igual ao minimo de horas de monitoria
+    # para aquele dia e capacidade suficientemente grande
+    # (vamos usar o total de horas)
     dias = minimo_por_dia.keys()
     for dia in dias:
         G.novo_vertice(dia)
@@ -159,8 +160,8 @@ def cria_rede(intervalos, monitores, min_horas,
             if intervalo.startswith(dia):
                 dia_do_intervalo = dia
 
-        # Criando um vertice para cada intervalo e conectando o dia do intervalo
-        # a cada um dos intervalos
+        # Criando um vertice para cada intervalo e conectando o
+        # dia do intervalo a cada um dos intervalos
         G.novo_vertice(intervalo)
         G.nova_aresta(dia_do_intervalo, intervalo, 1, 0)
 
@@ -179,6 +180,6 @@ if fluxo == d:
         for w in G_.adj[horario]:
             if G_.fluxo[w] == 1:
                 tabela_de_monitores.append([w.origem, w.destino])
-    return tabela_de_monitores
+    print tabela_de_monitores
 else:
-    return 'Impossivel'
+    print 'Impossivel'

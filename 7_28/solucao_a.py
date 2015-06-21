@@ -1,3 +1,4 @@
+
 horarios=[["", "Ana", "Bia", "Caio", "Davi", "Edu", "Felipe", "Gabi", "Hugo", "Isa"], ["Seg 10h", "", "", "", "x", "", "", "", "", ""], ["Seg 14h", "", "", "", "", "", "x", "x", "x", "x"], ["Seg 21h", "x", "", "", "x", "", "", "", "", ""], ["Ter 10h", "x", "x", "", "x", "", "", "", "", ""], ["Ter 16h", "", "", "x", "", "", "", "", "", ""], ["Ter 20h", "", "", "", "", "", "", "x", "", "x"], ["Qua 9h", "", "", "", "", "", "x", "", "", ""], ["Qua 17h", "", "", "x", "", "", "", "", "", ""], ["Qua 19h", "", "", "", "", "", "", "", "x", ""], ["Qui 7h", "", "x", "", "", "", "x", "", "", ""], ["Qui 13h", "", "", "", "", "", "", "x", "", ""], ["Qui 19h", "", "x", "", "", "x", "", "", "x", ""], ["Sex 7h", "", "", "x", "", "x", "", "", "", ""], ["Sex 11h", "x", "", "", "", "x", "", "", "", "x"], ["Sex 21h", "", "", "x", "", "", "x", "", "", "x"]]
 regras=[["Min de horas por monitor", 1], ["Max de horas por monitor", 3], ["Horas de monitoria", 10]]
 # coding: utf-8
@@ -63,26 +64,25 @@ class RedeDeFluxo():
             for aresta in arestas:
                 self.fluxo[aresta] = 0
 
-    def encontra_caminho(self, fonte, dreno, caminho, visitados):
-        if fonte == dreno:
+    def encontra_caminho(self, v, dreno, caminho, visitados):
+        if v == dreno:
             return caminho
-
-        visitados.add(fonte)
-
-        for aresta in self.encontra_arestas(fonte):
+    
+        visitados.add(v)
+    
+        for aresta in self.encontra_arestas(v):
             residuo = aresta.capacidade - self.fluxo[aresta]
             if residuo > 0 and aresta.destino not in visitados:
                 resp = self.encontra_caminho(aresta.destino,
                                              dreno,
                                              caminho + [aresta],
                                              visitados)
-                # TODO: explicar essa parte
                 if resp != None:
                     return resp
 
     def fluxo_maximo(self, fonte, dreno):
         self.cria_fluxo_inicial()
-
+    
         caminho = self.encontra_caminho(fonte, dreno, [], set())
         while caminho is not None:
             self.expande_caminho(caminho)
@@ -133,14 +133,15 @@ def cria_rede(intervalos, monitores, min_horas, max_horas, total_horas):
     G.novo_vertice('Dreno')
     G.nova_aresta('Dreno', 'Fonte', total_horas, total_horas)
 
-    # Criando um vertice para cada monitor e ligando esse vertice ao dreno
+    # Criando um vertice para cada monitor e ligando esse vertice
+    # ao dreno
     for monitor in monitores:
         G.novo_vertice(monitor)
         G.nova_aresta(monitor, 'Dreno', max_horas, min_horas)
 
     for intervalo, monitores_disponiveis in intervalos.iteritems():
-        # Criando um vertice para cada intervalo e conectando a fonte a
-        # cada um dos intervalos
+        # Criando um vertice para cada intervalo e conectando a
+        # fonte a cada um dos intervalos
         G.novo_vertice(intervalo)
         G.nova_aresta('Fonte', intervalo, 1, 0)
 

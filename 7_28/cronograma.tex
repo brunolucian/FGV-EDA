@@ -1,4 +1,4 @@
-% Created 2015-06-20 Sáb 23:01
+% Created 2015-06-21 Dom 18:26
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -19,11 +19,9 @@
 \usepackage{minted}
 \usemintedstyle{perldoc}
 \usepackage{tikz}
-\hyphenation{es-co-lhi-dos}
-\usepackage[table]{xcolor}
 \usetikzlibrary{decorations.markings}
 \tikzstyle{vertex}=[circle, draw, inner sep=0pt, minimum size=7pt]
-\newcommand{\vertex}{\node[vertex]}
+\providecommand{\vertex}{\node[vertex]}
 \author{Alice Duarte Scarpa, Bruno Lucian Costa}
 \date{2015-06-23}
 \title{Exercício 7.28 (Tardos)}
@@ -106,15 +104,12 @@ aresta $e$ um valor real não-negativo $f(e)$ tal que:
 $f(e)$ representa o fluxo que vai passar pela aresta $e$. O valor de
 um fluxo é o total que parte da fonte $s$, isso é:
 
-$$\label{valor_fluxo} \mathrm{Valor}(f) = \sum_{e \text{ saindo de } s} f(e) $$
+\begin{equation}
+\label{valor_fluxo} \mathrm{Valor}(f) = \sum_{e \text{ saindo de } s} f(e)
+\end{equation}
 
-TODO: definir circulação
 \subsection{Representação}
 \label{sec-2-2}
-
-Podemos usar [[TODO: colocar uma referencia de OOP][programação orientada a objetos]
-para nos ajudar na representação da rede de fluxo,
-simplificando o algoritmo.
 
 Vamos usar uma classe para representar arestas. Uma aresta é
 inicializada com as propriedades: vértice de origem, vértice de
@@ -139,7 +134,7 @@ Agora que temos a classe Aresta, vamos usá-la para auxiliar na
 representação de uma rede de fluxo também como objeto.
 
 Uma rede de fluxo tem duas propriedades: adjacências, um dicionário
-que mapeia cada vértice às arestas que saem dele e fluxo TODO: explicar isso
+que mapeia cada vértice às arestas que saem dele e fluxo.
 
 O construtor da classe inicializa as duas propriedades como dicionários vazios.
 
@@ -189,7 +184,7 @@ class RedeDeFluxo():
         return valor
 \end{minted}
 
-\section{Modelando o problema com fluxos}
+\section{Modelando o problema com fluxos\label{modelagem_fluxo}}
 \label{sec-3}
 
 Os dois itens do problema podem ser reduzidos a encontrar um fluxo
@@ -213,8 +208,18 @@ monitoria, criamos uma nova fonte $s'$ e uma aresta $(s', s)$
 com demanda e capacidade $c$.
 \end{itemize}
 
-TODO: argumentar que soluções para esse problema são equivalentes a
-soluções do problema original
+Para construir uma atribuição de intervalos válida a partir de um
+fluxo, é suficiente atribuir um intervalo a um monitor se a aresta que
+liga o intervalo ao monitor tem fluxo 1.  As condições de capacidade e
+demanda da rede garantem que um intervalo é atribuído a no máximo um
+monitor, que cada monitor recebe apenas intervalos compatíveis com ele
+e que as restrições no número de hora são satisfeitas.
+
+Reciprocamente, para toda atribuição de intervalos válida, podemos
+construir um fluxo passando uma unidade de fluxo pelo caminho $(s', s, I,
+T, t)$ para cada par $(I, T)$ de intervalo e monitor correspondente. A
+validade da atribuição implica imediatamente que as condições de
+demanda e capacidade são atendidas.
 
 O caso com 3 intervalos e 2 monitores (A e B) em que o monitor A está
 disponível nos intervalos 1 e 2 e o monitor B está disponível nos
@@ -222,7 +227,7 @@ horários 1 e 3 está representado abaixo. Os rótulos
 das arestas são da forma demanda/capacidade. As
 arestas sem rótulo tem demanda 0 e capacidade 1.
 
-TODO: circulação
+
 \[\begin{tikzpicture}[x=0.25\textwidth,
     every edge/.style={
         draw,
@@ -231,7 +236,7 @@ TODO: circulação
                    }
         }
 ]
-\vertex (fonte') at (0,3) [label=above:$\textit{s}$] {};
+\vertex (fonte') at (0,3) [label=above:$s$] {};
 \vertex (fonte) at (-0.5,3) [label=above:$s'$] {};
 \vertex (I1) at (1,5) [label=above:$I_1$] {};
 \vertex (I2) at (1,3) [label=above:$I_2$] {};
@@ -258,8 +263,6 @@ $s$ diretamente aos intervalos de monitoria, ligamos $s$ a cada dia da
 semana i com demanda $d_i$ e capacidade $c$ e depois
 criamos uma aresta com demanda 0 e capacidade 1 de
 cada dia da semana para os intervalos que são naquele dia.
-
-TODO: argumento que isso dá a solução certa
 
 Abaixo está o mesmo exemplo do item a) com dias da semana. Para deixar
 a visualização mais simples estamos colocando aqui apenas dois dias da
@@ -322,8 +325,19 @@ novo fluxo $f'$ expandindo $f$ em $P$
 \item Primeira parte:
 \end{itemize}
 
-O gargalo de um caminho é TODO: definir gargalo, explicar o código a seguir
-Definimos aqui uma função que encontra o gargalo do caminho
+Queremos expandir o fluxo $f$ em $P$. Mais precisamente, queremos
+mudar o valor do fluxo somando $x$ ao valor de $f(e)$ para toda aresta
+$e$ que está no caminho $P$.
+
+O gargalo de um caminho $P$ (com relação a um fluxo $f$) é o maior
+valor de $x$ tal que $f(e) + x \leq c_e$ para toda aresta $e \in
+P$. Essa última condição significa que o fluxo
+
+\[ f'(e) = \begin{cases}f(e)&\text{ se } e \not\in P \\
+                        f(e) + x&\text{ se } e \in P\end{cases} \]
+
+ainda satisfaz as restrições de capacidade. O código abaixo computa
+tal valor de $x$.
 \begin{minted}[]{python}
 def encontra_gargalo(self, caminho):
     residuos = []
@@ -332,7 +346,10 @@ def encontra_gargalo(self, caminho):
     return min(residuos)
 \end{minted}
 
-Expandir o caminho é TODO: explicar o que é expandir o caminho,
+Como descrito acima, expandir o caminho é somar $x$ ao valor de $f(e)$
+para cada aresta do caminho. Precisamos atualizar também as arestas
+reversas, pois elas precisam satisfazer a propriedade $f(e) =
+-f(e.reversa)$.
 \begin{minted}[]{python}
 def expande_caminho(self, caminho):
     gargalo = self.encontra_gargalo(caminho)
@@ -341,7 +358,49 @@ def expande_caminho(self, caminho):
         self.fluxo[aresta.reversa] -= gargalo
 \end{minted}
 
-Com isso temos a parte 1 do algoritmo.
+Pela definição de gargalo, a operação de expandir $P$ gera um fluxo
+válido. Se garantirmos que $c_e - f(e)$ é positivo para toda $e \in
+P$, então o gargalo também será positivo, de modo que o fluxo $f'$
+obtido terá valor maior que o anterior.
+
+Tendo a restrição acima em mente, iremos fazer uma DFS no grafo,
+usando apenas as arestas que possuem $c_e - f(e)$ (chamaremos esse
+valor de \verb~residuo~) positivo.
+
+Mais precisamente, a função abaixo recebe um caminho parcialmente
+construído da fonte até \verb~v~ na variável \verb~caminho~ e recursivamente
+encontra uma maneira de chegar em dreno a partir de \verb~v~ usando apenas
+vértices não explorados. Se um caminho de \verb~v~ a dreno não existir, a
+função não retorna um valor (isto é, retorna \verb~None~).
+
+\begin{minted}[]{python}
+def encontra_caminho(self, v, dreno, caminho, visitados):
+    if v == dreno:
+        return caminho
+
+    visitados.add(v)
+
+    for aresta in self.encontra_arestas(v):
+        residuo = aresta.capacidade - self.fluxo[aresta]
+        if residuo > 0 and aresta.destino not in visitados:
+            resp = self.encontra_caminho(aresta.destino,
+                                         dreno,
+                                         caminho + [aresta],
+                                         visitados)
+            if resp != None:
+                return resp
+\end{minted}
+
+Como só chamamos a função com primeiro parâmetro igual a \verb~w~ quando
+\verb~w~ não está no conjunto de vértices visitados e \verb~w~ é imediatamente
+colocado em tal conjunto depois da chamada, chamamos a função uma
+única vez por vértice. Como a função demora tempo proporcional ao
+número de arestas que saem do vértice em questão, o tempo total gasto
+em todas as chamadas da função é $O(|V| + |E|)$.
+
+Para as outras funções, note que um caminho tem no máximo $|V|$
+vértices, e portanto as funções \verb~encontra_gargalo~ e \verb~expande_caminho~
+têm complexidade $O(|V|)$.
 
 Para a parte 2, vamos precisar criar um fluxo $f$ com $f(e) = 0$ para
 toda aresta $e$. Podemos fazer isso utilizando o seguinte método na
@@ -353,37 +412,9 @@ def cria_fluxo_inicial(self):
             self.fluxo[aresta] = 0
 \end{minted}
 
-\begin{verbatim}
-None
-\end{verbatim}
-
-TODO: explicar porque precisamos desse método e como ele funciona
-Retorna um caminho de fonte a dreno passando pelos vértices
-em caminho
-É uma DFS
-\begin{minted}[]{python}
-def encontra_caminho(self, fonte, dreno, caminho, visitados):
-    if fonte == dreno:
-        return caminho
-
-    visitados.add(fonte)
-
-    for aresta in self.encontra_arestas(fonte):
-        residuo = aresta.capacidade - self.fluxo[aresta]
-        if residuo > 0 and aresta.destino not in visitados:
-            resp = self.encontra_caminho(aresta.destino,
-                                         dreno,
-                                         caminho + [aresta],
-                                         visitados)
-            # TODO: explicar essa parte
-            if resp != None:
-                return resp
-\end{minted}
-
 Com todas as funções auxiliares prontas, podemos finalmente definir a
-função que encontra o fluxo máximo.
-
-TODO: explicar o algoritmo de fluxo máximo
+função que encontra o fluxo máximo, repetidamente aumentando o fluxo
+como descrito na parte 1:
 \begin{minted}[]{python}
 def fluxo_maximo(self, fonte, dreno):
     self.cria_fluxo_inicial()
@@ -394,6 +425,12 @@ def fluxo_maximo(self, fonte, dreno):
         caminho = self.encontra_caminho(fonte, dreno, [], set())
     return self.valor_do_fluxo(fonte)
 \end{minted}
+
+Como o fluxo aumenta em pelo menos uma unidade por iteração e o custo
+de uma iteração é $O(|V| + |E|)$, a complexidade total do algoritmo é
+$O((|V|+|E|)F)$, onde $F$ é o fluxo máximo possível na rede. No caso
+do exercício, $F$ é no máximo o número de intervalos e portanto
+polinomial no tamanho da entrada.
 
 \subsection{Fluxo válido com demandas não-nulas}
 \label{sec-4-2}
@@ -451,19 +488,11 @@ def cria_rede_com_demandas_nulas(G):
     return G_, d
 \end{minted}
 
-TODO: provar que soluções de um são também soluções do outro
-
-
-\section{Complexidade}
+\section{Rodando o algoritmo}
 \label{sec-5}
 
-TODO: calcular a complexidade do algoritmo
-
-\section{Rodando o algoritmo}
-\label{sec-6}
-
 \subsection{Item A}
-\label{sec-6-1}
+\label{sec-5-1}
 A seguinte tabela mostra a disponibilidade dos monitores nos horários
 escolhidos pelo administrador:
 
@@ -498,7 +527,7 @@ Horas de monitoria & 10\\
 \end{center}
 
 Podemos carregar as informações das tabelas para criar uma rede como
-descrita em TODO: colocar a referencia certa.
+descrita no final da Seção \ref{modelagem_fluxo}.
 \begin{minted}[]{python}
 # Lendo a tabela de disponibilidade
 intervalos = collections.OrderedDict()
@@ -527,14 +556,15 @@ def cria_rede(intervalos, monitores, min_horas, max_horas, total_horas):
     G.novo_vertice('Dreno')
     G.nova_aresta('Dreno', 'Fonte', total_horas, total_horas)
 
-    # Criando um vertice para cada monitor e ligando esse vertice ao dreno
+    # Criando um vertice para cada monitor e ligando esse vertice
+    # ao dreno
     for monitor in monitores:
         G.novo_vertice(monitor)
         G.nova_aresta(monitor, 'Dreno', max_horas, min_horas)
 
     for intervalo, monitores_disponiveis in intervalos.iteritems():
-        # Criando um vertice para cada intervalo e conectando a fonte a
-        # cada um dos intervalos
+        # Criando um vertice para cada intervalo e conectando a
+        # fonte a cada um dos intervalos
         G.novo_vertice(intervalo)
         G.nova_aresta('Fonte', intervalo, 1, 0)
 
@@ -565,9 +595,23 @@ No final, obtemos ou 'Impossível' se não existir um horário compatível
 ou uma tabela com um horário que atende a todas as restrições.
 
 Para a tabela acima:
+\begin{center}
+\begin{tabular}{ll}
+Seg 10h & Davi\\
+Seg 14h & Gabi\\
+Seg 21h & Ana\\
+Ter 10h & Bia\\
+Ter 16h & Caio\\
+Ter 20h & Isa\\
+Qua 9h & Felipe\\
+Qua 17h & Caio\\
+Qua 19h & Hugo\\
+Qui 19h & Edu\\
+\end{tabular}
+\end{center}
 
 \subsection{Item b}
-\label{sec-6-2}
+\label{sec-5-2}
 
 No item b, além de todas as restrições do item a, há também a
 restrição de mínimo de horas por dia da semana.
@@ -602,14 +646,16 @@ def cria_rede(intervalos, monitores, min_horas,
     G.novo_vertice('Dreno')
     G.nova_aresta('Dreno', 'Fonte', total_horas, total_horas)
 
-    # Criando um vertice para cada monitor e ligando esse vertice ao dreno
+    # Criando um vertice para cada monitor e ligando esse vertice
+    # ao dreno
     for monitor in monitores:
         G.novo_vertice(monitor)
         G.nova_aresta(monitor, 'Dreno', max_horas, min_horas)
 
-    # Criando um vertice para cada dia e uma aresta da Fonte ao dia
-    # com demanda igual ao minimo de horas de monitoria para aquele dia
-    # e capacidade suficientemente grande (vamos usar o total de horas)
+    # Criando um vertice para cada dia e uma aresta da Fonte
+    # ao dia com demanda igual ao minimo de horas de monitoria
+    # para aquele dia e capacidade suficientemente grande
+    # (vamos usar o total de horas)
     dias = minimo_por_dia.keys()
     for dia in dias:
         G.novo_vertice(dia)
@@ -621,8 +667,8 @@ def cria_rede(intervalos, monitores, min_horas,
             if intervalo.startswith(dia):
                 dia_do_intervalo = dia
 
-        # Criando um vertice para cada intervalo e conectando o dia do intervalo
-        # a cada um dos intervalos
+        # Criando um vertice para cada intervalo e conectando o
+        # dia do intervalo a cada um dos intervalos
         G.novo_vertice(intervalo)
         G.nova_aresta(dia_do_intervalo, intervalo, 1, 0)
 

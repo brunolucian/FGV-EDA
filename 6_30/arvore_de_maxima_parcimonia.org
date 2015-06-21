@@ -358,8 +358,8 @@ imprime_resposta(resposta)
 
 Executando o código acima descrito, obtemos a seguinte saída.
 
-#+NAME: codigo_completo
-#+BEGIN_SRC python :tangle parcimonia.py :noweb yes :exports none
+#+NAME: rodando_exemplo
+#+BEGIN_SRC python :tangle parcimonia.py :noweb yes :results output :exports results :var arquivo_entrada="livro.in"
 import collections
 
 <<estrutura_de_dados>>
@@ -383,11 +383,6 @@ import collections
 <<rodando>>
 #+END_SRC
 
-#+NAME: rodando_exemplo
-#+BEGIN_SRC python :tangle parcimonia.py :noweb yes :results output :exports results :var arquivo_entrada="livro.in"
-<<codigo_completo>>
-#+END_SRC
-
 #+RESULTS: rodando_exemplo
 
 ** Rodando o algoritmo com dados mais complexos
@@ -400,7 +395,27 @@ uma com 266 caracteres.
 
 #+NAME: rodando_rosalind
 #+BEGIN_SRC python :noweb yes :results none :exports results :var arquivo_entrada="rosalind.in" :file rosalind.out
-<<codigo_completo>>
+import collections
+
+<<estrutura_de_dados>>
+
+<<inicializando>>
+
+<<calcula_melhor_nota>>
+
+<<raiz>>
+
+<<parseando_newick>>
+
+<<fasta_para_lista>>
+
+<<separa_arvore>>
+
+<<concatena_arvores>>
+
+<<imprime_resposta>>
+
+<<rodando>>
 #+END_SRC
 
 Como o resultado é muito longo, deixamos o arquivo de saída disponível

@@ -14,10 +14,10 @@ Algoritmos da FGV-Rio.
 ** Gerando o relatório final:
 
 Para gerar o relatório final em PDF, basta exportar
-[relatorio_final.org] como PDF, usando ~C-c C-e l o~.
+~relatorio_final.org~ como PDF, usando ~C-c C-e l o~.
 
 Para que o código em Python seja executado ao gerar o PDF, o seguinte
-tem que estar em ~init.el~:
+tem que estar em ~.emacs.d/init.el~ (ou ~.emacs~)
 
 #+BEGIN_SRC lisp
 (org-babel-do-load-languages
@@ -26,7 +26,8 @@ tem que estar em ~init.el~:
 #+END_SRC
 
 Para que o código apareça colorizado no relatório em PDF, é importante
-que as seguintes linhas estejam no arquivo ~init.el~:
+que as seguintes linhas estejam no arquivo ~.emacs.d/init.el~ (ou
+~.emacs~):
 
 #+BEGIN_SRC lisp
 ;; Requer o minted para code highlight no pdf final

@@ -85,7 +85,7 @@ colocando 1 de fluxo nas arestas entre os vasilhames e os caminhões
 que os contém nesse arranjo obtemos um fluxo de valor $m$.
 
  Para a seguinte situação:
-#+tblname: regras
+#+tblname: regras_vasilhames
 | Capacidade    |  3 |
 | Total de cam. |  4 |
 | Total de vas. | 10 |
@@ -175,7 +175,7 @@ capacidades iguais a 1 para não poluir demais a imagem.
 
 Primeiramente, precisamos ser capazes de ler a tabela acima para
 passar os valores para o nosso algoritmo.
-#+NAME: processa_regras
+#+NAME: processa_regras_vasilhames
 #+BEGIN_SRC python
 capacidade_por_caminhao = regras[0][1]
 total_de_vasilhames = regras[2][1]
@@ -234,7 +234,7 @@ Podemos então rodar Ford-Fulkerson e ver se o fluxo máximo encontrado
 é igual ao total de vasilhames. Se for, isso significa que o problema
 tem uma solução, que vamos retornar. Caso contrário não existe arranjo
 possível.
-#+NAME: rodando
+#+NAME: rodando_vasilhames
 #+BEGIN_SRC python
 G = cria_grafo(vasilhames, caminhoes, capacidade_por_caminhao)
 fluxo = G.fluxo_maximo('Fonte', 'Dreno')
@@ -338,19 +338,19 @@ class RedeDeFluxo():
 
 #+END_SRC
 
-#+BEGIN_SRC python :tangle solucao_a.py :noweb yes :exports results :var seguros=seguros regras=regras
+#+BEGIN_SRC python :tangle solucao_a.py :noweb yes :exports results :var seguros=seguros regras=regras_vasilhames
 # coding: utf-8
 import collections
 
 <<ford_fulkerson>>
 
-<<processa_regras>>
+<<processa_regras_vasilhames>>
 
 <<processa_seguros>>
 
 <<cria_grafo>>
 
-<<rodando>>
+<<rodando_vasilhames>>
 #+END_SRC
 
 *** Complexidade

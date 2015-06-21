@@ -1,4 +1,4 @@
-% Created 2015-06-21 Dom 17:04
+% Created 2015-06-21 Dom 18:26
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -237,18 +237,21 @@ def cria_grafo(vasilhames, caminhoes, capacidade_por_caminhao):
     G.novo_vertice('Fonte')
     G.novo_vertice('Dreno')
 
-    # Criando um vertice para cada caminhao e ligando esse vertice ao dreno
+    # Criando um vertice para cada caminhao e ligando esse
+    # vertice ao dreno
     for caminhao in caminhoes:
         G.novo_vertice(caminhao)
-        G.nova_aresta(caminhao, 'Dreno', capacidade_por_caminhao, 0)
+        G.nova_aresta(caminhao, 'Dreno',
+                      capacidade_por_caminhao, 0)
 
     for vasilhame, caminhoes in vasilhames.iteritems():
-        # Criando um vertice para cada vasilhame e conectando a fonte a
-        # cada um dos vasilhames
+        # Criando um vertice para cada vasilhame e conectando
+        # a fonte a cada um dos vasilhames
         G.novo_vertice(vasilhame)
         G.nova_aresta('Fonte', vasilhame, 1, 0)
 
-        # Conectando o vasilhame a cada caminhao que pode transporta-lo
+        # Conectando o vasilhame a cada caminhao que pode
+        # transporta-lo
         for caminhao in caminhoes:
             G.nova_aresta(vasilhame, caminhao, 1, 0)
 
@@ -381,7 +384,7 @@ podem estar ambas no caminhão do $w_i$, pois elas conflitam entre si.
 nenhuma delas estivesse no caminhão do $w_i$, estariam ambas no único
 caminhão que não contém nenhum $w$ (pois todos os outros caminhões
 contém um $w_j$ com $i \neq j$, o que conflita com $v_i$ e
-$\overline{v_i}$), o que também não pode acontecer.
+$\overline{v_i}$ por $P_2$), o que também não pode acontecer por $P_3$.
 \end{enumerate}
 
 

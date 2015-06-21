@@ -20,4 +20,4 @@
 #+INCLUDE: "4_5/solucao.org" :lines "5-"
 
 * Exercício 8.19 (Tardos)
-  #+INCLUDE: "8_19/solucao.org" :lines "5-"
+#+INCLUDE: "8_19/solucao.org" :lines "5-"
