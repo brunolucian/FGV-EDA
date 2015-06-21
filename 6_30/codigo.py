@@ -1,5 +1,3 @@
-arvore_newick = "(((ATTC,AGTC),CGCG),(AGGA,ATCA));"
-
 import collections
 
 

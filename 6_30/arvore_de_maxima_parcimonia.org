@@ -54,8 +54,10 @@ calcular a resposta para cada letra independentemente e depois
 concatenar as respostas para obter a árvore final.
 
 Nós vamos usar um algoritmo de programação dinâmica para encontrar o
-valor das folhas intermediárias em uma árvore $P$ em que cada
-folha tem valor A, G, T ou C.
+valor das folhas intermediárias em uma árvore $P$ em que cada folha
+tem valor A, G, T ou C. Como em dados reais de bioinformática é muito
+comum representar uma deleção como o carácter extra '-', também vamos
+suportar essa opção na nossa solução.
 
 Vamos representar a nossa árvore como um objeto:
 #+Name: estrutura_de_dados
@@ -65,7 +67,7 @@ class Arvore:
         self.filhos = []
         self.valor = ""
         self.pai = pai
-
+        self.nome = ""
 #+END_SRC
 
 Vamos computar $melhor\tu nota[v, \ell]$ como a melhor maneira de
@@ -116,6 +118,9 @@ função:
 #+Name: calcula_melhor_nota
 #+BEGIN_SRC python
 def calcula_melhor_nota(v, l):
+    if (v, l) in melhor_nota:
+        return melhor_nota[v, l]
+
     if not v.filhos:
         melhor_nota[v, l] = 1 if l != v.valor else 0
         melhor_letra[v, l] = v.valor
@@ -123,7 +128,7 @@ def calcula_melhor_nota(v, l):
 
     melhor_nota[v, l] = 100000
 
-    for m in ['A', 'G', 'T', 'C']:
+    for m in ['A', 'G', 'T', 'C', '-']:
         nota_atual = sum(calcula_melhor_nota(w, m) for w in v.filhos)
         if m != l:
             nota_atual += 1
@@ -142,33 +147,31 @@ os possíveis valores para a raiz:
 melhor \tu nota[v][\ell]\]
 
 Um valor ótimo para a raiz é um valor de \ell para o qual o mínimo
-acima é atingido. Preencheremos $raiz.label$ com tal valor, como
-abaixo:
+acima é atingido.
+
+
+Podemos agora preencher toda a árvore:
 #+Name: raiz
 #+BEGIN_SRC python
-melhor_nota_raiz = 100000
-for l in ['A', 'G', 'T', 'C']:
-    nota_atual_raiz = sum(calcula_melhor_nota(w, m) for w in v.filhos)
+def preenche_tudo(raiz):
+    melhor_nota_raiz = 100000
+    for l in ['A', 'G', 'T', 'C', '-']:
+        nota_atual_raiz = sum(calcula_melhor_nota(w, l) for w in raiz.filhos)
 
-    if nota_atual_raiz < melhor_nota_raiz:
-        raiz.valor = l
-        melhor_custo_raiz = nota_atual_raiz
-#+END_SRC
+        if nota_atual_raiz < melhor_nota_raiz:
+            raiz.valor = l
+            melhor_nota_raiz = nota_atual_raiz
 
-Tendo o valor da raiz já determinado e os valores de $melhor \tu
-letra$, podemos preencher os valores dos nós internos:
+    def preenche_dado_pai(v):
+        v.valor = melhor_letra[v, v.pai.valor]
+        for w in v.filhos:
+            preenche_dado_pai(w)
 
-#+Name: rodando
-#+BEGIN_SRC python
-def preenche_dado_pai(v):
-    v.valor = melhor_letra[v, v.pai.valor]
-    for w in v.filhos:
+    for w in raiz.filhos:
         preenche_dado_pai(w)
 
-for w in raiz.filhos:
-    preenche_dado_pai(w)
+    return raiz, melhor_nota_raiz
 #+END_SRC
-
 
 * Rodando o algoritmo
 
@@ -178,15 +181,14 @@ Um formato muito usado para árvores em bioinformática é o formato
 Newick. Assim como as $s$-expressions do LISP, ele usa o fato de que
 parênteses podem ser usados para especificar uma árvore.
 
-TODO: especificar o formato, referência do formato
-
 *** Parseando o formato Newick
 
 O primeiro passo é notar que (gato, rato) é equivalente a
 (gato)(rato), então podemos transformar uma estrutura com vírgulas
 em uma estrutura que só contém parênteses.
 
-TODO: explicar o código
+Depois construimos a árvore adicionando vértices novos conforme os
+parênteses.
 #+NAME: parseando_newick
 #+BEGIN_SRC python
 def parseia_newick(string):
@@ -210,8 +212,38 @@ def parseia_newick(string):
     return em_construcao[0]
 #+END_SRC
 
+** Formato FASTA
 
-*** Separando e concatenando árvores
+Outro formato muito comum em bioinformática é o formato FASTA. É um
+formato bem simples:
+>Nome
+Sequência de DNA
+
+Vamos escrever uma função para converter dados no formato FASTA em uma
+lista de tuplas:
+#+NAME: fasta_para_lista
+#+BEGIN_SRC python
+def fasta_para_lista(array):
+    label = ""
+    dna = ""
+    lista = []
+
+    for tmp in array:
+        line = tmp.rstrip()
+        if line[0] == ">":
+            if label != "":
+                lista.append((label, dna))
+                dna = ""
+            label = line[1:]
+        else:
+            dna += line
+
+    lista.append((label, dna))
+
+    return lista
+#+END_SRC
+
+** Separando e concatenando árvores
 
 As árvores no nosso algoritmo só tem uma letra por nó, mas nós
 recebemos apenas uma árvore com toda a string de DNA.
@@ -235,12 +267,12 @@ def separa_arvore(indice, origem):
 
 Depois de rodar o algoritmo, vamos querer juntar as árvores para encontrar
 os valores dos nós intermediários. Podemos fazer isso com uma DFS e ~reduce~.
-#+NAME: juntando_arvores
+#+NAME: concatena_arvores
 #+BEGIN_SRC python
 def concatena_arvores(arvores):
     fusao = Arvore(None)
     fusao.valor = reduce(lambda string, arv: string + arv.valor,
-        arvores, "")
+                         arvores, "")
 
     for i in xrange(len(arvores[0].filhos)):
         fusao_filho = concatena_arvores(
@@ -252,6 +284,46 @@ def concatena_arvores(arvores):
 #+END_SRC
 
 ** Rodando o algoritmo com os dados do problema
+
+Usando os formatos Newick e FASTA para descrever os dados do problema,
+obtemos o seguinte:
+
+#+BEGIN_EXAMPLE
+(((folha1,folha2)interno1,folha3)interno2,(folha4,folha5)interno3)interno4;
+>folha1
+ATTC
+>folha2
+AGTC
+>folha3
+CGCG
+>folha4
+AGGA
+>folha5
+ATCA
+#+END_EXAMPLE
+
+#+NAME codigo_completo
+#+BEGIN_SRC python :tangle parcimonia.py :noweb yes :exports output
+import collections
+
+<<estrutura_de_dados>>
+
+<<inicializando>>
+
+<<calcula_melhor_nota>>
+
+<<raiz>>
+
+<<preenche_dado_pai>>
+
+<<parseando_newick>>
+
+<<separa_arvore>>
+
+<<concatena_arvores>>
+#+END_SRC
+
+
 
 ** Rodando o algoritmo com dados reais
 

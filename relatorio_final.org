@@ -1,4 +1,4 @@
-#+TITLE:        Trabalho de Estrutura de Dados e Algoritmos
+#+TITLE:        Trabalho de Estruturas de Dados e Algoritmos
 #+AUTHOR:	Alice Duarte Scarpa, Bruno Lucian Costa
 #+EMAIL:	alicescarpa@gmail.com, bruno.lucian.costa@gmail.com
 #+DATE:		2015-06-23
@@ -25,4 +25,4 @@
 #+INCLUDE: "4_5/solucao.org" :lines "5-"
 
 * Exercício 8.19 (Tardos)
-#+INCLUDE: "8_19/solucao.org" :lines "5-"
+  #+INCLUDE: "8_19/solucao.org" :lines "5-"
