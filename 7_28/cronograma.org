@@ -602,7 +602,7 @@ import collections
 <<rodando_cronograma>>
 #+END_SRC
 
-** Item b
+** Item B
 
 No item b, além de todas as restrições do item a, há também a
 restrição de mínimo de horas por dia da semana.
@@ -625,7 +625,8 @@ for dia in min_por_dia:
 #+END_SRC
 
 A única função que precisamos alterar do item a é a função
-~cria_rede~, que agora tem que lidar com a construção mencionada em TODO.
+~cria_rede~, que agora tem que lidar com a construção mencionada na
+Seção \ref{modelagem_fluxo}.
 
 #+NAME: cria_rede_b
 #+BEGIN_SRC python

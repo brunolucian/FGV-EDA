@@ -1,4 +1,4 @@
-% Created 2015-06-21 Dom 18:31
+% Created 2015-06-21 Dom 18:59
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -42,11 +42,25 @@
 
 \maketitle
 
-\section{Exercício 7.28 (Tardos)}
+\section{Introdução}
 \label{sec-1}
 
+Esse relatório é gerado a partir de arquivos org-mode, imagens e
+bancos de dados. Todos os arquivos necessários para gerar esse
+relatório estão disponíveis no \href{https://github.com/adusca/FGV-EDA}{GitHub}.
+
+O código contido neste relatório é rodado automaticamente toda vez que
+o relatório é gerado, e suas saídas estão presentes no próprio
+relatório.
+
+Mais detalhes de como gerar o relatório final estão disponíveis no
+README do repositório.
+
+\section{Exercício 7.28 (Tardos)}
+\label{sec-2}
+
 \subsection{Enunciado}
-\label{sec-1-1}
+\label{sec-2-1}
 
 Um grupo de estudantes está escrevendo um módulo para preparar
 cronogramas de monitoria. O protótipo inicial deles funciona do
@@ -87,13 +101,13 @@ b) O algoritmo acima tornou-se popular, e surgiu a vontade de
 
 
 \subsection{Introdução}
-\label{sec-1-2}
+\label{sec-2-2}
 
 Queremos modelar esse problema como um problema de fluxo. Para isso
 vamos começar com algumas definições de fluxo.
 
 \subsubsection{Definições}
-\label{sec-1-2-1}
+\label{sec-2-2-1}
 
 Uma rede de fluxo é um grafo direcionado $G =
 (V, E)$ com as seguintes propriedades:
@@ -121,7 +135,7 @@ um fluxo é o total que parte da fonte $s$, isso é:
 \end{equation}
 
 \subsubsection{Representação}
-\label{sec-1-2-2}
+\label{sec-2-2-2}
 
 Vamos usar uma classe para representar arestas. Uma aresta é
 inicializada com as propriedades: vértice de origem, vértice de
@@ -197,7 +211,7 @@ class RedeDeFluxo():
 \end{minted}
 
 \subsection{Modelando o problema com fluxos\label{modelagem_fluxo}}
-\label{sec-1-3}
+\label{sec-2-3}
 
 Os dois itens do problema podem ser reduzidos a encontrar um fluxo
 válido em uma rede usando construções semelhantes.
@@ -315,10 +329,10 @@ semana.
 \end{tikzpicture}\]
 
 \subsection{Implementação}
-\label{sec-1-4}
+\label{sec-2-4}
 
 \subsubsection{Fluxo máximo}
-\label{sec-1-4-1}
+\label{sec-2-4-1}
 
 Vamos começar estudando o problema de encontrar o fluxo máximo de uma
 rede $G$ em que $d_e = 0 \; \forall e \in E$ $f$. Vamos implementar aqui o
@@ -445,7 +459,7 @@ do exercício, $F$ é no máximo o número de intervalos e portanto
 polinomial no tamanho da entrada.
 
 \subsubsection{Fluxo válido com demandas não-nulas}
-\label{sec-1-4-2}
+\label{sec-2-4-2}
 
 O nosso objetivo é encontrar um fluxo válido $f$ para uma rede $G =
 (V, E)$ no caso em que as demandas são positivas.
@@ -501,10 +515,10 @@ def cria_rede_com_demandas_nulas(G):
 \end{minted}
 
 \subsection{Rodando o algoritmo}
-\label{sec-1-5}
+\label{sec-2-5}
 
 \subsubsection{Item A}
-\label{sec-1-5-1}
+\label{sec-2-5-1}
 A seguinte tabela mostra a disponibilidade dos monitores nos horários
 escolhidos pelo administrador:
 
@@ -622,8 +636,8 @@ Qui 19h & Edu\\
 \end{tabular}
 \end{center}
 
-\subsubsection{Item b}
-\label{sec-1-5-2}
+\subsubsection{Item B}
+\label{sec-2-5-2}
 
 No item b, além de todas as restrições do item a, há também a
 restrição de mínimo de horas por dia da semana.
@@ -648,7 +662,8 @@ for dia in min_por_dia:
 \end{minted}
 
 A única função que precisamos alterar do item a é a função
-\verb~cria_rede~, que agora tem que lidar com a construção mencionada em TODO.
+\verb~cria_rede~, que agora tem que lidar com a construção mencionada na
+Seção \ref{modelagem_fluxo}.
 
 \begin{minted}[]{python}
 def cria_rede(intervalos, monitores, min_horas,
@@ -707,10 +722,10 @@ Sex 7h & Edu\\
 \end{center}
 
 \section{Exercício 6.3 (Papadimitriou)}
-\label{sec-2}
+\label{sec-3}
 
 \subsection{Enunciado}
-\label{sec-2-1}
+\label{sec-3-1}
 
 O Yuckdonald's está considerando abrir uma cadeia de restaurantes em
 Quaint Valley Highway (QVG). Os $n$ locais possíveis estão em uma
@@ -730,10 +745,10 @@ Dê um algoritmo eficiente para computar o maior lucro total
 esperado, sujeito às restrições acima.
 
 \section{Exercício 6.30 (Papadimitriou)}
-\label{sec-3}
+\label{sec-4}
 
 \subsection{Enunciado}
-\label{sec-3-1}
+\label{sec-4-1}
 
 \textit{Reconstruindo árvores filogenéticas pelo método da máxima parcimônia}
 
@@ -771,7 +786,7 @@ máxima parcimônia.
 \end{enumerate}
 
 \subsection{Solução}
-\label{sec-3-2}
+\label{sec-4-2}
 
 A nota final de uma árvore é a soma da nota de cada letra. Podemos
 calcular a resposta para cada letra independentemente e depois
@@ -894,10 +909,10 @@ def preenche_tudo(raiz):
 \end{minted}
 
 \subsection{Rodando o algoritmo}
-\label{sec-3-3}
+\label{sec-4-3}
 
 \subsubsection{Formato Newick}
-\label{sec-3-3-1}
+\label{sec-4-3-1}
 
 Um formato muito usado para árvores em bioinformática é o formato
 Newick. Assim como as $s$-expressions do LISP, ele usa o fato de que
@@ -905,7 +920,7 @@ parênteses podem ser usados para especificar uma árvore.
 
 \begin{enumerate}
 \item Parseando o formato Newick
-\label{sec-3-3-1-1}
+\label{sec-4-3-1-1}
 
 O primeiro passo é notar que (gato, rato) é equivalente a
 (gato)(rato), então podemos transformar uma estrutura com vírgulas
@@ -937,7 +952,7 @@ def parseia_newick(string):
 \end{enumerate}
 
 \subsubsection{Formato FASTA}
-\label{sec-3-3-2}
+\label{sec-4-3-2}
 
 Outro formato muito comum em bioinformática é o formato FASTA. É um
 formato bem simples:
@@ -972,7 +987,7 @@ def fasta_para_dict(linhas):
 \end{minted}
 
 \subsubsection{Separando e concatenando árvores}
-\label{sec-3-3-3}
+\label{sec-4-3-3}
 
 As árvores no nosso algoritmo só tem uma letra por nó, mas nós
 recebemos apenas uma árvore com toda a string de DNA.
@@ -1015,7 +1030,7 @@ def concatena_arvores(arvores):
 \end{minted}
 
 \subsubsection{Imprimindo os resultados}
-\label{sec-3-3-4}
+\label{sec-4-3-4}
 
 Vamos usar o formato FASTA para imprimir as sequências de DNA que
 encontrarmos para todos os nós internos.
@@ -1032,7 +1047,7 @@ def imprime_resposta(arvore):
 
 
 \subsubsection{Rodando o algoritmo com os dados do problema}
-\label{sec-3-3-5}
+\label{sec-4-3-5}
 
 Usando os formatos Newick e FASTA para descrever os dados do problema,
 obtemos o seguinte:
@@ -1098,7 +1113,7 @@ AGCA
 \end{verbatim}
 
 \subsubsection{Rodando o algoritmo com dados mais complexos}
-\label{sec-3-3-6}
+\label{sec-4-3-6}
 
 Obtemos os dados no formato Newick do \href{http://rosalind.info}{Rosalind}, uma plataforma de
 ensino de bioinformática.
@@ -1120,10 +1135,10 @@ CCGACAAATTTAAAAACGCGAACGATGGAAT
 \end{verbatim}
 
 \section{Exercício 4.5 (Tardos)}
-\label{sec-4}
+\label{sec-5}
 
 \subsection{Enunciado}
-\label{sec-4-1}
+\label{sec-5-1}
 
 Vamos considerar uma rua campestre longa e quieta, com casas
 espalhadas bem esparsamente ao longo da mesma. (Podemos imaginar a
@@ -1138,10 +1153,10 @@ uma das estações-base. Dê um algoritmo eficiente para alcançar esta
 meta, usando o menor número possível de bases.
 
 \section{Exercício 8.19 (Tardos)}
-\label{sec-5}
+\label{sec-6}
 
 \subsection{Enunciado}
-\label{sec-5-1}
+\label{sec-6-1}
 
 Um comboio de navios chega ao porto com um total de $n$ vasilhames
 contendo tipos diferentes de materiais perigosos.
@@ -1164,8 +1179,8 @@ que nenhum dos pares proibidos de vasilhames esteja no mesmo
 caminhão?
 \end{itemize}
 
-\subsection{Item a}
-\label{sec-5-2}
+\subsection{Item A}
+\label{sec-6-2}
 
 Uma solução força-bruta para esse problema seria:
 
@@ -1191,7 +1206,7 @@ seguir, esse problema não é NP-completo pois aceita uma solução
 polinomial usando fluxos.
 
 \subsubsection{Solução com fluxos}
-\label{sec-5-2-1}
+\label{sec-6-2-1}
 
 Podemos transformar esse problemas em um problema de encontrar o fluxo
 máximo de um grafo usando a seguinte construção:
@@ -1314,7 +1329,7 @@ capacidades iguais a 1 para não poluir demais a imagem.
 
 \begin{enumerate}
 \item Implementação
-\label{sec-5-2-1-1}
+\label{sec-6-2-1-1}
 
 Primeiramente, precisamos ser capazes de ler a tabela acima para
 passar os valores para o nosso algoritmo.
@@ -1405,7 +1420,7 @@ v$_{\text{10}}$ & C$_{\text{4}}$\\
 \end{center}
 
 \item Complexidade
-\label{sec-5-2-1-2}
+\label{sec-6-2-1-2}
 
 Como vimos no exercício 7.28, O algoritmo de Ford-Fulkerson tem
 complexidade $O((V + E)F)$ em que $V$ é a quantidade de vértices, $E$
@@ -1417,7 +1432,7 @@ entrada.
 \end{enumerate}
 
 \subsection{Item B}
-\label{sec-5-3}
+\label{sec-6-3}
 
 Vamos mostrar que é possível reduzir uma instância do 3-SAT a um
 problema de colocar vasilhames em caminhões seguindo as restrições do
@@ -1425,7 +1440,7 @@ enunciado. De modo que, como 3-SAT é NP-completo, nosso problema
 também é.
 
 \subsubsection{Definindo 3-SAT}
-\label{sec-5-3-1}
+\label{sec-6-3-1}
 
 3-SAT é o problema de dado um conjunto de variáveis $v_1, \ldots, v_x$
 e cláusulas $K_1, \ldots, K_y$, onde cada cláusula é constituída de no
@@ -1435,7 +1450,7 @@ atribuição de valores Verdadeiro/Falso para cada variável
 que faça com que todas as cláusulas sejam verdadeiras.
 
 \subsubsection{3-SAT $\to$ Caminhões}
-\label{sec-5-3-2}
+\label{sec-6-3-2}
 
 Dada uma instância do 3-SAT, vamos construir uma instância do problema
 enunciado que admite solução se e somente se tal
@@ -1447,7 +1462,7 @@ variáveis que não aparecem em cláusula alguma se necessário.
 
 \begin{enumerate}
 \item Construção
-\label{sec-5-3-2-1}
+\label{sec-6-3-2-1}
 
 Vamos começar a construção sem as cláusulas:
 
@@ -1522,7 +1537,7 @@ mínimo quatro literais falsos, de modo que há garantidamente um
 literal que não aparece na cláusula e portanto conflita com ela.
 
 \item Obtendo uma solução
-\label{sec-5-3-2-2}
+\label{sec-6-3-2-2}
 
 Para completar a nossa redução, precisamos de duas coisas:
 \begin{itemize}
@@ -1534,7 +1549,7 @@ encontrar em tempo polinomial uma solução do 3-SAT correspondente
 
 \begin{enumerate}
 \item Solução caminhões $\to$ Solução 3-SAT
-\label{sec-5-3-2-2-1}
+\label{sec-6-3-2-2-1}
 
 Se existe uma solução para o problema, então todo caminhão que contém
 um vasilhame do tipo $w_i$ também contém um vasilhame correspondente a
@@ -1549,7 +1564,7 @@ todas as cláusulas sejam verdadeiras.
 
 
 \item $\not \exists$ solução caminhões $\Rightarrow \not \exists$ solução 3-SAT
-\label{sec-5-3-2-2-2}
+\label{sec-6-3-2-2-2}
 
 É mais fácil provar a contrapositiva, isso é, $\exists$ solução 3-SAT
 $\Rightarrow \exists$ solução caminhões.

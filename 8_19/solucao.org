@@ -34,7 +34,7 @@ polinomial ou prove NP-completude:
   que nenhum dos pares proibidos de vasilhames esteja no mesmo
   caminhão?
 
-* Item a
+* Item A
 
 Uma solução força-bruta para esse problema seria:
 
