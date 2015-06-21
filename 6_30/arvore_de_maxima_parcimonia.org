@@ -8,10 +8,6 @@
 #+EXPORT_SELECT_TAGS: export
 #+EXPORT_EXCLUDE_TAGS: noexport
 #+LaTeX_HEADER: \usemintedstyle{perldoc}
-#+LaTeX_HEADER: \usepackage{tikz}
-#+LaTeX_HEADER: \usetikzlibrary{decorations.markings}
-#+LaTeX_HEADER: \tikzstyle{vertex}=[circle, draw, inner sep=0pt, minimum size=7pt]
-#+LaTeX_HEADER: \providecommand{\vertex}{\node[vertex]}
 #+LaTeX_HEADER: \newcommand{\tu}{\textunderscore}
 
 * Enunciado
@@ -216,29 +212,33 @@ def parseia_newick(string):
 
 Outro formato muito comum em bioinformática é o formato FASTA. É um
 formato bem simples:
+
+#+BEGIN_EXAMPLE
 >Nome
 Sequência de DNA
+que pode estar em
+várias linhas
+#+END_EXAMPLE
 
 Vamos escrever uma função para converter dados no formato FASTA em um
 dicionário:
 #+NAME: fasta_para_lista
 #+BEGIN_SRC python
-def fasta_para_dict(array):
-    label = ""
+def fasta_para_dict(linhas):
+    nome = ""
     dna = ""
     saida = {}
 
-    for tmp in array:
-        line = tmp.rstrip()
-        if line[0] == ">":
-            if label != "":
-                saida[label] = dna
+    for linha_atual in linhas:
+        if linha_atual[0] == ">":
+            if nome != "":
+                saida[nome] = dna
                 dna = ""
-            label = line[1:]
+            nome = linha_atual[1:]
         else:
-            dna += line
+            dna += linha_atual
 
-    saida[label] = dna
+    saida[nome] = dna
 
     return saida
 #+END_SRC
@@ -329,7 +329,7 @@ Podemos agora rodar o código para descobrir os valores dos nós internos:
 
 #+NAME: rodando
 #+BEGIN_SRC python
-with open('livro.in', 'r') as f:
+with open(arquivo_entrada, 'r') as f:
     entrada = map(lambda s: s.strip(), f.readlines())
 
 raiz_grande = parseia_newick(entrada[0])
@@ -356,8 +356,10 @@ print "Nota:", nota_total
 imprime_resposta(resposta)
 #+END_SRC
 
+Executando o código acima descrito, obtemos a seguinte saída.
+
 #+NAME: codigo_completo
-#+BEGIN_SRC python :tangle parcimonia.py :noweb yes :results output :exports results
+#+BEGIN_SRC python :tangle parcimonia.py :noweb yes :exports none
 import collections
 
 <<estrutura_de_dados>>
@@ -381,18 +383,12 @@ import collections
 <<rodando>>
 #+END_SRC
 
-#+RESULTS: codigo_completo
-: Nota: 7
-: >interno4
-: AGCA
-: >interno2
-: AGCA
-: >interno1
-: AGTC
-: >interno3
-: AGCA
+#+NAME: rodando_exemplo
+#+BEGIN_SRC python :tangle parcimonia.py :noweb yes :results output :exports results :var arquivo_entrada="livro.in"
+<<codigo_completo>>
+#+END_SRC
 
-
+#+RESULTS: rodando_exemplo
 
 ** Rodando o algoritmo com dados mais complexos
 
@@ -403,63 +399,12 @@ O arquivo [[https://github.com/adusca/FGV-EDA/blob/master/6_30/rosalind.in][rosa
 uma com 266 caracteres.
 
 #+NAME: rodando_rosalind
-#+BEGIN_SRC python :exports none
-with open('rosalind.in', 'r') as f:
-    entrada = map(lambda s: s.strip(), f.readlines())
-
-raiz_grande = parseia_newick(entrada[0])
-dnas = fasta_para_dict(entrada[1:])
-
-def preenche_folhas(arvore, dnas):
-    if arvore.nome in dnas:
-        arvore.valor = dnas[arvore.nome]
-
-    for w in arvore.filhos:
-        preenche_folhas(w, dnas)
-
-preenche_folhas(raiz_grande, dnas)
-
-n = len(dnas.values()[0])
-
-arvores_sep = [separa_arvore(i, raiz_grande) for i in range(n)]
-pares_preenchidos = [preenche_tudo(a) for a in arvores_sep]
-
-nota_total = sum(nota for (_, nota) in pares_preenchidos)
-resposta = concatena_arvores([raiz for (raiz, _) in pares_preenchidos])
-
-print "Nota:", nota_total
-imprime_resposta(resposta)
+#+BEGIN_SRC python :noweb yes :results none :exports results :var arquivo_entrada="rosalind.in" :file rosalind.out
+<<codigo_completo>>
 #+END_SRC
 
-#+NAME: codigo_completo_rosalind
-#+BEGIN_SRC python :tangle parcimonia.py :noweb yes :results output :exports none :file rosalind.out
-import collections
-
-<<estrutura_de_dados>>
-
-<<inicializando>>
-
-<<calcula_melhor_nota>>
-
-<<raiz>>
-
-<<parseando_newick>>
-
-<<fasta_para_lista>>
-
-<<separa_arvore>>
-
-<<concatena_arvores>>
-
-<<imprime_resposta>>
-
-<<rodando_rosalind>>
-#+END_SRC
-
-#+RESULTS: codigo_completo_rosalind
-
-Como o resultado é muito longo, deixamos ele disponível em
-[[https://github.com/adusca/FGV-EDA/blob/master/6_30/rosalind.out][rosalind.out]]. As primeiras linhas da saída são:
+Como o resultado é muito longo, deixamos o arquivo de saída disponível
+em [[https://github.com/adusca/FGV-EDA/blob/master/6_30/rosalind.out][rosalind.out]]. As primeiras linhas da saída são:
 
 #+BEGIN_EXAMPLE
 Nota: 16880

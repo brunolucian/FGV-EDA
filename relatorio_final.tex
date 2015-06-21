@@ -1,4 +1,4 @@
-% Created 2015-06-20 Sáb 23:08
+% Created 2015-06-21 Dom 17:20
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -21,35 +21,16 @@
 \usepackage{tikz}
 \usetikzlibrary{decorations.markings}
 \tikzstyle{vertex}=[circle, draw, inner sep=0pt, minimum size=7pt]
-\newcommand{\vertex}{\node[vertex]}
+\providecommand{\vertex}{\node[vertex]}
 \usemintedstyle{perldoc}
-\usepackage{tikz}
-\hyphenation{es-co-lhi-dos}
-\usepackage[table]{xcolor}
-\usetikzlibrary{decorations.markings}
-\tikzstyle{vertex}=[circle, draw, inner sep=0pt, minimum size=7pt]
-\newcommand{\vertex}{\node[vertex]}
 \usemintedstyle{perldoc}
-\usepackage{tikz}
-\usetikzlibrary{decorations.markings}
-\tikzstyle{vertex}=[circle, draw, inner sep=0pt, minimum size=7pt]
-\newcommand{\vertex}{\node[vertex]}
 \newcommand{\tu}{\textunderscore}
 \usemintedstyle{perldoc}
-\usepackage{tikz}
-\usetikzlibrary{decorations.markings}
-\tikzstyle{vertex}=[circle, draw, inner sep=0pt, minimum size=7pt]
-\newcommand{\vertex}{\node[vertex]}
-\usemintedstyle{perldoc}
-\usepackage{tikz}
-\usetikzlibrary{decorations.markings}
-\tikzstyle{vertex}=[circle, draw, inner sep=0pt, minimum size=7pt]
-\newcommand{\vertex}{\node[vertex]}
 \usemintedstyle{perldoc}
 \usepackage{tikz,enumerate}
 \usetikzlibrary{decorations.markings}
 \tikzstyle{vertex}=[circle, draw, inner sep=0pt, minimum size=7pt]
-\newcommand{\vertex}{\node[vertex]}
+\providecommand{\vertex}{\node[vertex]}
 \author{Alice Duarte Scarpa, Bruno Lucian Costa}
 \date{2015-06-23}
 \title{Trabalho de Estruturas de Dados e Algoritmos}
@@ -594,6 +575,20 @@ No final, obtemos ou 'Impossível' se não existir um horário compatível
 ou uma tabela com um horário que atende a todas as restrições.
 
 Para a tabela acima:
+\begin{center}
+\begin{tabular}{ll}
+Seg 10h & Davi\\
+Seg 14h & Gabi\\
+Seg 21h & Ana\\
+Ter 10h & Bia\\
+Ter 16h & Caio\\
+Ter 20h & Isa\\
+Qua 9h & Felipe\\
+Qua 17h & Caio\\
+Qua 19h & Hugo\\
+Qui 19h & Edu\\
+\end{tabular}
+\end{center}
 
 \subsubsection{Item b}
 \label{sec-1-6-2}
@@ -677,11 +672,34 @@ Sex 7h & Edu\\
 \end{tabular}
 \end{center}
 
-\section{Exercício 6.30 (Papadimitriou)}
+\section{Exercício 6.3 (Papadimitriou)}
 \label{sec-2}
 
 \subsection{Enunciado}
 \label{sec-2-1}
+
+O Yuckdonald's está considerando abrir uma cadeia de restaurantes em
+Quaint Valley Highway (QVG). Os $n$ locais possíveis estão em uma
+linha reta, e as distâncias desses locais até o começo da QVG são, em
+milhas e em ordem crescente, $m_1, m_2, \ldots, m_n$. As restrições
+são as seguintes:
+
+\begin{itemize}
+\item Em cada local, o Yuckdonald's pode abrir no máximo um
+restaurante. O lucro esperado ao abrir um restaurante no local
+$i$ é $p_i$, onde $p_i > 0$ e $i = 1, 2, \ldots, n$.
+\item Quaisquer dois restaurantes devem estar a pelo menos $k$
+  milhas de distância, onde $k$ é um inteiro positivo.
+\end{itemize}
+
+Dê um algoritmo eficiente para computar o maior lucro total
+esperado, sujeito às restrições acima.
+
+\section{Exercício 6.30 (Papadimitriou)}
+\label{sec-3}
+
+\subsection{Enunciado}
+\label{sec-3-1}
 
 \textit{Reconstruindo árvores filogenéticas pelo método da máxima parcimônia}
 
@@ -719,15 +737,17 @@ máxima parcimônia.
 \end{enumerate}
 
 \subsection{Solução}
-\label{sec-2-2}
+\label{sec-3-2}
 
 A nota final de uma árvore é a soma da nota de cada letra. Podemos
 calcular a resposta para cada letra independentemente e depois
 concatenar as respostas para obter a árvore final.
 
 Nós vamos usar um algoritmo de programação dinâmica para encontrar o
-valor das folhas intermediárias em uma árvore $P$ em que cada
-folha tem valor A, G, T ou C.
+valor das folhas intermediárias em uma árvore $P$ em que cada folha
+tem valor A, G, T ou C. Como em dados reais de bioinformática é muito
+comum representar uma deleção como o carácter extra '-', também vamos
+suportar essa opção na nossa solução.
 
 Vamos representar a nossa árvore como um objeto:
 \begin{minted}[]{python}
@@ -736,6 +756,7 @@ class Arvore:
         self.filhos = []
         self.valor = ""
         self.pai = pai
+        self.nome = ""
 \end{minted}
 
 Vamos computar $melhor\tu nota[v, \ell]$ como a melhor maneira de
@@ -749,41 +770,44 @@ melhor_letra = {}
 \end{minted}
 
 Vamos computar $melhor \tu nota$ de baixo para cima. Então, o caso base
-para esse algoritmo é a resposta para as folhas, isto é, $melhor\tu nota[\mathrm{folha}][\ell]$.
+para esse algoritmo é a resposta para as folhas, isto é, $melhor\tu nota[\mathrm{folha}, \ell]$.
 
 Uma sub-árvore que contém apenas uma folha e seu pai vai ter
 nota 0 se a folha e o pai tiverem ambos o mesmo valor (A,
 G, T ou C) ou nota 1 se os dois tiverem valores diferentes:
 
-\[melhor \tu nota[\textit{folha}][\ell] = \begin{cases}0 \text{ se } \textit{folha}.valor = \ell \\
+\[melhor \tu nota[\textit{folha}, \ell] = \begin{cases}0 \text{ se } \textit{folha}.valor = \ell \\
                                                        1 \text{ caso contrário}\end{cases}\]
 
 Além disso, não temos escolha para o valor otimal:
-\[ melhor \tu valor[\textit{folha}][\ell] = \textit{folha}.valor \]
+\[ melhor \tu valor[\textit{folha}, \ell] = \textit{folha}.valor \]
 
-Tendo o caso base, podemos computar $melhor \tu nota[v][\ell]$
-assumindo que $melhor \tu nota[w][\ell]$ já foi computado para todo
+Tendo o caso base, podemos computar $melhor \tu nota[v, \ell]$
+assumindo que $melhor \tu nota[w, \ell]$ já foi computado para todo
 $w$ filho de $v$ e $\ell \in \{A, G, T, C\}$.
 
 Dado que o pai de $v$ tem valor $\ell$, a melhor nota para a
 sub-árvore enraizada em $v$ quando o valor de $v$ é igual a $m$ é:
-\[ [\ell \neq m] + \sum_{w \text{ filho de }v} melhor \tu nota[w][m]\]
+\[ [\ell \neq m] + \sum_{w \text{ filho de }v} melhor \tu nota[w, m]\]
 
 Onde \[[\ell \neq m] =  \begin{cases} 0 \text{ se } m = \ell \\
                                       1 \text{ caso contrário}\end{cases}\]
 
 Queremos escolher um valor $m \in \{A, G, T, C\}$ para $v$
 que minimize a nota final da sub-árvore. Então:
-\[melhor \tu nota[v][\ell] = \min_{m \in \{A, G, T, C\}} \left([\ell
-\neq m] + \sum_{w \text{ filho de }v} melhor \tu nota[w][m]\right)\]
+\[melhor \tu nota[v, \ell] = \min_{m \in \{A, G, T, C\}} \left([\ell
+\neq m] + \sum_{w \text{ filho de }v} melhor \tu nota[w, m]\right)\]
 
-e $melhor\tu letra[v][\ell]$ é um valor de $m$ que atinge o mínimo
+e $melhor\tu letra[v, \ell]$ é um valor de $m$ que atinge o mínimo
 acima.
 
 Implementando o que descrevemos recursivamente, obtemos a seguinte
 função:
 \begin{minted}[]{python}
 def calcula_melhor_nota(v, l):
+    if (v, l) in melhor_nota:
+        return melhor_nota[v, l]
+
     if not v.filhos:
         melhor_nota[v, l] = 1 if l != v.valor else 0
         melhor_letra[v, l] = v.valor
@@ -791,7 +815,7 @@ def calcula_melhor_nota(v, l):
 
     melhor_nota[v, l] = 100000
 
-    for m in ['A', 'G', 'T', 'C']:
+    for m in ['A', 'G', 'T', 'C', '-']:
         nota_atual = sum(calcula_melhor_nota(w, m) for w in v.filhos)
         if m != l:
             nota_atual += 1
@@ -803,60 +827,58 @@ def calcula_melhor_nota(v, l):
     return melhor_nota[v, l]
 \end{minted}
 
-Sabendo calcular $melhor \tu nota[v][\ell]$ para todos os vértices
+Sabendo calcular $melhor \tu nota[v, \ell]$ para todos os vértices
 exceto a raiz podemos encontrar a nota da árvore como o mínimo entre
 os possíveis valores para a raiz:
 \[ \min_{\ell \in \{A, G, T, C\}} \sum_{v \text{ filho da raiz}}
-melhor \tu nota[v][\ell]\]
+melhor \tu nota[v, \ell]\]
 
 Um valor ótimo para a raiz é um valor de $\ell$ para o qual o mínimo
-acima é atingido. Preencheremos $raiz.label$ com tal valor, como
-abaixo:
+acima é atingido.
+
+
+Podemos agora preencher toda a árvore:
 \begin{minted}[]{python}
-melhor_nota_raiz = 100000
-for l in ['A', 'G', 'T', 'C']:
-    nota_atual_raiz = sum(calcula_melhor_nota(w, m) for w in v.filhos)
+def preenche_tudo(raiz):
+    melhor_nota_raiz = 100000
+    for l in ['A', 'G', 'T', 'C', '-']:
+        nota_atual_raiz = sum(calcula_melhor_nota(w, l) for w in raiz.filhos)
 
-    if nota_atual_raiz < melhor_nota_raiz:
-        raiz.valor = l
-        melhor_custo_raiz = nota_atual_raiz
-\end{minted}
+        if nota_atual_raiz < melhor_nota_raiz:
+            raiz.valor = l
+            melhor_nota_raiz = nota_atual_raiz
 
-Tendo o valor da raiz já determinado e os valores de $melhor \tu
-letra$, podemos preencher os valores dos nós internos:
+    def preenche_dado_pai(v):
+        v.valor = melhor_letra[v, v.pai.valor]
+        for w in v.filhos:
+            preenche_dado_pai(w)
 
-\begin{minted}[]{python}
-def preenche_dado_pai(v):
-    v.valor = melhor_letra[v, v.pai.valor]
-    for w in v.filhos:
+    for w in raiz.filhos:
         preenche_dado_pai(w)
 
-for w in raiz.filhos:
-    preenche_dado_pai(w)
+    return raiz, melhor_nota_raiz
 \end{minted}
 
-
 \subsection{Rodando o algoritmo}
-\label{sec-2-3}
+\label{sec-3-3}
 
 \subsubsection{Formato Newick}
-\label{sec-2-3-1}
+\label{sec-3-3-1}
 
 Um formato muito usado para árvores em bioinformática é o formato
 Newick. Assim como as $s$-expressions do LISP, ele usa o fato de que
 parênteses podem ser usados para especificar uma árvore.
 
-TODO: especificar o formato, referência do formato
-
 \begin{enumerate}
 \item Parseando o formato Newick
-\label{sec-2-3-1-1}
+\label{sec-3-3-1-1}
 
 O primeiro passo é notar que (gato, rato) é equivalente a
 (gato)(rato), então podemos transformar uma estrutura com vírgulas
 em uma estrutura que só contém parênteses.
 
-TODO: explicar o código
+Depois construimos a árvore adicionando vértices novos conforme os
+parênteses.
 \begin{minted}[]{python}
 def parseia_newick(string):
     string = string.replace(',', ')(').replace(';', '')
@@ -873,15 +895,50 @@ def parseia_newick(string):
         elif ch == ')':
             em_construcao.pop()
         else:
-            em_construcao[-1].valor += ch
+            em_construcao[-1].nome += ch
 
     assert len(em_construcao) == 1
     return em_construcao[0]
 \end{minted}
+\end{enumerate}
 
+\subsubsection{Formato FASTA}
+\label{sec-3-3-2}
 
-\item Separando e concatenando árvores
-\label{sec-2-3-1-2}
+Outro formato muito comum em bioinformática é o formato FASTA. É um
+formato bem simples:
+
+\begin{verbatim}
+>Nome
+Sequência de DNA
+que pode estar em
+várias linhas
+\end{verbatim}
+
+Vamos escrever uma função para converter dados no formato FASTA em um
+dicionário:
+\begin{minted}[]{python}
+def fasta_para_dict(linhas):
+    nome = ""
+    dna = ""
+    saida = {}
+
+    for linha_atual in linhas:
+        if linha_atual[0] == ">":
+            if nome != "":
+                saida[nome] = dna
+                dna = ""
+            nome = linha_atual[1:]
+        else:
+            dna += linha_atual
+
+    saida[nome] = dna
+
+    return saida
+\end{minted}
+
+\subsubsection{Separando e concatenando árvores}
+\label{sec-3-3-3}
 
 As árvores no nosso algoritmo só tem uma letra por nó, mas nós
 recebemos apenas uma árvore com toda a string de DNA.
@@ -891,6 +948,8 @@ carácter. A seguinte DFS cria a árvore das $i$-ésimas letras:
 \begin{minted}[]{python}
 def separa_arvore(indice, origem):
     copia_origem = Arvore(None)
+    copia_origem.nome = origem.nome
+
     if len(origem.valor):
         copia_origem.valor = origem.valor[indice]
 
@@ -902,13 +961,15 @@ def separa_arvore(indice, origem):
     return copia_origem
 \end{minted}
 
+
 Depois de rodar o algoritmo, vamos querer juntar as árvores para encontrar
 os valores dos nós intermediários. Podemos fazer isso com uma DFS e \verb~reduce~.
 \begin{minted}[]{python}
 def concatena_arvores(arvores):
     fusao = Arvore(None)
     fusao.valor = reduce(lambda string, arv: string + arv.valor,
-        arvores, "")
+                         arvores, "")
+    fusao.nome = arvores[0].nome
 
     for i in xrange(len(arvores[0].filhos)):
         fusao_filho = concatena_arvores(
@@ -918,48 +979,99 @@ def concatena_arvores(arvores):
 
     return fusao
 \end{minted}
-\end{enumerate}
+
+\subsubsection{Imprimindo os resultados}
+\label{sec-3-3-4}
+
+Vamos usar o formato FASTA para imprimir as sequências de DNA que
+encontrarmos para todos os nós internos.
+
+\begin{minted}[]{python}
+def imprime_resposta(arvore):
+    if arvore.filhos:
+        print '>%s' % arvore.nome
+        print arvore.valor
+
+    for w in arvore.filhos:
+        imprime_resposta(w)
+\end{minted}
+
 
 \subsubsection{Rodando o algoritmo com os dados do problema}
-\label{sec-2-3-2}
+\label{sec-3-3-5}
 
-\subsubsection{Rodando o algoritmo com dados reais}
-\label{sec-2-3-3}
+Usando os formatos Newick e FASTA para descrever os dados do problema,
+obtemos o seguinte:
+
+\begin{verbatim}
+(((folha1,folha2)interno1,folha3)interno2,(folha4,folha5)interno3)interno4;
+>folha1
+ATTC
+>folha2
+AGTC
+>folha3
+CGCG
+>folha4
+AGGA
+>folha5
+ATCA
+\end{verbatim}
+
+Salvamos esta entrada no arquivo \verb~livro.in~.
+
+Podemos agora rodar o código para descobrir os valores dos nós internos:
+
+\begin{minted}[]{python}
+with open(arquivo_entrada, 'r') as f:
+    entrada = map(lambda s: s.strip(), f.readlines())
+
+raiz_grande = parseia_newick(entrada[0])
+dnas = fasta_para_dict(entrada[1:])
+
+def preenche_folhas(arvore, dnas):
+    if arvore.nome in dnas:
+        arvore.valor = dnas[arvore.nome]
+
+    for w in arvore.filhos:
+        preenche_folhas(w, dnas)
+
+preenche_folhas(raiz_grande, dnas)
+
+n = len(dnas.values()[0])
+
+arvores_sep = [separa_arvore(i, raiz_grande) for i in range(n)]
+pares_preenchidos = [preenche_tudo(a) for a in arvores_sep]
+
+nota_total = sum(nota for (_, nota) in pares_preenchidos)
+resposta = concatena_arvores([raiz for (raiz, _) in pares_preenchidos])
+
+print "Nota:", nota_total
+imprime_resposta(resposta)
+\end{minted}
+
+Executando o código acima descrito, obtemos a seguinte saída.
+
+\subsubsection{Rodando o algoritmo com dados mais complexos}
+\label{sec-3-3-6}
 
 Obtemos os dados no formato Newick do \href{http://rosalind.info}{Rosalind}, uma plataforma de
 ensino de bioinformática.
 
-\subsection{Extensões}
-\label{sec-2-4}
+O arquivo \href{https://github.com/adusca/FGV-EDA/blob/master/6_30/rosalind.in}{rosalind.in} contém um banco de dados de 221 espécies, cada
+uma com 266 caracteres.
 
-Ao fazer esse exercício, notamos que a árvore já é uma entrada do problema.
-Como é possível obter a árvore de menor valor a partir das espécies
+Como o resultado é muito longo, deixamos o arquivo de saída disponível
+em \href{https://github.com/adusca/FGV-EDA/blob/master/6_30/rosalind.out}{rosalind.out}. As primeiras linhas da saída são:
 
-Esse problema é NP-completo [TODO: colocar referência] e o melhor
-algoritmo conhecido é [TODO]
-
-\section{Exercício 6.3 (Papadimitriou)}
-\label{sec-3}
-
-\subsection{Enunciado}
-\label{sec-3-1}
-
-O Yuckdonald's está considerando abrir uma cadeia de restaurantes em
-Quaint Valley Highway (QVG). Os $n$ locais possíveis estão em uma
-linha reta, e as distâncias desses locais até o começo da QVG são, em
-milhas e em ordem crescente, $m_1, m_2, \ldots, m_n$. As restrições
-são as seguintes:
-
-\begin{itemize}
-\item Em cada local, o Yuckdonald's pode abrir no máximo um
-restaurante. O lucro esperado ao abrir um restaurante no local
-$i$ é $p_i$, onde $p_i > 0$ e $i = 1, 2, \ldots, n$.
-\item Quaisquer dois restaurantes devem estar a pelo menos $k$
-  milhas de distância, onde $k$ é um inteiro positivo.
-\end{itemize}
-
-Dê um algoritmo eficiente para computar o maior lucro total
-esperado, sujeito às restrições acima.
+\begin{verbatim}
+Nota: 16880
+>sibiricus_plumipes
+TGGCATTGCAATGTACAAGTGGTCTAACGTCAGTGATCATACTTGCTAAGAATAGAAAAC
+CAACCTAAATAAAACCGACACTAAAGACCTCAGCGTTATGCGACATAACTATGCCTCGTT
+AAGAATCTGCGTAATACGGCACGCGGACAACATATGACTAGGGGCATAGGAAGTATGAAG
+CGTTCGGCAGTCTTGGGATCAAAAAGAAGCGTAGATCAATTTCTATGTAAAACTATACGG
+CCGACAAATTTAAAAACGCGAACGATGGAAT
+\end{verbatim}
 
 \section{Exercício 4.5 (Tardos)}
 \label{sec-4}
@@ -1187,18 +1299,21 @@ def cria_grafo(vasilhames, caminhoes, capacidade_por_caminhao):
     G.novo_vertice('Fonte')
     G.novo_vertice('Dreno')
 
-    # Criando um vertice para cada caminhao e ligando esse vertice ao dreno
+    # Criando um vertice para cada caminhao e ligando esse
+    # vertice ao dreno
     for caminhao in caminhoes:
         G.novo_vertice(caminhao)
-        G.nova_aresta(caminhao, 'Dreno', capacidade_por_caminhao, 0)
+        G.nova_aresta(caminhao, 'Dreno',
+                      capacidade_por_caminhao, 0)
 
     for vasilhame, caminhoes in vasilhames.iteritems():
-        # Criando um vertice para cada vasilhame e conectando a fonte a
-        # cada um dos vasilhames
+        # Criando um vertice para cada vasilhame e conectando
+        # a fonte a cada um dos vasilhames
         G.novo_vertice(vasilhame)
         G.nova_aresta('Fonte', vasilhame, 1, 0)
 
-        # Conectando o vasilhame a cada caminhao que pode transporta-lo
+        # Conectando o vasilhame a cada caminhao que pode
+        # transporta-lo
         for caminhao in caminhoes:
             G.nova_aresta(vasilhame, caminhao, 1, 0)
 
@@ -1232,16 +1347,16 @@ A solução para a nossa entrada:
 \item Complexidade
 \label{sec-5-2-1-2}
 
-O algoritmo de Ford-Fulkerson tem complexidade $O(VF)$ TODO:
-referência ao 7.28, em que $V$ é a quantidade de vértices e $F$ é o
-maior valor possível para o fluxo.
+Como vimos no exercício 7.28, O algoritmo de Ford-Fulkerson tem
+complexidade $O((V + E)F)$ em que $V$ é a quantidade de vértices, $E$
+é a quantidade de arestas e $F$ é o maior valor possível para o fluxo.
 
-No caso, o número de vértices é $m + n + 2$ e o maior fluxo possível é
-$n$, totalizando uma complexidade $O(n(m + n))$, o que é polinomial na
+No caso, $V = m + n + 2$, $E \leq n + nm + m$ e o maior fluxo possível é
+$n$, totalizando uma complexidade máxima $O(n^2m)$, o que é polinomial na
 entrada.
 \end{enumerate}
 
-\subsection{Item b}
+\subsection{Item B}
 \label{sec-5-3}
 
 Vamos mostrar que é possível reduzir uma instância do 3-SAT a um
@@ -1257,7 +1372,7 @@ e cláusulas $K_1, \ldots, K_y$, onde cada cláusula é constituída de no
 máximo três elementos do universo de \textit{literais}, $\{v_1,
 \overline{v_1}, \ldots, v_x, \overline{v_x}\}$, encontrar uma
 atribuição de valores Verdadeiro/Falso para cada variável
-que faça com que todas as claúsulas sejam verdadeiras.
+que faça com que todas as cláusulas sejam verdadeiras.
 
 \subsubsection{3-SAT $\to$ Caminhões}
 \label{sec-5-3-2}
@@ -1304,7 +1419,7 @@ Para garantir as condições acima, vamos criar os seguintes conflitos:
 Com isso, garantimos as seguintes propriedades:
 
 \begin{enumerate}[($P_1$)]
-\item Como todos os $w_i$ conflitem entre si, é necessário um
+\item Como todos os $w_i$ conflitam entre si, é necessário um
 caminhão por $w_i$.
 
 \item Como $w_i$ conflita com todos os literais tais que
@@ -1313,14 +1428,15 @@ correspondentes a $i$-ésima variável.
 
 \item $v_i$ e $\overline{v_i}$ não
 podem estar ambas no caminhão do $w_i$, pois elas conflitam entre si.
-\end{enumerate}
 
-Mais ainda, $\textit{exatamente}$ um elemento do par $\{v_i,
+\item Mais ainda, $\textit{exatamente}$ um elemento do par $\{v_i,
 \overline{v_i}\}$ está no caminhão do $w_i$ numa atribuição válida: Se
 nenhuma delas estivesse no caminhão do $w_i$, estariam ambas no único
 caminhão que não contém nenhum $w$ (pois todos os outros caminhões
 contém um $w_j$ com $i \neq j$, o que conflita com $v_i$ e
-$\overline{v_i}$), o que também não pode acontecer.
+$\overline{v_i}$ por $P_2$), o que também não pode acontecer por $P_3$.
+\end{enumerate}
+
 
 
 Agora, vamos adicionar as cláusulas à nossa construção:
@@ -1362,13 +1478,14 @@ encontrar em tempo polinomial uma solução do 3-SAT correspondente
 
 Se existe uma solução para o problema, então todo caminhão que contém
 um vasilhame do tipo $w_i$ também contém um vasilhame correspondente a
-um literal; esse literal será marcado como verdadeiro. Todos os outros
-literais serão marcados como falsos. Essa marcação é consistente, pois
-para cada $i \in \{1, 2, \ldots, x\}$ exatamente um literal entre
-$v_i, \overline{v_i}$ que está no mesmo caminhão que $w_i$. Como todas as
-cláusulas têm que estar em um caminhão que contém um vasilhame do tipo
-$w_i$ e esse caminhão tem que conter um literal que está na claúsula,
-essa marcação faz com que todas as cláusulas sejam verdadeiras.
+um literal, pela propriedade $P_4$; esse literal será marcado como
+verdadeiro. Todos os outros literais serão marcados como falsos. Essa
+marcação é consistente, pois para cada $i \in \{1, 2, \ldots, x\}$
+exatamente um literal entre $v_i, \overline{v_i}$ que está no mesmo
+caminhão que $w_i$. Como todas as cláusulas têm que estar em um
+caminhão que contém um vasilhame do tipo $w_i$ e esse caminhão tem que
+conter um literal que está na cláusula, essa marcação faz com que
+todas as cláusulas sejam verdadeiras.
 
 
 \item $\not \exists$ solução caminhões $\Rightarrow \not \exists$ solução 3-SAT

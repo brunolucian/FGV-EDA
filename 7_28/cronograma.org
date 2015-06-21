@@ -9,11 +9,9 @@
 #+EXPORT_EXCLUDE_TAGS: noexport
 #+LaTeX_HEADER: \usemintedstyle{perldoc}
 #+LaTeX_HEADER: \usepackage{tikz}
-#+LaTeX_HEADER: \hyphenation{es-co-lhi-dos}
-#+LaTeX_HEADER: \usepackage[table]{xcolor}
 #+LaTeX_HEADER: \usetikzlibrary{decorations.markings}
 #+LaTeX_HEADER: \tikzstyle{vertex}=[circle, draw, inner sep=0pt, minimum size=7pt]
-#+LaTeX_HEADER: \newcommand{\vertex}{\node[vertex]}
+#+LaTeX_HEADER: \providecommand{\vertex}{\node[vertex]}
 
 * Enunciado
 
@@ -502,14 +500,15 @@ def cria_rede(intervalos, monitores, min_horas, max_horas, total_horas):
     G.novo_vertice('Dreno')
     G.nova_aresta('Dreno', 'Fonte', total_horas, total_horas)
 
-    # Criando um vertice para cada monitor e ligando esse vertice ao dreno
+    # Criando um vertice para cada monitor e ligando esse vertice
+    # ao dreno
     for monitor in monitores:
         G.novo_vertice(monitor)
         G.nova_aresta(monitor, 'Dreno', max_horas, min_horas)
 
     for intervalo, monitores_disponiveis in intervalos.iteritems():
-        # Criando um vertice para cada intervalo e conectando a fonte a
-        # cada um dos intervalos
+        # Criando um vertice para cada intervalo e conectando a
+        # fonte a cada um dos intervalos
         G.novo_vertice(intervalo)
         G.nova_aresta('Fonte', intervalo, 1, 0)
 
@@ -565,7 +564,7 @@ import collections
 
 <<processa_horarios>>
 
-<<processa_regras>>t
+<<processa_regras>>
 
 <<cria_rede>>
 
@@ -606,14 +605,16 @@ def cria_rede(intervalos, monitores, min_horas,
     G.novo_vertice('Dreno')
     G.nova_aresta('Dreno', 'Fonte', total_horas, total_horas)
 
-    # Criando um vertice para cada monitor e ligando esse vertice ao dreno
+    # Criando um vertice para cada monitor e ligando esse vertice
+    # ao dreno
     for monitor in monitores:
         G.novo_vertice(monitor)
         G.nova_aresta(monitor, 'Dreno', max_horas, min_horas)
 
-    # Criando um vertice para cada dia e uma aresta da Fonte ao dia
-    # com demanda igual ao minimo de horas de monitoria para aquele dia
-    # e capacidade suficientemente grande (vamos usar o total de horas)
+    # Criando um vertice para cada dia e uma aresta da Fonte
+    # ao dia com demanda igual ao minimo de horas de monitoria
+    # para aquele dia e capacidade suficientemente grande
+    # (vamos usar o total de horas)
     dias = minimo_por_dia.keys()
     for dia in dias:
         G.novo_vertice(dia)
@@ -625,8 +626,8 @@ def cria_rede(intervalos, monitores, min_horas,
             if intervalo.startswith(dia):
                 dia_do_intervalo = dia
 
-        # Criando um vertice para cada intervalo e conectando o dia do intervalo
-        # a cada um dos intervalos
+        # Criando um vertice para cada intervalo e conectando o
+        # dia do intervalo a cada um dos intervalos
         G.novo_vertice(intervalo)
         G.nova_aresta(dia_do_intervalo, intervalo, 1, 0)
 

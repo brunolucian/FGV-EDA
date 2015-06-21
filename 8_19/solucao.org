@@ -11,7 +11,7 @@
 #+LaTeX_HEADER: \usepackage{tikz,enumerate}
 #+LaTeX_HEADER: \usetikzlibrary{decorations.markings}
 #+LaTeX_HEADER: \tikzstyle{vertex}=[circle, draw, inner sep=0pt, minimum size=7pt]
-#+LaTeX_HEADER: \newcommand{\vertex}{\node[vertex]}
+#+LaTeX_HEADER: \providecommand{\vertex}{\node[vertex]}
 
 * Enunciado
 
@@ -205,18 +205,21 @@ def cria_grafo(vasilhames, caminhoes, capacidade_por_caminhao):
     G.novo_vertice('Fonte')
     G.novo_vertice('Dreno')
 
-    # Criando um vertice para cada caminhao e ligando esse vertice ao dreno
+    # Criando um vertice para cada caminhao e ligando esse
+    # vertice ao dreno
     for caminhao in caminhoes:
         G.novo_vertice(caminhao)
-        G.nova_aresta(caminhao, 'Dreno', capacidade_por_caminhao, 0)
+        G.nova_aresta(caminhao, 'Dreno',
+                      capacidade_por_caminhao, 0)
 
     for vasilhame, caminhoes in vasilhames.iteritems():
-        # Criando um vertice para cada vasilhame e conectando a fonte a
-        # cada um dos vasilhames
+        # Criando um vertice para cada vasilhame e conectando
+        # a fonte a cada um dos vasilhames
         G.novo_vertice(vasilhame)
         G.nova_aresta('Fonte', vasilhame, 1, 0)
 
-        # Conectando o vasilhame a cada caminhao que pode transporta-lo
+        # Conectando o vasilhame a cada caminhao que pode
+        # transporta-lo
         for caminhao in caminhoes:
             G.nova_aresta(vasilhame, caminhao, 1, 0)
 
@@ -352,15 +355,15 @@ import collections
 
 *** Complexidade
 
-O algoritmo de Ford-Fulkerson tem complexidade $O(VF)$ TODO:
-referência ao 7.28, em que $V$ é a quantidade de vértices e $F$ é o
-maior valor possível para o fluxo.
+Como vimos no exercício 7.28, O algoritmo de Ford-Fulkerson tem
+complexidade $O((V + E)F)$ em que $V$ é a quantidade de vértices, $E$
+é a quantidade de arestas e $F$ é o maior valor possível para o fluxo.
 
-No caso, o número de vértices é $m + n + 2$ e o maior fluxo possível é
-$n$, totalizando uma complexidade $O(n(m + n))$, o que é polinomial na
+No caso, $V = m + n + 2$, $E \leq n + nm + m$ e o maior fluxo possível é
+$n$, totalizando uma complexidade máxima $O(n^2m)$, o que é polinomial na
 entrada.
 
-* Item b
+* Item B
 
 Vamos mostrar que é possível reduzir uma instância do 3-SAT a um
 problema de colocar vasilhames em caminhões seguindo as restrições do
@@ -374,7 +377,7 @@ e cláusulas $K_1, \ldots, K_y$, onde cada cláusula é constituída de no
 máximo três elementos do universo de \textit{literais}, $\{v_1,
 \overline{v_1}, \ldots, v_x, \overline{v_x}\}$, encontrar uma
 atribuição de valores Verdadeiro/Falso para cada variável
-que faça com que todas as claúsulas sejam verdadeiras.
+que faça com que todas as cláusulas sejam verdadeiras.
 
 ** 3-SAT $\to$ Caminhões
 
@@ -412,7 +415,7 @@ Para garantir as condições acima, vamos criar os seguintes conflitos:
 Com isso, garantimos as seguintes propriedades:
 
 \begin{enumerate}[($P_1$)]
-\item Como todos os $w_i$ conflitem entre si, é necessário um
+\item Como todos os $w_i$ conflitam entre si, é necessário um
 caminhão por $w_i$.
 
 \item Como $w_i$ conflita com todos os literais tais que
@@ -421,14 +424,15 @@ correspondentes a $i$-ésima variável.
 
 \item $v_i$ e $\overline{v_i}$ não
 podem estar ambas no caminhão do $w_i$, pois elas conflitam entre si.
-\end{enumerate}
 
-Mais ainda, $\textit{exatamente}$ um elemento do par $\{v_i,
+\item Mais ainda, $\textit{exatamente}$ um elemento do par $\{v_i,
 \overline{v_i}\}$ está no caminhão do $w_i$ numa atribuição válida: Se
 nenhuma delas estivesse no caminhão do $w_i$, estariam ambas no único
 caminhão que não contém nenhum $w$ (pois todos os outros caminhões
 contém um $w_j$ com $i \neq j$, o que conflita com $v_i$ e
-$\overline{v_i}$), o que também não pode acontecer.
+$\overline{v_i}$ por $P_2$), o que também não pode acontecer por $P_3$.
+\end{enumerate}
+
 
 
 Agora, vamos adicionar as cláusulas à nossa construção:
@@ -461,13 +465,14 @@ Para completar a nossa redução, precisamos de duas coisas:
 
 Se existe uma solução para o problema, então todo caminhão que contém
 um vasilhame do tipo $w_i$ também contém um vasilhame correspondente a
-um literal; esse literal será marcado como verdadeiro. Todos os outros
-literais serão marcados como falsos. Essa marcação é consistente, pois
-para cada $i \in \{1, 2, \ldots, x\}$ exatamente um literal entre
-$v_i, \overline{v_i}$ que está no mesmo caminhão que $w_i$. Como todas as
-cláusulas têm que estar em um caminhão que contém um vasilhame do tipo
-$w_i$ e esse caminhão tem que conter um literal que está na claúsula,
-essa marcação faz com que todas as cláusulas sejam verdadeiras.
+um literal, pela propriedade $P_4$; esse literal será marcado como
+verdadeiro. Todos os outros literais serão marcados como falsos. Essa
+marcação é consistente, pois para cada $i \in \{1, 2, \ldots, x\}$
+exatamente um literal entre $v_i, \overline{v_i}$ que está no mesmo
+caminhão que $w_i$. Como todas as cláusulas têm que estar em um
+caminhão que contém um vasilhame do tipo $w_i$ e esse caminhão tem que
+conter um literal que está na cláusula, essa marcação faz com que
+todas as cláusulas sejam verdadeiras.
 
 
 **** $\not \exists$ solução caminhões $\Rightarrow \not \exists$ solução 3-SAT

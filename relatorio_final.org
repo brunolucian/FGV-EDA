@@ -6,20 +6,15 @@
 #+OPTIONS: toc:nil
 #+EXPORT_SELECT_TAGS: export
 #+EXPORT_EXCLUDE_TAGS: noexport
-#+LaTeX_HEADER: \usemintedstyle{perldoc}
-#+LaTeX_HEADER: \usepackage{tikz}
-#+LaTeX_HEADER: \usetikzlibrary{decorations.markings}
-#+LaTeX_HEADER: \tikzstyle{vertex}=[circle, draw, inner sep=0pt, minimum size=7pt]
-#+LaTeX_HEADER: \newcommand{\vertex}{\node[vertex]}
 
 * Exercício 7.28 (Tardos)
 #+INCLUDE: "7_28/cronograma.org" :lines "5-"
 
-* Exercício 6.30 (Papadimitriou)
-#+INCLUDE: "6_30/arvore_de_maxima_parcimonia.org" :lines "5-"
-
 * Exercício 6.3 (Papadimitriou)
 #+INCLUDE: "6_3/solucao.org" :lines "5-"
+
+* Exercício 6.30 (Papadimitriou)
+#+INCLUDE: "6_30/arvore_de_maxima_parcimonia.org" :lines "5-"
 
 * Exercício 4.5 (Tardos)
 #+INCLUDE: "4_5/solucao.org" :lines "5-"

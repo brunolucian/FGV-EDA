@@ -1,4 +1,4 @@
-% Created 2015-06-21 Dom 16:35
+% Created 2015-06-21 Dom 16:57
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -18,10 +18,6 @@
 \tolerance=1000
 \usepackage{minted}
 \usemintedstyle{perldoc}
-\usepackage{tikz}
-\usetikzlibrary{decorations.markings}
-\tikzstyle{vertex}=[circle, draw, inner sep=0pt, minimum size=7pt]
-\providecommand{\vertex}{\node[vertex]}
 \newcommand{\tu}{\textunderscore}
 \author{Alice Duarte Scarpa, Bruno Lucian Costa}
 \date{2015-06-23}
@@ -241,28 +237,32 @@ def parseia_newick(string):
 
 Outro formato muito comum em bioinformática é o formato FASTA. É um
 formato bem simples:
+
+\begin{verbatim}
 >Nome
 Sequência de DNA
+que pode estar em
+várias linhas
+\end{verbatim}
 
 Vamos escrever uma função para converter dados no formato FASTA em um
 dicionário:
 \begin{minted}[]{python}
-def fasta_para_dict(array):
-    label = ""
+def fasta_para_dict(linhas):
+    nome = ""
     dna = ""
     saida = {}
 
-    for tmp in array:
-        line = tmp.rstrip()
-        if line[0] == ">":
-            if label != "":
-                saida[label] = dna
+    for linha_atual in linhas:
+        if linha_atual[0] == ">":
+            if nome != "":
+                saida[nome] = dna
                 dna = ""
-            label = line[1:]
+            nome = linha_atual[1:]
         else:
-            dna += line
+            dna += linha_atual
 
-    saida[label] = dna
+    saida[nome] = dna
 
     return saida
 \end{minted}
@@ -352,7 +352,7 @@ Salvamos esta entrada no arquivo \verb~livro.in~.
 Podemos agora rodar o código para descobrir os valores dos nós internos:
 
 \begin{minted}[]{python}
-with open('livro.in', 'r') as f:
+with open(arquivo_entrada, 'r') as f:
     entrada = map(lambda s: s.strip(), f.readlines())
 
 raiz_grande = parseia_newick(entrada[0])
@@ -379,6 +379,8 @@ print "Nota:", nota_total
 imprime_resposta(resposta)
 \end{minted}
 
+Executando o código acima descrito, obtemos a seguinte saída.
+
 \begin{verbatim}
 Nota: 7
 >interno4
@@ -391,8 +393,6 @@ AGTC
 AGCA
 \end{verbatim}
 
-
-
 \subsection{Rodando o algoritmo com dados mais complexos}
 \label{sec-3-6}
 
@@ -402,8 +402,8 @@ ensino de bioinformática.
 O arquivo \href{https://github.com/adusca/FGV-EDA/blob/master/6_30/rosalind.in}{rosalind.in} contém um banco de dados de 221 espécies, cada
 uma com 266 caracteres.
 
-Como o resultado é muito longo, deixamos ele disponível em
-\href{https://github.com/adusca/FGV-EDA/blob/master/6_30/rosalind.out}{rosalind.out}. As primeiras linhas da saída são:
+Como o resultado é muito longo, deixamos o arquivo de saída disponível
+em \href{https://github.com/adusca/FGV-EDA/blob/master/6_30/rosalind.out}{rosalind.out}. As primeiras linhas da saída são:
 
 \begin{verbatim}
 Nota: 16880

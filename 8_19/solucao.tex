@@ -1,4 +1,4 @@
-% Created 2015-06-20 Sáb 23:02
+% Created 2015-06-21 Dom 17:04
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -21,7 +21,7 @@
 \usepackage{tikz,enumerate}
 \usetikzlibrary{decorations.markings}
 \tikzstyle{vertex}=[circle, draw, inner sep=0pt, minimum size=7pt]
-\newcommand{\vertex}{\node[vertex]}
+\providecommand{\vertex}{\node[vertex]}
 \author{Alice Duarte Scarpa, Bruno Lucian Costa}
 \date{2015-06-23}
 \title{Exercício 8.19 (Tardos)}
@@ -296,15 +296,15 @@ v$_{\text{10}}$ & C$_{\text{4}}$\\
 \subsubsection{Complexidade}
 \label{sec-2-1-2}
 
-O algoritmo de Ford-Fulkerson tem complexidade $O(VF)$ TODO:
-referência ao 7.28, em que $V$ é a quantidade de vértices e $F$ é o
-maior valor possível para o fluxo.
+Como vimos no exercício 7.28, O algoritmo de Ford-Fulkerson tem
+complexidade $O((V + E)F)$ em que $V$ é a quantidade de vértices, $E$
+é a quantidade de arestas e $F$ é o maior valor possível para o fluxo.
 
-No caso, o número de vértices é $m + n + 2$ e o maior fluxo possível é
-$n$, totalizando uma complexidade $O(n(m + n))$, o que é polinomial na
+No caso, $V = m + n + 2$, $E \leq n + nm + m$ e o maior fluxo possível é
+$n$, totalizando uma complexidade máxima $O(n^2m)$, o que é polinomial na
 entrada.
 
-\section{Item b}
+\section{Item B}
 \label{sec-3}
 
 Vamos mostrar que é possível reduzir uma instância do 3-SAT a um
@@ -320,7 +320,7 @@ e cláusulas $K_1, \ldots, K_y$, onde cada cláusula é constituída de no
 máximo três elementos do universo de \textit{literais}, $\{v_1,
 \overline{v_1}, \ldots, v_x, \overline{v_x}\}$, encontrar uma
 atribuição de valores Verdadeiro/Falso para cada variável
-que faça com que todas as claúsulas sejam verdadeiras.
+que faça com que todas as cláusulas sejam verdadeiras.
 
 \subsection{3-SAT $\to$ Caminhões}
 \label{sec-3-2}
@@ -366,7 +366,7 @@ Para garantir as condições acima, vamos criar os seguintes conflitos:
 Com isso, garantimos as seguintes propriedades:
 
 \begin{enumerate}[($P_1$)]
-\item Como todos os $w_i$ conflitem entre si, é necessário um
+\item Como todos os $w_i$ conflitam entre si, é necessário um
 caminhão por $w_i$.
 
 \item Como $w_i$ conflita com todos os literais tais que
@@ -375,14 +375,15 @@ correspondentes a $i$-ésima variável.
 
 \item $v_i$ e $\overline{v_i}$ não
 podem estar ambas no caminhão do $w_i$, pois elas conflitam entre si.
-\end{enumerate}
 
-Mais ainda, $\textit{exatamente}$ um elemento do par $\{v_i,
+\item Mais ainda, $\textit{exatamente}$ um elemento do par $\{v_i,
 \overline{v_i}\}$ está no caminhão do $w_i$ numa atribuição válida: Se
 nenhuma delas estivesse no caminhão do $w_i$, estariam ambas no único
 caminhão que não contém nenhum $w$ (pois todos os outros caminhões
 contém um $w_j$ com $i \neq j$, o que conflita com $v_i$ e
 $\overline{v_i}$), o que também não pode acontecer.
+\end{enumerate}
+
 
 
 Agora, vamos adicionar as cláusulas à nossa construção:
@@ -424,13 +425,14 @@ encontrar em tempo polinomial uma solução do 3-SAT correspondente
 
 Se existe uma solução para o problema, então todo caminhão que contém
 um vasilhame do tipo $w_i$ também contém um vasilhame correspondente a
-um literal; esse literal será marcado como verdadeiro. Todos os outros
-literais serão marcados como falsos. Essa marcação é consistente, pois
-para cada $i \in \{1, 2, \ldots, x\}$ exatamente um literal entre
-$v_i, \overline{v_i}$ que está no mesmo caminhão que $w_i$. Como todas as
-cláusulas têm que estar em um caminhão que contém um vasilhame do tipo
-$w_i$ e esse caminhão tem que conter um literal que está na claúsula,
-essa marcação faz com que todas as cláusulas sejam verdadeiras.
+um literal, pela propriedade $P_4$; esse literal será marcado como
+verdadeiro. Todos os outros literais serão marcados como falsos. Essa
+marcação é consistente, pois para cada $i \in \{1, 2, \ldots, x\}$
+exatamente um literal entre $v_i, \overline{v_i}$ que está no mesmo
+caminhão que $w_i$. Como todas as cláusulas têm que estar em um
+caminhão que contém um vasilhame do tipo $w_i$ e esse caminhão tem que
+conter um literal que está na cláusula, essa marcação faz com que
+todas as cláusulas sejam verdadeiras.
 
 
 \item $\not \exists$ solução caminhões $\Rightarrow \not \exists$ solução 3-SAT
