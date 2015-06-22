@@ -6,8 +6,8 @@ def antena(lista):
     ant = []
     while lista != []: # Realizar procedimento até lista estar vazia, ou seja todas as casas cobertas
         torre = np.random.randint(1, lmax) #fixando uma torre em um ponto qualquer
-        #for i in range(len(lista)): #Percorrendo toda a lista
-        for j in lista: # 
+        #for i in range(len(lista)): 
+        for j in lista: #Percorrendo toda a lista
              if j >= torre-4 and j <= torre+4: # Verifica se tem casa está coberta pela torre
                  lista.remove(j) # remove a casa coberta
                  ant.append(torre) # adciona a torre a lista

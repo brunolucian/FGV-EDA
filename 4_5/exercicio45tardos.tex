@@ -151,7 +151,7 @@ procedimento até que todas as casas tenham sido cobertas.
 import math, numpy
 
 def antena(lista):
-  lmax = max(lista)
+  lmax = max(lista)# Valor maximo presente na lista de distancias
   ant = []
   
   while lista != []: # Realizar procedimento ate todas as casas cobertas
@@ -169,6 +169,19 @@ def antena(lista):
  
 \end{minted}
 
+Vamos reproducir o mesmo exemplo feito com o algoritmo anterior para vermos a diferença entre as soluções.
+
+\begin{minted}[]{python}
+
+Chamada da funcao:
+print antena2([3, 16, 11, 18, 5, 17, 24, 29, 1, 301])
+
+Resultado:
+[4, 7, 10, 18, 20, 25, 28, 299]
+ 
+\end{minted}
+
+
 A solução do algoritmo para esse problema pode até ser a ótima eventualmente mas em suma ele demorar mais a conseguir um resposta
 para o problema devido a sua escolha aleatoria do local a colocar a antena. 
 
@@ -179,12 +192,15 @@ colocar porém algumas vezes pode escolher em local vazio gerando retrabalho o a
 
 \label{sec-3-3}
 
-
+Esse algoritmo recebe uma lista com as distancias das casas até o ponto inicial. 
+E começamos nosso algoritmo saindo do ponto inicial, ao oeste, em direção ao leste até que primeira casa esteja 4 milhas a oeste 
+colocamos uma antena neste local e retiramos da lista todas as casas cobertas por essa antena. Depois continuamos com esse processo
+até todas as casas serem retiradas da lista.
 
 \begin{minted}[]{python}
 
 def antena(lista):
-    lmax = max(lista)
+    lmax = max(lista)# Valor maximo presente na lista de distancias
     ant = []
     j = 0
     for i in range(lmax):
