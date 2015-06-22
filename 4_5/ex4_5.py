@@ -1,11 +1,8 @@
 def antena(lista):
-    #lista = lista
     lmax = max(lista)
-    #k = k
     ant = []
     j = 0
     for i in range(lmax):
-        #import pdb; pdb.set_trace()
         if j >= lmax:
             if j - ant[-1] <= 4:
                 return ant
@@ -18,4 +15,4 @@ def antena(lista):
     return ant
 
 
-print antena([3, 16, 11, 18, 5, 17, 24, 29, 1])
+print antena([3, 16, 11, 18, 5, 17, 24, 29, 1, 301])
