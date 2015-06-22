@@ -3,6 +3,7 @@ def antena(lista):
     ant = []
     j = 0
     for i in range(lmax):
+        print j
         if j >= lmax:
             if j - ant[-1] <= 4:
                 return ant

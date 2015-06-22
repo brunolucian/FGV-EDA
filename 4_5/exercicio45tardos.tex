@@ -217,6 +217,35 @@ def antena(lista):
  
 \end{minted}
 
+Vamos reproducir o mesmo exemplo feito com o algoritmo anterior para vermos a diferença entre as soluções.
+
+\begin{minted}[]{python}
+
+Chamada da funcao:
+print antena([3, 16, 11, 18, 5, 17, 24, 29, 1, 301])
+
+Resultado:
+[5, 15, 28, 305]
+ 
+\end{minted}
+
+Esse algoritmo sempre nos retorna a solução ótima e vamos mostrar isso a seguir.
+
+Suponha $S = \{ s_1, \ldots s_k \}$ sendo a solução com as posições das antenas 
+que o nosso algoritmo retornou e $T = \{ t_1, \ldots t_m \}$ sendo a solução ótima com as posições 
+das antenas ordenadas de forma crescente. Queremos mostrar que $k=m$.
+
+Vamos mostrar nosso algoritmo $S$ ``stay ahead'' da solução $T$. Ou seja, $s_i \geq t_i$.
+Para $i = 1$ essa afirmação é verdade, já que vamos ao leste o máximo possivel antes de colocar a antena.
+Iremos assumir também é verdade para $ i \geq 1$, ou seja, $\{ s_1 \ldots s_i \}$ cobre as mesmas casas que $\{ t_1 \ldots t_i \}$, 
+então se adicionarmos $t_{i+1}$ para $\{ s_1 \ldots s_i \}$, não deixa nenhuma casa entre $s_i$ e $t_{i+1}$ descobertas.
+Mas no passo $(i+1)$ do algoritmo guloso é escolhido o $s_{i+1}$ para ser o maior possivel com a condição cobrir as casas entre $s_i$ e 
+$s_{i+1}$ e então $s_{i+1} > t_{i+1}$ o que prova o que queriamos.
+
+Então, se $k>m$, a solução $\{ s_1 \ldots s_m \}$ falha ao cobrir todas as casas, mas $s_m \geq t_m$ logo $\{ t_1 \ldots t_m \} = T$
+também falha ao cobrir todas as casas. O que é uma contradição, pois assumimos que $T$ era uma solução ótima para o problema.
+
+
 
 
 \section{Complexidade}
