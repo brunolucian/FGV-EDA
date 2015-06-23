@@ -1,15 +1,36 @@
-#+TITLE:	Exercício 4.5 (Tardos)
-#+AUTHOR:	Alice Duarte Scarpa, Bruno Lucian Costa
-#+EMAIL:	alicescarpa@gmail.com, bruno.lucian.costa@gmail.com
-#+DATE:		2015-06-23
-#+OPTIONS: tex:t
-#+OPTIONS: toc:nil
-#+STARTUP: showall
-#+EXPORT_SELECT_TAGS: export
-#+EXPORT_EXCLUDE_TAGS: noexport
-#+LaTeX_HEADER: \usemintedstyle{perldoc}
+% Created 2015-06-22 Seg 21:57
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{fixltx2e}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{marvosym}
+\usepackage{wasysym}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\tolerance=1000
+\usepackage{minted}
+\usemintedstyle{perldoc}
+\author{Alice Duarte Scarpa, Bruno Lucian Costa}
+\date{2015-06-23}
+\title{Exercício 4.5 (Tardos)}
+\hypersetup{
+  pdfkeywords={},
+  pdfsubject={},
+  pdfcreator={Emacs 24.4.1 (Org mode 8.2.10)}}
+\begin{document}
 
-* Enunciado
+\maketitle
+
+\section{Enunciado}
+\label{sec-1}
 
 Vamos considerar uma rua campestre longa e quieta, com casas
 espalhadas bem esparsamente ao longo da mesma. (Podemos imaginar a
@@ -23,7 +44,8 @@ rodovia, de modo que toda casa esteja a no máximo quatro milhas de
 uma das estações-base. Dê um algoritmo eficiente para alcançar esta
 meta, usando o menor número possível de bases.
 
-* Introdução
+\section{Introdução}
+\label{sec-2}
 \label{sec-2}
 
 Com este exercício vamos abordar uma técnica chamada de algoritmos
@@ -35,11 +57,13 @@ Antes porém, vai ser apresentado soluções utilizando algoritmos
 ``naive'' e um força bruta.
 
 
-* Soluções para o problema
+\section{Soluções para o problema}
+\label{sec-3}
 \label{sec-3}
 
 
-** Algoritmo naive
+\subsection{Algoritmo naive}
+\label{sec-3-1}
 \label{sec-3-1}
 
 Esta primeira solução para o problema é uma das mais simples possiveis
@@ -49,8 +73,7 @@ algoritmo fizemos a solução baseado apenas nessa ideia, então com ele
 vamos colocar uma antena a cada 4 milhas de distancia até que a casa
 mais distante esteja coberta pela nossas antenas.
 
-#+NAME: naive
-#+BEGIN_SRC python
+\begin{minted}[]{python}
 def antena(lista):
     lmax = max(lista) # Valor maximo presente na lista de distancias
     ant = []
@@ -60,41 +83,32 @@ def antena(lista):
             return ant
         j += 4
         ant.append(j)
-#+END_SRC
+\end{minted}
 
 Esse algoritmo bem simples nos retorna uma solução correta para o
 problema, mas ele ainda nos faz colocar muitas antenas de forma
 desnecessárias como podemos ver no exemplo a seguir.
 
 Chamada da função:
-#+NAME: chama
-#+BEGIN_SRC python
+\begin{minted}[]{python}
 print antena([3, 16, 11, 18, 5, 17, 24, 29, 1, 301])
-#+END_SRC
-
-#+NAME: roda_naive
-#+BEGIN_SRC python :tangle solucao_naive.py :noweb yes :exports results :results output latex
-<<naive>>
-<<chama>>
-#+END_SRC
-
+\end{minted}
 
 Resultado:
 
-#+RESULTS: roda_naive
+[4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60, 64, 68, 72, 76, 80, 84, 88, 92, 96, 100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140, 144, 148, 152, 156, 160, 164, 168, 172, 176, 180, 184, 188, 192, 196, 200, 204, 208, 212, 216, 220, 224, 228, 232, 236, 240, 244, 248, 252, 256, 260, 264, 268, 272, 276, 280, 284, 288, 292, 296, 300, 304]
 
 Outro algoritmo ``naive'' que tem uma solução melhor do que anterior será apresentado a seguir.
 
-#+NAME: naive2
-#+BEGIN_SRC python
- def antena(lista):
-    ant=[]
-    for i in lista: #Pecorre toda a lista
-        ant.append(lista[lista.index(i)]) #Para cada item da lista coloca uma antena
+\begin{minted}[]{python}
+def antena(lista):
+   ant=[]
+   for i in lista: #Pecorre toda a lista
+       ant.append(lista[lista.index(i)]) #Para cada item da lista coloca uma antena
 
-    ant.sort()
-    return ant
-#+END_SRC
+   ant.sort()
+   return ant
+\end{minted}
 
 Neste algoritmo a ideia seria colocar uma antena para cada casa o que
 resolveria nosso problema.
@@ -102,20 +116,17 @@ resolveria nosso problema.
 Vamos rodar o novo algoritmo com o mesmo exemplo que usamos na solução
 anterior para compararmos as soluções.
 
-#+BEGIN_SRC python :noweb yes
-<<chama>>
-#+END_SRC
-
-
-#+NAME: roda_naive2
-#+BEGIN_SRC python :tangle solucao_naive2.py :noweb yes :exports results :results output table
-<<naive2>>
-<<chama>>
-#+END_SRC
+\begin{minted}[]{python}
+print antena([3, 16, 11, 18, 5, 17, 24, 29, 1, 301])
+\end{minted}
 
 
 Resultado:
-#+RESULTS: roda_naive2
+\begin{center}
+\begin{tabular}{rrrrrrrrrr}
+1 & 3 & 5 & 11 & 16 & 17 & 18 & 24 & 29 & 301\\
+\end{tabular}
+\end{center}
 
 Já conseguimos perceber uma diferença muito grande entre as soluções.
 
@@ -123,7 +134,8 @@ Esses dois algoritmos até agora apresentados não nos retorna a melhor
 solução, os proximos algoritmos tentaremos conseguir a solução ótima
 para resolução deste problema.
 
-** Força Bruta
+\subsection{Força Bruta}
+\label{sec-3-2}
 \label{sec-3-2}
 
 Esse algoritmo de força bem simples escolhe um ponto qualquer dentro
@@ -133,8 +145,7 @@ tiver retiramos essa casa da lista e efetuamos esse procedimento até
 que todas as casas tenham sido cobertas.
 
 
-#+NAME: forca_bruta
-#+BEGIN_SRC python
+\begin{minted}[]{python}
 import math, numpy
 def antena(lista):
   lmax = max(lista)# Valor maximo presente na lista de distancias
@@ -151,24 +162,22 @@ def antena(lista):
   ant.sort() #Ordena as torres
 
   return ant
-#+END_SRC
+\end{minted}
 
 Vamos rodar o algoritmo com o mesmo exemplo usado com os algoritmos
 anteriores para vermos a diferença entre as soluções.
 
 
-#+BEGIN_SRC python :noweb yes
-<<chama>>
-#+END_SRC
-
-#+NAME: roda_forca_bruta
-#+BEGIN_SRC python :tangle solucao_forca_bruta.py :noweb yes :exports results :results output table
-<<forca_bruta>>
-<<chama>>
-#+END_SRC
+\begin{minted}[]{python}
+print antena([3, 16, 11, 18, 5, 17, 24, 29, 1, 301])
+\end{minted}
 
 Resultado:
-#+RESULTS: roda_forca_bruta
+\begin{center}
+\begin{tabular}{rrrrrrr}
+1 & 11 & 14 & 20 & 22 & 32 & 298\\
+\end{tabular}
+\end{center}
 
 A solução do algoritmo para esse problema pode até ser a ótima
 eventualmente mas em suma ele demora mais a conseguir uma resposta
@@ -180,7 +189,8 @@ de batalha naval, ele escolhe aleatoriamente uma antena para colocar
 porém algumas vezes pode escolher em local vazio gerando retrabalho o
 algoritmo.
 
-** Algoritmo gulosos
+\subsection{Algoritmo gulosos}
+\label{sec-3-3}
 \label{sec-3-3}
 
 Esse algoritmo recebe uma lista com as distancias das casas até o
@@ -190,8 +200,7 @@ oeste colocamos uma antena neste local e retiramos da lista todas as
 casas cobertas por essa antena. Depois continuamos com esse processo
 até todas as casas serem retiradas da lista.
 
-#+NAME: guloso
-#+BEGIN_SRC python
+\begin{minted}[]{python}
 def antena(lista):
     lmax = max(lista)# Valor maximo presente na lista de distancias
     ant = []
@@ -207,24 +216,21 @@ def antena(lista):
         else:
             j += 1
     return ant
-
-#+END_SRC
+\end{minted}
 
 Vamos reproduzir o mesmo exemplo feito com o algoritmos anteriores
 para vermos a diferença entre as soluções.
 
-#+BEGIN_SRC python :noweb yes
-<<chama>>
-#+END_SRC
-
-#+NAME: roda_guloso
-#+BEGIN_SRC python :tangle solucao_guloso.py :noweb yes :exports results :results output table
-<<guloso>>
-<<chama>>
-#+END_SRC
+\begin{minted}[]{python}
+print antena([3, 16, 11, 18, 5, 17, 24, 29, 1, 301])
+\end{minted}
 
 Resultado:
-#+RESULTS: roda_guloso
+\begin{center}
+\begin{tabular}{rrrr}
+5 & 15 & 28 & 305\\
+\end{tabular}
+\end{center}
 
 Esse algoritmo sempre nos retorna a solução ótima e vamos mostrar isso
 a seguir.
@@ -237,7 +243,7 @@ forma crescente. Queremos mostrar que $k=m$.
 Vamos mostrar nosso algoritmo $S$ ``stay ahead'' da solução $T$. Ou
 seja, $s_i \geq t_i$.  Para $i = 1$ essa afirmação é verdade, já que
 vamos ao leste o máximo possivel antes de colocar a antena.  Iremos
-assumir também é verdade para $ i \geq 1$, ou seja, $\{ s_1 \ldots s_i
+assumir também é verdade para \$ i $\ge$ 1\$, ou seja, $\{ s_1 \ldots s_i
 \}$ cobre as mesmas casas que $\{ t_1 \ldots t_i \}$, então se
 adicionarmos $t_{i+1}$ para $\{ s_1 \ldots s_i \}$, não deixa nenhuma
 casa entre $s_i$ e $t_{i+1}$ descobertas.  Mas no passo $(i+1)$ do
@@ -251,7 +257,8 @@ também falha ao cobrir todas as casas. O que é uma contradição, pois
 assumimos que $T$ era uma solução ótima para o problema.
 
 
-* Complexidade
+\section{Complexidade}
+\label{sec-4}
 \label{sec-5}
 
 Para o problema proposto foi apresentado quatro possiveis
@@ -272,3 +279,5 @@ torna-se algo exponencial.
 
 A quarta solução é a única solução ótima e possui complexidade também
 linear, dependendo apenas do tamanho da rua.
+% Emacs 24.4.1 (Org mode 8.2.10)
+\end{document}
