@@ -10,7 +10,6 @@ def restaurante(distancias,k,pay):
         else:
             d_novo=0
         lucro[i+1]=max(lucro[i],pay[i]+d_novo)
-        print lucro
 
     return lucro[-1]
 
