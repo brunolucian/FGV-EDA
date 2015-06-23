@@ -1,4 +1,4 @@
-% Created 2015-06-21 Dom 18:26
+% Created 2015-06-23 Ter 13:55
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -57,7 +57,7 @@ que nenhum dos pares proibidos de vasilhames esteja no mesmo
 caminhão?
 \end{itemize}
 
-\section{Item a}
+\section{Item A}
 \label{sec-2}
 
 Uma solução força-bruta para esse problema seria:
@@ -315,8 +315,40 @@ problema de colocar vasilhames em caminhões seguindo as restrições do
 enunciado. De modo que, como 3-SAT é NP-completo, nosso problema
 também é.
 
-\subsection{Definindo 3-SAT}
+Mas antes, temos que mostrar que nosso problema está em $NP$.
+
+\subsection{Caminhões $\in$ NP}
 \label{sec-3-1}
+
+Para mostrarmos que o nosso problema está em $NP$, temos que provar
+que é possível verificar em tempo polinomial se um arranjo de
+vasilhames em caminhões é válido.
+
+Dada uma lista $V = [i_1, i_2, \ldots , i_n]$ tal que o
+$j$-ésimo vasilhame $v_j$ está no caminhão $C_{i_j}$, o
+seguinte algoritmo verifica se o arranjo é válido em tempo
+$O(m + |\textit{incompativeis}|) = O(m + n^2)$ :
+\begin{minted}[]{python}
+def verifica_arranjo(V, incompativeis, m, k):
+    por_caminhao = [0] * m
+    for caminhao in V:
+        por_caminhao[caminhao] += 1
+
+    # Verifica se cada caminhao tem no maximo k vasilhames
+    for i in xrange(m):
+        if por_caminhao[i] > k:
+            return False
+
+    # Verifica se um caminhao tem um par incompativel
+    for (v1, v2) in incompativeis:
+        if V[v1] == V[v2]:
+            return False
+
+    return True
+\end{minted}
+
+\subsection{Definindo 3-SAT}
+\label{sec-3-2}
 
 3-SAT é o problema de dado um conjunto de variáveis $v_1, \ldots, v_x$
 e cláusulas $K_1, \ldots, K_y$, onde cada cláusula é constituída de no
@@ -326,7 +358,7 @@ atribuição de valores Verdadeiro/Falso para cada variável
 que faça com que todas as cláusulas sejam verdadeiras.
 
 \subsection{3-SAT $\to$ Caminhões}
-\label{sec-3-2}
+\label{sec-3-3}
 
 Dada uma instância do 3-SAT, vamos construir uma instância do problema
 enunciado que admite solução se e somente se tal
@@ -337,7 +369,7 @@ problema de 3-SAT tem pelo menos quatro variáveis, adicionando
 variáveis que não aparecem em cláusula alguma se necessário.
 
 \subsubsection{Construção}
-\label{sec-3-2-1}
+\label{sec-3-3-1}
 
 Vamos começar a construção sem as cláusulas:
 
@@ -412,7 +444,7 @@ mínimo quatro literais falsos, de modo que há garantidamente um
 literal que não aparece na cláusula e portanto conflita com ela.
 
 \subsubsection{Obtendo uma solução}
-\label{sec-3-2-2}
+\label{sec-3-3-2}
 
 Para completar a nossa redução, precisamos de duas coisas:
 \begin{itemize}
@@ -424,7 +456,7 @@ encontrar em tempo polinomial uma solução do 3-SAT correspondente
 
 \begin{enumerate}
 \item Solução caminhões $\to$ Solução 3-SAT
-\label{sec-3-2-2-1}
+\label{sec-3-3-2-1}
 
 Se existe uma solução para o problema, então todo caminhão que contém
 um vasilhame do tipo $w_i$ também contém um vasilhame correspondente a
@@ -439,7 +471,7 @@ todas as cláusulas sejam verdadeiras.
 
 
 \item $\not \exists$ solução caminhões $\Rightarrow \not \exists$ solução 3-SAT
-\label{sec-3-2-2-2}
+\label{sec-3-3-2-2}
 
 É mais fácil provar a contrapositiva, isso é, $\exists$ solução 3-SAT
 $\Rightarrow \exists$ solução caminhões.

@@ -1,15 +1,36 @@
-#+TITLE:	Exercício 6.3 (Papadimitriou)
-#+AUTHOR:	Alice Duarte Scarpa, Bruno Lucian Costa
-#+EMAIL:	alicescarpa@gmail.com, bruno.lucian.costa@gmail.com
-#+DATE:		2015-06-23
-#+OPTIONS: tex:t
-#+OPTIONS: toc:nil
-#+STARTUP: showall
-#+EXPORT_SELECT_TAGS: export
-#+EXPORT_EXCLUDE_TAGS: noexport
-#+LaTeX_HEADER: \usemintedstyle{perldoc}
+% Created 2015-06-23 Ter 15:44
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{fixltx2e}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{marvosym}
+\usepackage{wasysym}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\tolerance=1000
+\usepackage{minted}
+\usemintedstyle{perldoc}
+\author{Alice Duarte Scarpa, Bruno Lucian Costa}
+\date{2015-06-23}
+\title{Exercício 6.3 (Papadimitriou)}
+\hypersetup{
+  pdfkeywords={},
+  pdfsubject={},
+  pdfcreator={Emacs 24.4.1 (Org mode 8.2.10)}}
+\begin{document}
 
-* Enunciado
+\maketitle
+
+\section{Enunciado}
+\label{sec-1}
 
 O Yuckdonald's está considerando abrir uma cadeia de restaurantes em
 Quaint Valley Highway (QVG). Os $n$ locais possíveis estão em uma
@@ -17,16 +38,19 @@ linha reta, e as distâncias desses locais até o começo da QVG são, em
 milhas e em ordem crescente, $m_1, m_2, \ldots, m_n$. As restrições
 são as seguintes:
 
-- Em cada local, o Yuckdonald's pode abrir no máximo um
-  restaurante. O lucro esperado ao abrir um restaurante no local
-  $i$ é $p_i$, onde $p_i > 0$ e $i = 1, 2, \ldots, n$.
-- Quaisquer dois restaurantes devem estar a pelo menos $k$
+\begin{itemize}
+\item Em cada local, o Yuckdonald's pode abrir no máximo um
+restaurante. O lucro esperado ao abrir um restaurante no local
+$i$ é $p_i$, onde $p_i > 0$ e $i = 1, 2, \ldots, n$.
+\item Quaisquer dois restaurantes devem estar a pelo menos $k$
   milhas de distância, onde $k$ é um inteiro positivo.
+\end{itemize}
 
 Dê um algoritmo eficiente para computar o maior lucro total
 esperado, sujeito às restrições acima.
 
-* Introdução
+\section{Introdução}
+\label{sec-2}
 \label{sec-2}
 
 Com este exercício vamos abordar uma técnica chamada de programação
@@ -36,10 +60,12 @@ calculada de soluções de subproblemas.
 Antes porém, vai ser apresentado uma solução utilizando um algoritmo guloso.
 
 
-* Soluções para o problema
+\section{Soluções para o problema}
+\label{sec-3}
 \label{sec-3}
 
-** Algoritmo guloso
+\subsection{Algoritmo guloso}
+\label{sec-3-1}
 
 \label{sec-3-3}
 
@@ -51,12 +77,11 @@ da QVH.
 
 Iremos percorrer as lojas em ordem crescente (lembrando que a entrada
 já vem nessa ordem), escolhendo uma loja sempre que a distância dela
-for pelo menos o valor da variável ~distancia_possivel~. Ao escolhermos
-uma loja ~i~, mudamos o valor dessa variável para ~distancia[i] + k~,
+for pelo menos o valor da variável \verb~distancia_possivel~. Ao escolhermos
+uma loja \verb~i~, mudamos o valor dessa variável para \verb~distancia[i] + k~,
 de modo a não pegar lojas próximas dela.
 
-#+NAME: guloso_6_3
-#+BEGIN_SRC python
+\begin{minted}[]{python}
 def restaurante(distancias, k, lucros):
     distancia_possivel = 0
     lucro = 0
@@ -68,7 +93,7 @@ def restaurante(distancias, k, lucros):
             distancia_possivel = distancias[i] + k
 
     return lucro
-#+END_SRC
+\end{minted}
 
 
 Vamos mostrar um exemplo no qual esse algoritmo não retonar o valor
@@ -77,20 +102,15 @@ máximo possivel e vamos tentar entender.
 
 Chamada da função:
 
-#+NAME: chama_guloso_6_3
-#+BEGIN_SRC python
+\begin{minted}[]{python}
 print restaurante([3, 8, 9, 15], 3, [5, 6, 10, 8])
-#+END_SRC
-
-#+NAME: roda_guloso_6_3
-#+BEGIN_SRC python :tangle solucao_guloso.py :noweb yes :exports results :results output
-<<guloso_6_3>>
-<<chama_guloso_6_3>>
-#+END_SRC
+\end{minted}
 
 Resultado:
 
-#+RESULTS: roda_guloso_6_3
+\begin{verbatim}
+19
+\end{verbatim}
 
 O resultado obtido utilizando desse algoritmo não foi o resultado
 ótimo, pois nesse exemplo é fácil perceber que o valor máximo que se
@@ -105,7 +125,8 @@ lucro esperado.
 Vamos resolver esse problema com utilizando um algoritmo baseado no
 paradigma de programação dinâmica.
 
-** Algoritmo utilizando programação dinâmica
+\subsection{Algoritmo utilizando programação dinâmica}
+\label{sec-3-2}
 
 Esse técnica de programação utiliza as soluções dos sub-problemas para
 calcular a solução do problema.
@@ -118,7 +139,7 @@ onde $i_{dispo}$ é o maior $j$ tal que $m_j \leq m_i - k$, ou seja
 o primeiro local antes de $i$ que esteja a pelo menos $k$ milhas de
 distância.
 
-Vamos usar uma função auxiliar ~computa_i_dispo~ para pré-computar, em
+Vamos usar uma função auxiliar \verb~computa_i_dispo~ para pré-computar, em
 tempo linear, o valor de $i_{dispo}$ descrito acima para todo $i$.  A
 função coloca $-1$ na posição $i$ do array se não há índice $j$ com
 essa propriedade, isto é, se $m_i < m_1 + k$ (lembrando que os índices
@@ -129,11 +150,10 @@ Para tornar o cálculo mais eficiente, exploramos o fato de que a
 ordenação da entrada implica que $(i+1)_{dispo} \geq i_{dispo}$, isto
 é, que voltar k milhas a partir da $(i+1)$-ésima casa resulta em um
 índice maior ou igual que voltar $k$ milhas a partir da $i$-ésima
-casa. Isso permite reusar o valor da variável ~k_milhas_para_tras~
-entre iterações do ~for~.
+casa. Isso permite reusar o valor da variável \verb~k_milhas_para_tras~
+entre iterações do \verb~for~.
 
-#+NAME: calcula_i_dispo
-#+BEGIN_SRC python
+\begin{minted}[]{python}
 def calcula_i_dispo(distancias, k):
     i_dispo = []
     k_milhas_para_tras = -1
@@ -144,23 +164,22 @@ def calcula_i_dispo(distancias, k):
         i_dispo.append(k_milhas_para_tras)
 
     return i_dispo
-#+END_SRC
+\end{minted}
 
 O algoritmo acima parece quadrático, mas não é: O loop while interno
 ou falha o teste e sai imediatamente ou incrementa a variável
-~k_milhas_para_tras~. A primeira coisa ocorre apenas uma vez por
-iteração do ~for~, e portanto ocorre $n$ vezes no total. A segunda
+\verb~k_milhas_para_tras~. A primeira coisa ocorre apenas uma vez por
+iteração do \verb~for~, e portanto ocorre $n$ vezes no total. A segunda
 coisa também só ocorre $n-1$ vezes, pois o maior valor possível de
-~k_milhas_para_tras~ é $n-2$, visto que ~distancias[n-1]~ não pode ser menor
-que ~distancias[i] - k~ para nenhum $i$ pois a lista está ordenada.
+\verb~k_milhas_para_tras~ é $n-2$, visto que \verb~distancias[n-1]~ não pode ser menor
+que \verb~distancias[i] - k~ para nenhum $i$ pois a lista está ordenada.
 
 Usando a função acima, podemos implementar o algoritmo de maneira simples.
 Esse algoritmo recebe duas listas de tamanho $n$, uma com as distâncias
 dos locais até o ponto inicial e a outra com os respectivos lucros
 esperados, e um inteiro $k$ que é a distância em milhas desejada.
 
-#+NAME: dinamica
-#+BEGIN_SRC python
+\begin{minted}[]{python}
 def restaurante(distancias, k, valores):
     i_dispo = calcula_i_dispo(distancias, k)
 
@@ -175,34 +194,28 @@ def restaurante(distancias, k, valores):
         lucros[i + 1] = max(lucros[i], valores[i] + d_novo)
 
     return lucros[-1] # retorna o maior lucro calculado
-#+END_SRC
+\end{minted}
 
 Vamos repetir o exemplo que utilizamos no algoritmo guloso e vamos
 perceber que o valor que retornamos é o valor máximo.
 
 Chamada da função:
-#+NAME: chama_pd
-#+BEGIN_SRC python
+\begin{minted}[]{python}
 print restaurante([3, 8, 9, 15], 3, [5, 6, 10, 8])
-#+END_SRC
-
-#+NAME: roda_pd
-#+BEGIN_SRC python :tangle solucao_pd.py :noweb yes :exports results :results output
-<<calcula_i_dispo>>
-<<dinamica>>
-<<chama_pd>>
-#+END_SRC
-
+\end{minted}
 
 Resultado:
 
-#+RESULTS: roda_pd
+\begin{verbatim}
+23
+\end{verbatim}
 
 Isso se deve ao fato de que a programação dinâmica utiliza os valores
 de lucros já calculados e guardados na memória para calcular os
 valores ótimos futuros.
 
-* Complexidade
+\section{Complexidade}
+\label{sec-4}
 \label{sec-5}
 
 
@@ -211,6 +224,8 @@ porém não é ótima, como podemos perceber no exemplo.
 
 A solução obtida pelo algoritmo utlizando programação dinâmica é a
 solução ótima e possui complexidade linear, pois a função
-~calcula_i_dispo~ é linear como já argumentado e a função
-~restaurante~ cria um array de tamanho $n+1$ e depois executa um
-~for~ com operações de tempo constante.
+\verb~calcula_i_dispo~ é linear como já argumentado e a função
+\verb~restaurante~ cria um array de tamanho $n+1$ e depois executa um
+\verb~for~ com operações de tempo constante.
+% Emacs 24.4.1 (Org mode 8.2.10)
+\end{document}

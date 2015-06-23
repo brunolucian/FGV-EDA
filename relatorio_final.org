@@ -19,18 +19,23 @@ relatório.
 
 Mais detalhes de como gerar o relatório final estão disponíveis no
 README do repositório.
+#+LaTeX: \pagebreak
 
 * Exercício 7.28 (Tardos)
 #+INCLUDE: "7_28/cronograma.org" :lines "5-"
+#+LaTeX: \pagebreak
 
 * Exercício 6.3 (Papadimitriou)
 #+INCLUDE: "6_3/solucao.org" :lines "5-"
+#+LaTeX: \pagebreak
 
 * Exercício 6.30 (Papadimitriou)
 #+INCLUDE: "6_30/arvore_de_maxima_parcimonia.org" :lines "5-"
+#+LaTeX: \pagebreak
 
 * Exercício 4.5 (Tardos)
 #+INCLUDE: "4_5/solucao.org" :lines "5-"
+#+LaTeX: \pagebreak
 
 * Exercício 8.19 (Tardos)
 #+INCLUDE: "8_19/solucao.org" :lines "5-"

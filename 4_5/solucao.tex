@@ -1,4 +1,4 @@
-% Created 2015-06-22 Seg 21:57
+% Created 2015-06-23 Ter 14:35
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -95,7 +95,6 @@ print antena([3, 16, 11, 18, 5, 17, 24, 29, 1, 301])
 \end{minted}
 
 Resultado:
-
 [4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60, 64, 68, 72, 76, 80, 84, 88, 92, 96, 100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140, 144, 148, 152, 156, 160, 164, 168, 172, 176, 180, 184, 188, 192, 196, 200, 204, 208, 212, 216, 220, 224, 228, 232, 236, 240, 244, 248, 252, 256, 260, 264, 268, 272, 276, 280, 284, 288, 292, 296, 300, 304]
 
 Outro algoritmo ``naive'' que tem uma solução melhor do que anterior será apresentado a seguir.
@@ -103,8 +102,8 @@ Outro algoritmo ``naive'' que tem uma solução melhor do que anterior será apr
 \begin{minted}[]{python}
 def antena(lista):
    ant=[]
-   for i in lista: #Pecorre toda a lista
-       ant.append(lista[lista.index(i)]) #Para cada item da lista coloca uma antena
+   for i in xrange(len(lista)): #Pecorre toda a lista
+       ant.append(lista[i]) #Para cada item da lista coloca uma antena
 
    ant.sort()
    return ant
@@ -120,7 +119,6 @@ anterior para compararmos as soluções.
 print antena([3, 16, 11, 18, 5, 17, 24, 29, 1, 301])
 \end{minted}
 
-
 Resultado:
 \begin{center}
 \begin{tabular}{rrrrrrrrrr}
@@ -134,7 +132,7 @@ Esses dois algoritmos até agora apresentados não nos retorna a melhor
 solução, os proximos algoritmos tentaremos conseguir a solução ótima
 para resolução deste problema.
 
-\subsection{Força Bruta}
+\subsection{Força bruta}
 \label{sec-3-2}
 \label{sec-3-2}
 
@@ -175,7 +173,7 @@ print antena([3, 16, 11, 18, 5, 17, 24, 29, 1, 301])
 Resultado:
 \begin{center}
 \begin{tabular}{rrrrrrr}
-1 & 11 & 14 & 20 & 22 & 32 & 298\\
+2 & 5 & 9 & 13 & 22 & 26 & 299\\
 \end{tabular}
 \end{center}
 
@@ -189,32 +187,34 @@ de batalha naval, ele escolhe aleatoriamente uma antena para colocar
 porém algumas vezes pode escolher em local vazio gerando retrabalho o
 algoritmo.
 
-\subsection{Algoritmo gulosos}
+\subsection{Algoritmo guloso}
 \label{sec-3-3}
 \label{sec-3-3}
 
-Esse algoritmo recebe uma lista com as distancias das casas até o
-ponto inicial.  E começamos nosso algoritmo saindo do ponto inicial,
-ao oeste, em direção ao leste até que primeira casa esteja 4 milhas a
+Esse algoritmo recebe uma lista com as distâncias das casas até o
+ponto inicial. Começamos nosso algoritmo saindo do ponto inicial,
+a oeste, em direção ao leste até que primeira casa esteja 4 milhas a
 oeste colocamos uma antena neste local e retiramos da lista todas as
 casas cobertas por essa antena. Depois continuamos com esse processo
 até todas as casas serem retiradas da lista.
 
 \begin{minted}[]{python}
 def antena(lista):
-    lmax = max(lista)# Valor maximo presente na lista de distancias
     ant = []
-    j = 0
-    for i in range(lmax):
-        if j >= lmax:
-            if j - ant[-1] <= 4:
-                return ant
-        if j in lista:
-            j += 4
-            ant.append(j)
-            j += 4
+    lista.sort()
+
+    tamanho = len(lista)
+    for i in range(tamanho):
+        if len(ant) == 0:
+            # O valor de -10 nao afeta a resposta, pois as posicoes
+            # das casas sao positivas
+            alcance = -10
         else:
-            j += 1
+            alcance = ant[-1] + 4
+
+        if lista[i] > alcance:
+            ant.append(lista[i] + 4)
+
     return ant
 \end{minted}
 
@@ -240,10 +240,10 @@ das antenas que o nosso algoritmo retornou e $T = \{ t_1, \ldots t_m
 \}$ sendo a solução ótima com as posições das antenas ordenadas de
 forma crescente. Queremos mostrar que $k=m$.
 
-Vamos mostrar nosso algoritmo $S$ ``stay ahead'' da solução $T$. Ou
+Vamos mostrar nosso algoritmo $S$ ``stays ahead'' da solução $T$. Ou
 seja, $s_i \geq t_i$.  Para $i = 1$ essa afirmação é verdade, já que
 vamos ao leste o máximo possivel antes de colocar a antena.  Iremos
-assumir também é verdade para \$ i $\ge$ 1\$, ou seja, $\{ s_1 \ldots s_i
+assumir também é verdade para $i \geq 1$, ou seja, $\{ s_1 \ldots s_i
 \}$ cobre as mesmas casas que $\{ t_1 \ldots t_i \}$, então se
 adicionarmos $t_{i+1}$ para $\{ s_1 \ldots s_i \}$, não deixa nenhuma
 casa entre $s_i$ e $t_{i+1}$ descobertas.  Mas no passo $(i+1)$ do
@@ -271,13 +271,16 @@ uma casa.
 
 A segunda solução ``naive'' é linear em relação ao tamanho do vetor de
 distancias, ou seja, tem complexidade $O(n)$, onde $n$ é o número de
-casas na rua.
+casas na rua, a menos da ordenação do final. Com a ordenação, a
+complexidade é $O(n \log n)$.
 
 A terceira solução é uma força bruta, escolhendo aleatóriamente uma
-posição para colocar a antena o que com valor de $n$ muito grande
-torna-se algo exponencial.
+posição para colocar a antena o que, com estradas muito grandes, pode
+demorar uma quantidade de tempo não-polinomial.
 
-A quarta solução é a única solução ótima e possui complexidade também
-linear, dependendo apenas do tamanho da rua.
+A quarta solução é a única solução ótima e possui complexidade linear
+a menos da chamada para a função de ordenação. Ou seja, seria linear
+se a entrada já viesse ordenada. Como este não é necessariamente o
+caso, o algoritmo demora tempo $O(n\log n)$.
 % Emacs 24.4.1 (Org mode 8.2.10)
 \end{document}

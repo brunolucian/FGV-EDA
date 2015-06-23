@@ -1,4 +1,4 @@
-% Created 2015-06-22 Seg 21:59
+% Created 2015-06-23 Ter 15:47
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -55,6 +55,7 @@ relatório.
 
 Mais detalhes de como gerar o relatório final estão disponíveis no
 README do repositório.
+\pagebreak
 
 \section{Exercício 7.28 (Tardos)}
 \label{sec-2}
@@ -721,6 +722,8 @@ Sex 7h & Edu\\
 \end{tabular}
 \end{center}
 
+\pagebreak
+
 \section{Exercício 6.3 (Papadimitriou)}
 \label{sec-3}
 
@@ -743,6 +746,186 @@ $i$ é $p_i$, onde $p_i > 0$ e $i = 1, 2, \ldots, n$.
 
 Dê um algoritmo eficiente para computar o maior lucro total
 esperado, sujeito às restrições acima.
+
+\subsection{Introdução}
+\label{sec-3-2}
+\label{sec-2}
+
+Com este exercício vamos abordar uma técnica chamada de programação
+dinâmica, que tem como caracteristica que a solução ótima pode ser
+calculada de soluções de subproblemas.
+
+Antes porém, vai ser apresentado uma solução utilizando um algoritmo guloso.
+
+
+\subsection{Soluções para o problema}
+\label{sec-3-3}
+\label{sec-3}
+
+\subsubsection{Algoritmo guloso}
+\label{sec-3-3-1}
+
+\label{sec-3-3}
+
+Esse algoritmo recebe duas listas de tamanho $n$, uma com as distâncias
+dos locais até o ponto inicial e a outra com os respectivos lucros
+esperados, e um inteiro $k$ que é a distância em milhas do enunciado.
+Começamos nosso algoritmo saindo do ponto inicial, em direção ao fim
+da QVH.
+
+Iremos percorrer as lojas em ordem crescente (lembrando que a entrada
+já vem nessa ordem), escolhendo uma loja sempre que a distância dela
+for pelo menos o valor da variável \verb~distancia_possivel~. Ao escolhermos
+uma loja \verb~i~, mudamos o valor dessa variável para \verb~distancia[i] + k~,
+de modo a não pegar lojas próximas dela.
+
+\begin{minted}[]{python}
+def restaurante(distancias, k, lucros):
+    distancia_possivel = 0
+    lucro = 0
+
+    # Percorrendo toda a QVH
+    for i in range(len(distancias)):
+        if distancias[i] >= distancia_possivel:
+            lucro += lucros[i]
+            distancia_possivel = distancias[i] + k
+
+    return lucro
+\end{minted}
+
+
+Vamos mostrar um exemplo no qual esse algoritmo não retonar o valor
+máximo possivel e vamos tentar entender.
+
+
+Chamada da função:
+
+\begin{minted}[]{python}
+print restaurante([3, 8, 9, 15], 3, [5, 6, 10, 8])
+\end{minted}
+
+Resultado:
+
+\begin{verbatim}
+19
+\end{verbatim}
+
+O resultado obtido utilizando desse algoritmo não foi o resultado
+ótimo, pois nesse exemplo é fácil perceber que o valor máximo que se
+pode ter respeitando as restrições é de $23$, no qual a escolha seria
+feita pelos locais $[3, 9, 15]$. O algoritmo guloso, no entanto, está
+instruído sempre a escolher o primeiro local vago respeitando as
+restrições, ou seja nesse exemplo ele escolhe os locais $[3, 8, 15]$
+totalizando o lucro de $19$ que é inferior ao valor ótimo. O algoritmo
+guloso funcionaria bem para o caso que todos os locais têm o mesmo
+lucro esperado.
+
+Vamos resolver esse problema com utilizando um algoritmo baseado no
+paradigma de programação dinâmica.
+
+\subsubsection{Algoritmo utilizando programação dinâmica}
+\label{sec-3-3-2}
+
+Esse técnica de programação utiliza as soluções dos sub-problemas para
+calcular a solução do problema.
+
+Vamos definir o nosso sub-problema: Suponha $L(i)$ como o lucro
+máximo que podemos obter com os locais de $1 \text{ até } i$ e que
+$L(0)=0$. Nosso algoritmo deve seguir a seguinte regra:
+\[ L(i) = \max{(L(i-1),p_i + L(i_{dispo}))} ,\]
+onde $i_{dispo}$ é o maior $j$ tal que $m_j \leq m_i - k$, ou seja
+o primeiro local antes de $i$ que esteja a pelo menos $k$ milhas de
+distância.
+
+Vamos usar uma função auxiliar \verb~computa_i_dispo~ para pré-computar, em
+tempo linear, o valor de $i_{dispo}$ descrito acima para todo $i$.  A
+função coloca $-1$ na posição $i$ do array se não há índice $j$ com
+essa propriedade, isto é, se $m_i < m_1 + k$ (lembrando que os índices
+começam de $1$ no enunciado, mas que os índices do código começam de
+zero).
+
+Para tornar o cálculo mais eficiente, exploramos o fato de que a
+ordenação da entrada implica que $(i+1)_{dispo} \geq i_{dispo}$, isto
+é, que voltar k milhas a partir da $(i+1)$-ésima casa resulta em um
+índice maior ou igual que voltar $k$ milhas a partir da $i$-ésima
+casa. Isso permite reusar o valor da variável \verb~k_milhas_para_tras~
+entre iterações do \verb~for~.
+
+\begin{minted}[]{python}
+def calcula_i_dispo(distancias, k):
+    i_dispo = []
+    k_milhas_para_tras = -1
+
+    for i in xrange(len(distancias)):
+        while distancias[k_milhas_para_tras + 1] <= distancias[i] - k:
+            k_milhas_para_tras += 1
+        i_dispo.append(k_milhas_para_tras)
+
+    return i_dispo
+\end{minted}
+
+O algoritmo acima parece quadrático, mas não é: O loop while interno
+ou falha o teste e sai imediatamente ou incrementa a variável
+\verb~k_milhas_para_tras~. A primeira coisa ocorre apenas uma vez por
+iteração do \verb~for~, e portanto ocorre $n$ vezes no total. A segunda
+coisa também só ocorre $n-1$ vezes, pois o maior valor possível de
+\verb~k_milhas_para_tras~ é $n-2$, visto que \verb~distancias[n-1]~ não pode ser menor
+que \verb~distancias[i] - k~ para nenhum $i$ pois a lista está ordenada.
+
+Usando a função acima, podemos implementar o algoritmo de maneira simples.
+Esse algoritmo recebe duas listas de tamanho $n$, uma com as distâncias
+dos locais até o ponto inicial e a outra com os respectivos lucros
+esperados, e um inteiro $k$ que é a distância em milhas desejada.
+
+\begin{minted}[]{python}
+def restaurante(distancias, k, valores):
+    i_dispo = calcula_i_dispo(distancias, k)
+
+    # Iniciando vetor de zeros de tamanho n+1
+    lucros = [0 for _ in range(len(valores) + 1)]
+
+    for i in range(len(distancias)):
+        # Calculando L(i_dispo)
+        d_novo = lucros[i_dispo[i] + 1]
+
+        # Calculando o lucro acumulado da posicao i
+        lucros[i + 1] = max(lucros[i], valores[i] + d_novo)
+
+    return lucros[-1] # retorna o maior lucro calculado
+\end{minted}
+
+Vamos repetir o exemplo que utilizamos no algoritmo guloso e vamos
+perceber que o valor que retornamos é o valor máximo.
+
+Chamada da função:
+\begin{minted}[]{python}
+print restaurante([3, 8, 9, 15], 3, [5, 6, 10, 8])
+\end{minted}
+
+Resultado:
+
+\begin{verbatim}
+23
+\end{verbatim}
+
+Isso se deve ao fato de que a programação dinâmica utiliza os valores
+de lucros já calculados e guardados na memória para calcular os
+valores ótimos futuros.
+
+\subsection{Complexidade}
+\label{sec-3-4}
+\label{sec-5}
+
+
+A solução obtida pelo algoritmo guloso possui complexidade linear,
+porém não é ótima, como podemos perceber no exemplo.
+
+A solução obtida pelo algoritmo utlizando programação dinâmica é a
+solução ótima e possui complexidade linear, pois a função
+\verb~calcula_i_dispo~ é linear como já argumentado e a função
+\verb~restaurante~ cria um array de tamanho $n+1$ e depois executa um
+\verb~for~ com operações de tempo constante.
+\pagebreak
 
 \section{Exercício 6.30 (Papadimitriou)}
 \label{sec-4}
@@ -1133,6 +1316,7 @@ AAGAATCTGCGTAATACGGCACGCGGACAACATATGACTAGGGGCATAGGAAGTATGAAG
 CGTTCGGCAGTCTTGGGATCAAAAAGAAGCGTAGATCAATTTCTATGTAAAACTATACGG
 CCGACAAATTTAAAAACGCGAACGATGGAAT
 \end{verbatim}
+\pagebreak
 
 \section{Exercício 4.5 (Tardos)}
 \label{sec-5}
@@ -1203,7 +1387,6 @@ print antena([3, 16, 11, 18, 5, 17, 24, 29, 1, 301])
 \end{minted}
 
 Resultado:
-
 [4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60, 64, 68, 72, 76, 80, 84, 88, 92, 96, 100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140, 144, 148, 152, 156, 160, 164, 168, 172, 176, 180, 184, 188, 192, 196, 200, 204, 208, 212, 216, 220, 224, 228, 232, 236, 240, 244, 248, 252, 256, 260, 264, 268, 272, 276, 280, 284, 288, 292, 296, 300, 304]
 
 Outro algoritmo ``naive'' que tem uma solução melhor do que anterior será apresentado a seguir.
@@ -1211,8 +1394,8 @@ Outro algoritmo ``naive'' que tem uma solução melhor do que anterior será apr
 \begin{minted}[]{python}
 def antena(lista):
    ant=[]
-   for i in lista: #Pecorre toda a lista
-       ant.append(lista[lista.index(i)]) #Para cada item da lista coloca uma antena
+   for i in xrange(len(lista)): #Pecorre toda a lista
+       ant.append(lista[i]) #Para cada item da lista coloca uma antena
 
    ant.sort()
    return ant
@@ -1228,7 +1411,6 @@ anterior para compararmos as soluções.
 print antena([3, 16, 11, 18, 5, 17, 24, 29, 1, 301])
 \end{minted}
 
-
 Resultado:
 \begin{center}
 \begin{tabular}{rrrrrrrrrr}
@@ -1242,7 +1424,7 @@ Esses dois algoritmos até agora apresentados não nos retorna a melhor
 solução, os proximos algoritmos tentaremos conseguir a solução ótima
 para resolução deste problema.
 
-\subsubsection{Força Bruta}
+\subsubsection{Força bruta}
 \label{sec-5-3-2}
 \label{sec-3-2}
 
@@ -1283,7 +1465,7 @@ print antena([3, 16, 11, 18, 5, 17, 24, 29, 1, 301])
 Resultado:
 \begin{center}
 \begin{tabular}{rrrrrrr}
-1 & 2 & 15 & 19 & 22 & 33 & 300\\
+4 & 5 & 10 & 19 & 21 & 33 & 297\\
 \end{tabular}
 \end{center}
 
@@ -1297,32 +1479,34 @@ de batalha naval, ele escolhe aleatoriamente uma antena para colocar
 porém algumas vezes pode escolher em local vazio gerando retrabalho o
 algoritmo.
 
-\subsubsection{Algoritmo gulosos}
+\subsubsection{Algoritmo guloso}
 \label{sec-5-3-3}
 \label{sec-3-3}
 
-Esse algoritmo recebe uma lista com as distancias das casas até o
-ponto inicial.  E começamos nosso algoritmo saindo do ponto inicial,
-ao oeste, em direção ao leste até que primeira casa esteja 4 milhas a
+Esse algoritmo recebe uma lista com as distâncias das casas até o
+ponto inicial. Começamos nosso algoritmo saindo do ponto inicial,
+a oeste, em direção ao leste até que primeira casa esteja 4 milhas a
 oeste colocamos uma antena neste local e retiramos da lista todas as
 casas cobertas por essa antena. Depois continuamos com esse processo
 até todas as casas serem retiradas da lista.
 
 \begin{minted}[]{python}
 def antena(lista):
-    lmax = max(lista)# Valor maximo presente na lista de distancias
     ant = []
-    j = 0
-    for i in range(lmax):
-        if j >= lmax:
-            if j - ant[-1] <= 4:
-                return ant
-        if j in lista:
-            j += 4
-            ant.append(j)
-            j += 4
+    lista.sort()
+
+    tamanho = len(lista)
+    for i in range(tamanho):
+        if len(ant) == 0:
+            # O valor de -10 nao afeta a resposta, pois as posicoes
+            # das casas sao positivas
+            alcance = -10
         else:
-            j += 1
+            alcance = ant[-1] + 4
+
+        if lista[i] > alcance:
+            ant.append(lista[i] + 4)
+
     return ant
 \end{minted}
 
@@ -1348,10 +1532,10 @@ das antenas que o nosso algoritmo retornou e $T = \{ t_1, \ldots t_m
 \}$ sendo a solução ótima com as posições das antenas ordenadas de
 forma crescente. Queremos mostrar que $k=m$.
 
-Vamos mostrar nosso algoritmo $S$ ``stay ahead'' da solução $T$. Ou
+Vamos mostrar nosso algoritmo $S$ ``stays ahead'' da solução $T$. Ou
 seja, $s_i \geq t_i$.  Para $i = 1$ essa afirmação é verdade, já que
 vamos ao leste o máximo possivel antes de colocar a antena.  Iremos
-assumir também é verdade para \$ i $\ge$ 1\$, ou seja, $\{ s_1 \ldots s_i
+assumir também é verdade para $i \geq 1$, ou seja, $\{ s_1 \ldots s_i
 \}$ cobre as mesmas casas que $\{ t_1 \ldots t_i \}$, então se
 adicionarmos $t_{i+1}$ para $\{ s_1 \ldots s_i \}$, não deixa nenhuma
 casa entre $s_i$ e $t_{i+1}$ descobertas.  Mas no passo $(i+1)$ do
@@ -1379,14 +1563,18 @@ uma casa.
 
 A segunda solução ``naive'' é linear em relação ao tamanho do vetor de
 distancias, ou seja, tem complexidade $O(n)$, onde $n$ é o número de
-casas na rua.
+casas na rua, a menos da ordenação do final. Com a ordenação, a
+complexidade é $O(n \log n)$.
 
 A terceira solução é uma força bruta, escolhendo aleatóriamente uma
-posição para colocar a antena o que com valor de $n$ muito grande
-torna-se algo exponencial.
+posição para colocar a antena o que, com estradas muito grandes, pode
+demorar uma quantidade de tempo não-polinomial.
 
-A quarta solução é a única solução ótima e possui complexidade também
-linear, dependendo apenas do tamanho da rua.
+A quarta solução é a única solução ótima e possui complexidade linear
+a menos da chamada para a função de ordenação. Ou seja, seria linear
+se a entrada já viesse ordenada. Como este não é necessariamente o
+caso, o algoritmo demora tempo $O(n\log n)$.
+\pagebreak
 
 \section{Exercício 8.19 (Tardos)}
 \label{sec-6}
@@ -1675,8 +1863,40 @@ problema de colocar vasilhames em caminhões seguindo as restrições do
 enunciado. De modo que, como 3-SAT é NP-completo, nosso problema
 também é.
 
-\subsubsection{Definindo 3-SAT}
+Mas antes, temos que mostrar que nosso problema está em $NP$.
+
+\subsubsection{Caminhões $\in$ NP}
 \label{sec-6-3-1}
+
+Para mostrarmos que o nosso problema está em $NP$, temos que provar
+que é possível verificar em tempo polinomial se um arranjo de
+vasilhames em caminhões é válido.
+
+Dada uma lista $V = [i_1, i_2, \ldots , i_n]$ tal que o
+$j$-ésimo vasilhame $v_j$ está no caminhão $C_{i_j}$, o
+seguinte algoritmo verifica se o arranjo é válido em tempo
+$O(m + |\textit{incompativeis}|) = O(m + n^2)$ :
+\begin{minted}[]{python}
+def verifica_arranjo(V, incompativeis, m, k):
+    por_caminhao = [0] * m
+    for caminhao in V:
+        por_caminhao[caminhao] += 1
+
+    # Verifica se cada caminhao tem no maximo k vasilhames
+    for i in xrange(m):
+        if por_caminhao[i] > k:
+            return False
+
+    # Verifica se um caminhao tem um par incompativel
+    for (v1, v2) in incompativeis:
+        if V[v1] == V[v2]:
+            return False
+
+    return True
+\end{minted}
+
+\subsubsection{Definindo 3-SAT}
+\label{sec-6-3-2}
 
 3-SAT é o problema de dado um conjunto de variáveis $v_1, \ldots, v_x$
 e cláusulas $K_1, \ldots, K_y$, onde cada cláusula é constituída de no
@@ -1686,7 +1906,7 @@ atribuição de valores Verdadeiro/Falso para cada variável
 que faça com que todas as cláusulas sejam verdadeiras.
 
 \subsubsection{3-SAT $\to$ Caminhões}
-\label{sec-6-3-2}
+\label{sec-6-3-3}
 
 Dada uma instância do 3-SAT, vamos construir uma instância do problema
 enunciado que admite solução se e somente se tal
@@ -1698,7 +1918,7 @@ variáveis que não aparecem em cláusula alguma se necessário.
 
 \begin{enumerate}
 \item Construção
-\label{sec-6-3-2-1}
+\label{sec-6-3-3-1}
 
 Vamos começar a construção sem as cláusulas:
 
@@ -1773,7 +1993,7 @@ mínimo quatro literais falsos, de modo que há garantidamente um
 literal que não aparece na cláusula e portanto conflita com ela.
 
 \item Obtendo uma solução
-\label{sec-6-3-2-2}
+\label{sec-6-3-3-2}
 
 Para completar a nossa redução, precisamos de duas coisas:
 \begin{itemize}
@@ -1785,7 +2005,7 @@ encontrar em tempo polinomial uma solução do 3-SAT correspondente
 
 \begin{enumerate}
 \item Solução caminhões $\to$ Solução 3-SAT
-\label{sec-6-3-2-2-1}
+\label{sec-6-3-3-2-1}
 
 Se existe uma solução para o problema, então todo caminhão que contém
 um vasilhame do tipo $w_i$ também contém um vasilhame correspondente a
@@ -1800,7 +2020,7 @@ todas as cláusulas sejam verdadeiras.
 
 
 \item $\not \exists$ solução caminhões $\Rightarrow \not \exists$ solução 3-SAT
-\label{sec-6-3-2-2-2}
+\label{sec-6-3-3-2-2}
 
 É mais fácil provar a contrapositiva, isso é, $\exists$ solução 3-SAT
 $\Rightarrow \exists$ solução caminhões.

@@ -370,6 +370,38 @@ problema de colocar vasilhames em caminhões seguindo as restrições do
 enunciado. De modo que, como 3-SAT é NP-completo, nosso problema
 também é.
 
+Mas antes, temos que mostrar que nosso problema está em $NP$.
+
+** Caminhões \in NP
+
+Para mostrarmos que o nosso problema está em $NP$, temos que provar
+que é possível verificar em tempo polinomial se um arranjo de
+vasilhames em caminhões é válido.
+
+Dada uma lista $V = [i_1, i_2, \ldots , i_n]$ tal que o
+$j$-ésimo vasilhame $v_j$ está no caminhão $C_{i_j}$, o
+seguinte algoritmo verifica se o arranjo é válido em tempo
+$O(m + |\textit{incompativeis}|) = O(m + n^2)$ :
+#+NAME: verifica_arranjo
+#+BEGIN_SRC python
+def verifica_arranjo(V, incompativeis, m, k):
+    por_caminhao = [0] * m
+    for caminhao in V:
+        por_caminhao[caminhao] += 1
+
+    # Verifica se cada caminhao tem no maximo k vasilhames
+    for i in xrange(m):
+        if por_caminhao[i] > k:
+            return False
+
+    # Verifica se um caminhao tem um par incompativel
+    for (v1, v2) in incompativeis:
+        if V[v1] == V[v2]:
+            return False
+
+    return True
+#+END_SRC
+
 ** Definindo 3-SAT
 
 3-SAT é o problema de dado um conjunto de variáveis $v_1, \ldots, v_x$

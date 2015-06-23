@@ -16,6 +16,3 @@ def antena(lista):
 
   return ant
 print antena([3, 16, 11, 18, 5, 17, 24, 29, 1, 301])
-print antena([3, 16, 11, 18, 5, 17, 24, 29, 1, 301])
-print antena([3, 16, 11, 18, 5, 17, 24, 29, 1, 301])
-print antena([3, 16, 11, 18, 5, 17, 24, 29, 1, 301])
