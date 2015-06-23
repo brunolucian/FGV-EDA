@@ -122,8 +122,9 @@ Vamos resolver esse problema com utilizando um algoritmo baseado no paradigma de
 
 Esse técnica de programação utiliza as soluções dos sub-problemas para calcular a solução do problema.
 
-Então vamos definir o nosso sub-problema: Suponha $L(i)$ como o lucro máximo que podemos obter com os locais de $1 \text{ até } i$   
-
+Então vamos definir o nosso sub-problema: Suponha $L(i)$ como o lucro máximo que podemos obter com os locais de $1 \text{ até } i$ e que
+$L(0)=0$ então nosso algoritmo deve seguir a seguinte regra: $$ L(i) = \max{(L(i-1),p_i + L(i_{dispo}))} ,$$  
+onde $i_{dispo}$ é o maior $j$ tal que $m_j \leq m_i - k$, ou seja o primeiro local antes de $i$ que esteja a pelo menos $k$ milhas de distancia. 
 
 
 Esse algoritmo recebe duas lista de tamanho $n$, uma com as distancias dos locais até o ponto inicial e a outra com os respectivos lucros esperados, e um inteiro $k$ que é a distancias em milhas desejada.
@@ -131,24 +132,36 @@ Esse algoritmo recebe duas lista de tamanho $n$, uma com as distancias dos locai
 \begin{minted}[]{python}
 
 def restaurante(distancias,k,pay):
-    lucro = [0 for a in range(len(pay)+1)]
+    lucro = [0 for a in range(len(pay)+1)] #iniciando vetor de zeros de tamanho n+1 
     for i in range(len(distancias)):
-        m_novo = distancias[i]-k
-        i_est=[b for b in distancias if b <= m_novo]
+        m_novo = distancias[i]-k # restricao de nova posicao disponivel
+        i_est=[b for b in distancias if b <= m_novo] #Calculando os m_j
         if len(i_est) > 0:
-            i_est=i_est[-1]
-            d_est= distancias.index(i_est)
-            d_novo=lucro[d_est+1]
+            i_est=i_est[-1] # pegando maior m_j
+            d_est= distancias.index(i_est) # pegando o indice i do m_j
+            d_novo=lucro[d_est+1] #calculando L(i_dispo)
         else:
             d_novo=0
-        lucro[i+1]=max(lucro[i],pay[i]+d_novo)
+        lucro[i+1]=max(lucro[i],pay[i]+d_novo) #calculo lucro acumulado da posicao i
 
-    return lucro[-1]
+    return lucro[-1] #retorna o maior lucro calculado
 
-print restaurante([3, 8, 9, 15],3,[5, 6, 10, 8])
 
 \end{minted}
 
+Vamos reproducir o mesmo exemplo que utilizamos no algoritmo guloso e vamos perceber que o valor que retornamos é o valor máximo.
+
+\begin{minted}[]{python}
+
+Chamada da funcao:
+restaurante([3, 8, 9, 15],3,[5, 6, 10, 8])
+
+Resultado:
+23
+ 
+\end{minted}
+
+Isso se deve ao que a programação dinâmica utiliza os valores de lucros já calculado e guardados na memória para calcular os valores ótimos futuros. 
 
 
 
@@ -156,19 +169,10 @@ print restaurante([3, 8, 9, 15],3,[5, 6, 10, 8])
 \section{Complexidade}
 \label{sec-5}
 
-Para o problema proposto foi apresentado quatro possiveis soluções. Duas opções ``naive'', uma força bruta e outra utilizando o 
-método de algoritmo guloso.
 
-A primeira solução ``naive'' é linear em relação ao tamanho da rua, ou seja, tem complexidade $O(m)$, onde $m$ é a distancia máxima 
-que temos uma casa.
+A solução obtida pelo algoritmo guloso possui complexidade linear, porém não é ótima, como podemos perceber no exemplo.
 
-A segunda solução ``naive'' é linear em relação ao tamanho do vetor de distancias, ou seja, tem complexidade $O(n)$, onde $n$ é o número
-de casas na rua.
-
-A terceira solução é uma força bruta, escolhendo aleatóriamente uma posição para colocar a antena o que com valor de $n$ muito grande 
-torna-se algo exponencial.
-
-A quarta solução é a única solução ótima e possui complexidade também linear, dependendo apenas do tamanho da rua.
+A solução obtida pelo algoritmo utlizando programação dinâmica é a solução ótima e possui complexidade linear.
 
 
 
